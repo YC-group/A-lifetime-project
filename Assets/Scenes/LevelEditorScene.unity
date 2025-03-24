@@ -430,9 +430,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1839821732}
-  - component: {fileID: 1839821733}
   m_Layer: 0
-  m_Name: LevelEditor
+  m_Name: Level
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -455,22 +454,6 @@ Transform:
   - {fileID: 1938498121}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1839821733
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1839821731}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3bd83a5b1a0b1284e8fa281d66721ad6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  buildingGrid: {fileID: 593580169}
-  buildingGridColor: {r: 0, g: 0, b: 1, a: 1}
-  moveGrid: {fileID: 1938498122}
-  moveGridColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!1 &1938498120
 GameObject:
   m_ObjectHideFlags: 0
