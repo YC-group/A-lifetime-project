@@ -252,7 +252,7 @@ GameObject:
   - component: {fileID: 593580169}
   m_Layer: 0
   m_Name: Building grid
-  m_TagString: Untagged
+  m_TagString: BuildingGrid
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -432,7 +432,7 @@ GameObject:
   - component: {fileID: 1839821732}
   m_Layer: 0
   m_Name: Level
-  m_TagString: Untagged
+  m_TagString: Level
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -466,7 +466,7 @@ GameObject:
   - component: {fileID: 1938498122}
   m_Layer: 0
   m_Name: Move grid
-  m_TagString: Untagged
+  m_TagString: MoveGrid
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

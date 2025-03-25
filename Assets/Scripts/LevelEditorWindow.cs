@@ -7,6 +7,8 @@ using Unity.VisualScripting;
 [ExecuteAlways]
 public class LevelEditorWindow : EditorWindow
 {
+    private Vector2 scrollPos;
+
     private GameObject level;
 
     private Grid buildingGrid;
@@ -29,10 +31,9 @@ public class LevelEditorWindow : EditorWindow
     private void OnEnable()
     {
         SceneView.duringSceneGui += OnSceneGUI;
-        if (level == null)
-        {
-            level = GameObject.Find("Level");
-        }
+        if (level == null) level = GameObject.FindWithTag("Level");
+        if (buildingGrid == null) buildingGrid = GameObject.FindWithTag("BuildingGrid").GetComponent<Grid>();
+        if (moveGrid == null) moveGrid = GameObject.FindWithTag("MoveGrid").GetComponent<Grid>();
     }
 
     private void OnDisable()
@@ -42,10 +43,12 @@ public class LevelEditorWindow : EditorWindow
 
     private void OnGUI()
     {
+        scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.ExpandHeight(true));
+
         GUILayout.Label("Level Object", EditorStyles.boldLabel);
         level = (GameObject)EditorGUILayout.ObjectField("Level Object", level, typeof(GameObject), true);
 
-        GUILayout.Space(10);
+        EditorGUILayout.LabelField("", GUI.skin.horizontalSlider); // 分隔線
 
         GUILayout.Label("Building Grid Settings", EditorStyles.boldLabel);
         buildingGrid = (Grid)EditorGUILayout.ObjectField("Building Grid", buildingGrid, typeof(Grid), true);
@@ -66,7 +69,8 @@ public class LevelEditorWindow : EditorWindow
             SceneView.RepaintAll();
         }
 
-        GUILayout.Space(20);
+        EditorGUILayout.LabelField("", GUI.skin.horizontalSlider); // 分隔線
+
         GUILayout.Label("Save Scene As...", EditorStyles.boldLabel);
         savePath = EditorGUILayout.TextField("Save Path", savePath);
         sceneName = EditorGUILayout.TextField("New Scene Name", sceneName);
@@ -75,6 +79,8 @@ public class LevelEditorWindow : EditorWindow
         {
             SaveCurrentSceneAs();
         }
+
+        EditorGUILayout.EndScrollView();
     }
 
     private void OnSceneGUI(SceneView sceneView)
