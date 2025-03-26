@@ -9,6 +9,9 @@ public class LevelEditorWindow : EditorWindow
 {
     private Vector2 scrollPos;
 
+    private int selectedTab = 0;
+    private string[] tabNames = { "設定", "建物", "角色", "道具" };
+
     private GameObject level;
 
     private Grid buildingGrid;
@@ -42,6 +45,24 @@ public class LevelEditorWindow : EditorWindow
     }
 
     private void OnGUI()
+    {
+        selectedTab = GUILayout.Toolbar(selectedTab, tabNames);
+
+        switch (selectedTab)
+        {
+            case 0:
+                SettingsGUI();
+                break;
+            case 1:
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+        }
+    }
+
+    private void SettingsGUI()
     {
         scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.ExpandHeight(true));
 
