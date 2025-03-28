@@ -90,6 +90,7 @@ public class LevelEditorWindow : EditorWindow
             SceneView.RepaintAll();
         }
 
+        /*
         EditorGUILayout.LabelField("", GUI.skin.horizontalSlider); // ¤À¹j½u
 
         GUILayout.Label("Save Scene As...", EditorStyles.boldLabel);
@@ -100,6 +101,7 @@ public class LevelEditorWindow : EditorWindow
         {
             SaveCurrentSceneAs();
         }
+        */
 
         EditorGUILayout.EndScrollView();
     }
