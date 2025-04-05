@@ -22,7 +22,7 @@ public class LevelEditorWindow : EditorWindow
 
     private Grid buildingGrid;
     private Color buildingGridColor = Color.blue;
-    private int buildingGridSize = 10;
+    private int buildingGridSize = 31;
 
     private Grid moveGrid;
     private Color moveGridColor = Color.yellow;
@@ -132,8 +132,7 @@ public class LevelEditorWindow : EditorWindow
             Vector3Int gridPosition = grid.WorldToCell(worldPosition);
 
             // 修正對齊網格，使物件位於格子內而非交點上
-            Vector3 alignedPosition = grid.CellToWorld(gridPosition);
-
+            Vector3 alignedPosition = grid.GetCellCenterWorld(gridPosition);
             if (gridPosition != lastGridPosition)
             {
                 selectedObject.transform.position = alignedPosition;
@@ -144,7 +143,7 @@ public class LevelEditorWindow : EditorWindow
     }
     private void AlignToGrid(Grid grid, GameObject go)
     {
-        go.transform.position = grid.CellToWorld(grid.WorldToCell(go.transform.position));
+        go.transform.position = grid.GetCellCenterWorld(grid.WorldToCell(go.transform.position));
     }
 
     private void OnGUI()
@@ -177,14 +176,14 @@ public class LevelEditorWindow : EditorWindow
 
         EditorGUILayout.BeginHorizontal();
 
-        if (GUILayout.Button("Align to building grid"))
+        if (GUILayout.Button("將選取物件對齊建築網格"))
         {
             foreach (var go in Selection.gameObjects)
             {
                 AlignToGrid(buildingGrid, go);
             }
         }
-        if (GUILayout.Button("Align to move grid"))
+        if (GUILayout.Button("將選取物件對齊移動網格"))
         {
             foreach (var go in Selection.gameObjects)
             {
@@ -256,13 +255,13 @@ public class LevelEditorWindow : EditorWindow
         Vector3 cellSize = grid.cellSize;
 
         // 計算偏移量，讓物件的中心對準網格中心
-        Vector3 offset = new Vector3(cellSize.x * 0.5f, 0, cellSize.z * 0.5f);
+        Vector3 offset = new Vector3(0, 0, 0);
 
         for (int x = 0; x <= gridSize; x++)
         {
             Vector3 start = origin + offset + new Vector3(x * cellSize.x, 0, 0);
             Vector3 end = start + new Vector3(0, 0, gridSize * cellSize.z);
-            Handles.DrawLine(start, end);
+            Handles.DrawLine(start, end);   
         }
 
         for (int z = 0; z <= gridSize; z++)
