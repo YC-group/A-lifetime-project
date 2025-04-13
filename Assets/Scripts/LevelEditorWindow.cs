@@ -1,8 +1,7 @@
+using System.IO;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
-using System.IO;
-using Unity.VisualScripting;
 /// <summary>
 /// 關卡編輯器 - js5515
 /// </summary>
@@ -10,26 +9,36 @@ using Unity.VisualScripting;
 public class LevelEditorWindow : EditorWindow
 {
     #region 變數
-    private Vector2 scrollPos;
+    private Vector2 scrollPos; //滾動視窗參數
 
-    private int selectedToolTab = 0;
-    private string[] toolTabNames = { "設定", "建物", "角色", "道具" };
+    private int selectedToolTab = 0; //選擇工具tab的參數
+    private string[] toolTabNames = { "設定", "建物", "角色", "道具" }; //選擇工具tab的選項
 
-    private int selectedGridAlignModeTab = 0;
-    private string[] gridAlignModeTabNames = { "無對齊", "對齊建築網格", "對齊移動網格"};
+    private int selectedGridAlignModeTab = 0; //選擇對齊模式的參數
+    private string[] gridAlignModeTabNames = { "無對齊", "對齊建築網格", "對齊移動網格"}; //選擇對齊模式的選項
+
+    //對齊模式用參數
+    private static GameObject selectedObject; // 當前被選取的物件
+    private static bool isDragging = false;   // 是否正在拖曳
+    private static Vector3Int lastGridPosition;
 
     private GameObject level;
+    private Vector3 gridOffset = new Vector3(0, 0.5f, 0); //改變網格視覺上顯示的位置(不會影響真正的網格)
 
+    //建築用網格參數
     private Grid buildingGrid;
     private Color buildingGridColor = Color.blue;
     private int buildingGridSize = 31;
 
+    //移動用網格參數
     private Grid moveGrid;
     private Color moveGridColor = Color.yellow;
     private int moveGridSize = 10;
 
+    /*
     private string savePath = "Assets/Scenes/Levels"; // 預設儲存路徑
     private string sceneName = "NewScene"; // 預設場景名稱
+    */
     #endregion
 
     [MenuItem("Tools/Level Editor Window")]
@@ -40,10 +49,12 @@ public class LevelEditorWindow : EditorWindow
 
     private void OnEnable()
     {
-        this.minSize = new Vector2(400, 300); // 最小尺寸 (寬, 高)
+        this.minSize = new Vector2(400, 300); // 設定最小尺寸 (寬, 高)
         //maxSize = new Vector2(800, 600); // 最大尺寸 (寬, 高)
 
         SceneView.duringSceneGui += OnSceneGUI;
+
+        //自動尋找物件
         if (level == null) level = GameObject.FindWithTag("Level");
         if (buildingGrid == null) buildingGrid = GameObject.FindWithTag("BuildingGrid").GetComponent<Grid>();
         if (moveGrid == null) moveGrid = GameObject.FindWithTag("MoveGrid").GetComponent<Grid>();
@@ -54,10 +65,11 @@ public class LevelEditorWindow : EditorWindow
         SceneView.duringSceneGui -= OnSceneGUI;
     }
 
+    //持續調用，類似Update
     private void OnSceneGUI(SceneView sceneView)
     {
-        if (buildingGrid) DrawGrid(buildingGrid, buildingGridColor, buildingGridSize);
-        if (moveGrid) DrawGrid(moveGrid, moveGridColor, moveGridSize);
+        if (buildingGrid) DrawGrid(buildingGrid, buildingGridColor, buildingGridSize, gridOffset);
+        if (moveGrid) DrawGrid(moveGrid, moveGridColor, moveGridSize, gridOffset);
 
         switch (selectedGridAlignModeTab)
         {
@@ -74,78 +86,97 @@ public class LevelEditorWindow : EditorWindow
         }
     }
 
-    private static GameObject selectedObject; // 當前被選取的物件
-    private static bool isDragging = false;   // 是否正在拖曳
-    private static Vector3Int lastGridPosition;
+
+    // 拖曳物件並對齊到網格上的邏輯
     private void AlignObjectByMouse(Grid grid)
     {
         Event e = Event.current;
 
+        // 當滑鼠左鍵按下時
         if (e.type == EventType.MouseDown && e.button == 0)
         {
             if (!isDragging)
             {
-                // 嘗試選取物件
+                // 如果目前沒有正在拖曳 → 嘗試選取物件
                 TrySelectObject();
             }
             else
             {
-                // 放下物件
+                // 如果已在拖曳中 → 放下物件，取消選取
                 isDragging = false;
                 selectedObject = null;
-                SceneView.RepaintAll();
+                SceneView.RepaintAll(); // 更新 Scene 視圖
             }
 
-            e.Use();
+            e.Use(); // 告知 Unity 這個事件已處理，避免傳遞到其他工具
         }
 
+        // 若正在拖曳且選取了物件 → 讓物件跟著滑鼠移動並對齊網格
         if (isDragging && selectedObject != null)
         {
-            // 讓物件跟隨滑鼠並貼齊網格
             MoveObjectWithMouse(grid);
         }
     }
+
+    // 嘗試選取滑鼠下的物件
     private bool TrySelectObject()
     {
+        // 將 GUI 座標轉換為世界中的 Ray
         Ray ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
         RaycastHit hit;
 
+        // 射線檢測：如果擊中了有 Collider 的物件
         if (Physics.Raycast(ray, out hit))
         {
-            selectedObject = hit.collider.gameObject;
-            isDragging = true;
+            selectedObject = hit.collider.gameObject; // 選取該物件
+            isDragging = true;                        // 開始拖曳模式
             return true;
         }
 
-        return false;
+        return false; // 沒有選到物件
     }
 
-
+    // 讓選取的物件跟隨滑鼠並對齊到網格
     private void MoveObjectWithMouse(Grid grid)
     {
+        // 再次取得滑鼠射線
         Ray ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
+
+        // 建立一個水平的虛擬平面（用於計算滑鼠與地面交點）
         Plane plane = new Plane(Vector3.up, Vector3.zero);
+
+        // 計算射線與平面交點
         if (plane.Raycast(ray, out float enter))
         {
+            // 取得交點世界座標
             Vector3 worldPosition = ray.GetPoint(enter);
+
+            // 保留原始 Y 值，避免物件升高或降低
             worldPosition.y = selectedObject.transform.position.y;
+
+            // 將世界座標轉換為 Grid 的 Cell 座標
             Vector3Int gridPosition = grid.WorldToCell(worldPosition);
 
-            // 修正對齊網格，使物件位於格子內而非交點上
+            // 對齊到格子的中心
             Vector3 alignedPosition = grid.GetCellCenterWorld(gridPosition);
+
+            // 如果位置有變更，就更新物件位置
             if (gridPosition != lastGridPosition)
             {
                 selectedObject.transform.position = alignedPosition;
                 lastGridPosition = gridPosition;
-                SceneView.RepaintAll();
+                SceneView.RepaintAll(); // 重新繪製場景
             }
         }
     }
+
+    //將物件對齊網格
     private void AlignToGrid(Grid grid, GameObject go)
     {
         go.transform.position = grid.GetCellCenterWorld(grid.WorldToCell(go.transform.position));
     }
 
+    //EditorWindow的顯示內容
     private void OnGUI()
     {
         selectedToolTab = GUILayout.Toolbar(selectedToolTab, toolTabNames);
@@ -165,6 +196,7 @@ public class LevelEditorWindow : EditorWindow
         }
     }    
 
+    //設定Tab的內容
     private void SettingsTabGUI()
     {
         EditorGUILayout.BeginHorizontal();
@@ -200,6 +232,8 @@ public class LevelEditorWindow : EditorWindow
         level = (GameObject)EditorGUILayout.ObjectField("Level Object", level, typeof(GameObject), true);
 
         EditorGUILayout.LabelField("", GUI.skin.horizontalSlider); // 分隔線
+
+        gridOffset = EditorGUILayout.Vector3Field("Grid offset", gridOffset);
 
         GUILayout.Label("Building Grid Settings", EditorStyles.boldLabel);
         buildingGrid = (Grid)EditorGUILayout.ObjectField("Building Grid", buildingGrid, typeof(Grid), true);
@@ -243,8 +277,8 @@ public class LevelEditorWindow : EditorWindow
         EditorGUILayout.EndScrollView();
     }
 
-
-    private void DrawGrid(Grid grid, Color color, int gridSize)
+    //網格視覺輔助
+    private void DrawGrid(Grid grid, Color color, int gridSize, Vector3 offset)
     {
         if (grid == null) return;
 
@@ -254,8 +288,7 @@ public class LevelEditorWindow : EditorWindow
         Vector3 origin = grid.transform.position;
         Vector3 cellSize = grid.cellSize;
 
-        // 計算偏移量，讓物件的中心對準網格中心
-        Vector3 offset = new Vector3(0, 0, 0);
+        offset = Vector3.Scale(offset, moveGrid.cellSize);
 
         for (int x = 0; x <= gridSize; x++)
         {
@@ -274,7 +307,7 @@ public class LevelEditorWindow : EditorWindow
         Handles.zTest = UnityEngine.Rendering.CompareFunction.Always; // 恢復為無視深度
     }
 
-
+    /*
     private void SaveCurrentSceneAs()
     {
         if (!Directory.Exists(savePath))
@@ -312,4 +345,5 @@ public class LevelEditorWindow : EditorWindow
             Debug.LogError("儲存場景時發生錯誤！");
         }
     }
+    */
 }
