@@ -1,6 +1,6 @@
-using UnityEngine;
+﻿using UnityEngine;
 /// <summary>
-/// Prefab�ͦ��ҪO - js5515
+/// Prefab生成模板 - js5515
 /// </summary>
 [System.Serializable]
 public class PrefabSpawnData

@@ -1,43 +1,43 @@
-using System.IO;
+ï»¿using System.IO;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 /// <summary>
-/// Ãö¥d½s¿è¾¹ - js5515
+/// é—œå¡ç·¨è¼¯å™¨ - js5515
 /// </summary>
 [ExecuteAlways]
 public class LevelEditorWindow : EditorWindow
 {
-    #region ÅÜ¼Æ
-    private Vector2 scrollPos; //ºu°Êµøµ¡°Ñ¼Æ
+    #region è®Šæ•¸
+    private Vector2 scrollPos; //æ»¾å‹•è¦–çª—åƒæ•¸
 
-    private int selectedToolTab = 0; //¿ï¾Ü¤u¨ãtabªº°Ñ¼Æ
-    private string[] toolTabNames = { "³]©w", "«Øª«", "¨¤¦â", "¹D¨ã" }; //¿ï¾Ü¤u¨ãtabªº¿ï¶µ
+    private int selectedToolTab = 0; //é¸æ“‡å·¥å…·tabçš„åƒæ•¸
+    private string[] toolTabNames = { "è¨­å®š", "å»ºç‰©", "è§’è‰²", "é“å…·" }; //é¸æ“‡å·¥å…·tabçš„é¸é …
 
-    private int selectedGridAlignModeTab = 0; //¿ï¾Ü¹ï»ô¼Ò¦¡ªº°Ñ¼Æ
-    private string[] gridAlignModeTabNames = { "µL¹ï»ô", "¹ï»ô«Ø¿vºô®æ", "¹ï»ô²¾°Êºô®æ"}; //¿ï¾Ü¹ï»ô¼Ò¦¡ªº¿ï¶µ
+    private int selectedGridAlignModeTab = 0; //é¸æ“‡å°é½Šæ¨¡å¼çš„åƒæ•¸
+    private string[] gridAlignModeTabNames = { "ç„¡å°é½Š", "å°é½Šå»ºç¯‰ç¶²æ ¼", "å°é½Šç§»å‹•ç¶²æ ¼"}; //é¸æ“‡å°é½Šæ¨¡å¼çš„é¸é …
 
-    //¹ï»ô¼Ò¦¡¥Î°Ñ¼Æ
-    private static GameObject selectedObject; // ·í«e³Q¿ï¨úªºª«¥ó
-    private static bool isDragging = false;   // ¬O§_¥¿¦b©ì¦²
+    //å°é½Šæ¨¡å¼ç”¨åƒæ•¸
+    private static GameObject selectedObject; // ç•¶å‰è¢«é¸å–çš„ç‰©ä»¶
+    private static bool isDragging = false;   // æ˜¯å¦æ­£åœ¨æ‹–æ›³
     private static Vector3Int lastGridPosition;
 
     private GameObject level;
-    private Vector3 gridOffset = new Vector3(0, 0.5f, 0); //§ïÅÜºô®æµøÄ±¤WÅã¥Üªº¦ì¸m(¤£·|¼vÅT¯u¥¿ªººô®æ)
+    private Vector3 gridOffset = new Vector3(0, 0.5f, 0); //æ”¹è®Šç¶²æ ¼è¦–è¦ºä¸Šé¡¯ç¤ºçš„ä½ç½®(ä¸æœƒå½±éŸ¿çœŸæ­£çš„ç¶²æ ¼)
 
-    //«Ø¿v¥Îºô®æ°Ñ¼Æ
+    //å»ºç¯‰ç”¨ç¶²æ ¼åƒæ•¸
     private Grid buildingGrid;
     private Color buildingGridColor = Color.blue;
     private int buildingGridSize = 31;
 
-    //²¾°Ê¥Îºô®æ°Ñ¼Æ
+    //ç§»å‹•ç”¨ç¶²æ ¼åƒæ•¸
     private Grid moveGrid;
     private Color moveGridColor = Color.yellow;
     private int moveGridSize = 10;
 
     /*
-    private string savePath = "Assets/Scenes/Levels"; // ¹w³]Àx¦s¸ô®|
-    private string sceneName = "NewScene"; // ¹w³]³õ´º¦WºÙ
+    private string savePath = "Assets/Scenes/Levels"; // é è¨­å„²å­˜è·¯å¾‘
+    private string sceneName = "NewScene"; // é è¨­å ´æ™¯åç¨±
     */
     #endregion
 
@@ -49,12 +49,12 @@ public class LevelEditorWindow : EditorWindow
 
     private void OnEnable()
     {
-        this.minSize = new Vector2(400, 300); // ³]©w³Ì¤p¤Ø¤o (¼e, °ª)
-        //maxSize = new Vector2(800, 600); // ³Ì¤j¤Ø¤o (¼e, °ª)
+        this.minSize = new Vector2(400, 300); // è¨­å®šæœ€å°å°ºå¯¸ (å¯¬, é«˜)
+        //maxSize = new Vector2(800, 600); // æœ€å¤§å°ºå¯¸ (å¯¬, é«˜)
 
         SceneView.duringSceneGui += OnSceneGUI;
 
-        //¦Û°Ê´M§äª«¥ó
+        //è‡ªå‹•å°‹æ‰¾ç‰©ä»¶
         if (level == null) level = GameObject.FindWithTag("Level");
         if (buildingGrid == null) buildingGrid = GameObject.FindWithTag("BuildingGrid").GetComponent<Grid>();
         if (moveGrid == null) moveGrid = GameObject.FindWithTag("MoveGrid").GetComponent<Grid>();
@@ -65,7 +65,7 @@ public class LevelEditorWindow : EditorWindow
         SceneView.duringSceneGui -= OnSceneGUI;
     }
 
-    //«ùÄò½Õ¥Î¡AÃş¦üUpdate
+    //æŒçºŒèª¿ç”¨ï¼Œé¡ä¼¼Update
     private void OnSceneGUI(SceneView sceneView)
     {
         if (buildingGrid) DrawGrid(buildingGrid, buildingGridColor, buildingGridSize, gridOffset);
@@ -87,96 +87,96 @@ public class LevelEditorWindow : EditorWindow
     }
 
 
-    // ©ì¦²ª«¥ó¨Ã¹ï»ô¨ìºô®æ¤WªºÅŞ¿è
+    // æ‹–æ›³ç‰©ä»¶ä¸¦å°é½Šåˆ°ç¶²æ ¼ä¸Šçš„é‚è¼¯
     private void AlignObjectByMouse(Grid grid)
     {
         Event e = Event.current;
 
-        // ·í·Æ¹«¥ªÁä«ö¤U®É
+        // ç•¶æ»‘é¼ å·¦éµæŒ‰ä¸‹æ™‚
         if (e.type == EventType.MouseDown && e.button == 0)
         {
             if (!isDragging)
             {
-                // ¦pªG¥Ø«e¨S¦³¥¿¦b©ì¦² ¡÷ ¹Á¸Õ¿ï¨úª«¥ó
+                // å¦‚æœç›®å‰æ²’æœ‰æ­£åœ¨æ‹–æ›³ â†’ å˜—è©¦é¸å–ç‰©ä»¶
                 TrySelectObject();
             }
             else
             {
-                // ¦pªG¤w¦b©ì¦²¤¤ ¡÷ ©ñ¤Uª«¥ó¡A¨ú®ø¿ï¨ú
+                // å¦‚æœå·²åœ¨æ‹–æ›³ä¸­ â†’ æ”¾ä¸‹ç‰©ä»¶ï¼Œå–æ¶ˆé¸å–
                 isDragging = false;
                 selectedObject = null;
-                SceneView.RepaintAll(); // §ó·s Scene µø¹Ï
+                SceneView.RepaintAll(); // æ›´æ–° Scene è¦–åœ–
             }
 
-            e.Use(); // §iª¾ Unity ³o­Ó¨Æ¥ó¤w³B²z¡AÁ×§K¶Ç»¼¨ì¨ä¥L¤u¨ã
+            e.Use(); // å‘ŠçŸ¥ Unity é€™å€‹äº‹ä»¶å·²è™•ç†ï¼Œé¿å…å‚³éåˆ°å…¶ä»–å·¥å…·
         }
 
-        // ­Y¥¿¦b©ì¦²¥B¿ï¨ú¤Fª«¥ó ¡÷ Åıª«¥ó¸òµÛ·Æ¹«²¾°Ê¨Ã¹ï»ôºô®æ
+        // è‹¥æ­£åœ¨æ‹–æ›³ä¸”é¸å–äº†ç‰©ä»¶ â†’ è®“ç‰©ä»¶è·Ÿè‘—æ»‘é¼ ç§»å‹•ä¸¦å°é½Šç¶²æ ¼
         if (isDragging && selectedObject != null)
         {
             MoveObjectWithMouse(grid);
         }
     }
 
-    // ¹Á¸Õ¿ï¨ú·Æ¹«¤Uªºª«¥ó
+    // å˜—è©¦é¸å–æ»‘é¼ ä¸‹çš„ç‰©ä»¶
     private bool TrySelectObject()
     {
-        // ±N GUI ®y¼ĞÂà´«¬°¥@¬É¤¤ªº Ray
+        // å°‡ GUI åº§æ¨™è½‰æ›ç‚ºä¸–ç•Œä¸­çš„ Ray
         Ray ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
         RaycastHit hit;
 
-        // ®g½uÀË´ú¡G¦pªGÀ»¤¤¤F¦³ Collider ªºª«¥ó
+        // å°„ç·šæª¢æ¸¬ï¼šå¦‚æœæ“Šä¸­äº†æœ‰ Collider çš„ç‰©ä»¶
         if (Physics.Raycast(ray, out hit))
         {
-            selectedObject = hit.collider.gameObject; // ¿ï¨ú¸Óª«¥ó
-            isDragging = true;                        // ¶}©l©ì¦²¼Ò¦¡
+            selectedObject = hit.collider.gameObject; // é¸å–è©²ç‰©ä»¶
+            isDragging = true;                        // é–‹å§‹æ‹–æ›³æ¨¡å¼
             return true;
         }
 
-        return false; // ¨S¦³¿ï¨ìª«¥ó
+        return false; // æ²’æœ‰é¸åˆ°ç‰©ä»¶
     }
 
-    // Åı¿ï¨úªºª«¥ó¸òÀH·Æ¹«¨Ã¹ï»ô¨ìºô®æ
+    // è®“é¸å–çš„ç‰©ä»¶è·Ÿéš¨æ»‘é¼ ä¸¦å°é½Šåˆ°ç¶²æ ¼
     private void MoveObjectWithMouse(Grid grid)
     {
-        // ¦A¦¸¨ú±o·Æ¹«®g½u
+        // å†æ¬¡å–å¾—æ»‘é¼ å°„ç·š
         Ray ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
 
-        // «Ø¥ß¤@­Ó¤ô¥­ªºµêÀÀ¥­­±¡]¥Î©ó­pºâ·Æ¹«»P¦a­±¥æÂI¡^
+        // å»ºç«‹ä¸€å€‹æ°´å¹³çš„è™›æ“¬å¹³é¢ï¼ˆç”¨æ–¼è¨ˆç®—æ»‘é¼ èˆ‡åœ°é¢äº¤é»ï¼‰
         Plane plane = new Plane(Vector3.up, Vector3.zero);
 
-        // ­pºâ®g½u»P¥­­±¥æÂI
+        // è¨ˆç®—å°„ç·šèˆ‡å¹³é¢äº¤é»
         if (plane.Raycast(ray, out float enter))
         {
-            // ¨ú±o¥æÂI¥@¬É®y¼Ğ
+            // å–å¾—äº¤é»ä¸–ç•Œåº§æ¨™
             Vector3 worldPosition = ray.GetPoint(enter);
 
-            // «O¯d­ì©l Y ­È¡AÁ×§Kª«¥ó¤É°ª©Î­°§C
+            // ä¿ç•™åŸå§‹ Y å€¼ï¼Œé¿å…ç‰©ä»¶å‡é«˜æˆ–é™ä½
             worldPosition.y = selectedObject.transform.position.y;
 
-            // ±N¥@¬É®y¼ĞÂà´«¬° Grid ªº Cell ®y¼Ğ
+            // å°‡ä¸–ç•Œåº§æ¨™è½‰æ›ç‚º Grid çš„ Cell åº§æ¨™
             Vector3Int gridPosition = grid.WorldToCell(worldPosition);
 
-            // ¹ï»ô¨ì®æ¤lªº¤¤¤ß
+            // å°é½Šåˆ°æ ¼å­çš„ä¸­å¿ƒ
             Vector3 alignedPosition = grid.GetCellCenterWorld(gridPosition);
 
-            // ¦pªG¦ì¸m¦³ÅÜ§ó¡A´N§ó·sª«¥ó¦ì¸m
+            // å¦‚æœä½ç½®æœ‰è®Šæ›´ï¼Œå°±æ›´æ–°ç‰©ä»¶ä½ç½®
             if (gridPosition != lastGridPosition)
             {
                 selectedObject.transform.position = alignedPosition;
                 lastGridPosition = gridPosition;
-                SceneView.RepaintAll(); // ­«·sÃ¸»s³õ´º
+                SceneView.RepaintAll(); // é‡æ–°ç¹ªè£½å ´æ™¯
             }
         }
     }
 
-    //±Nª«¥ó¹ï»ôºô®æ
+    //å°‡ç‰©ä»¶å°é½Šç¶²æ ¼
     private void AlignToGrid(Grid grid, GameObject go)
     {
         go.transform.position = grid.GetCellCenterWorld(grid.WorldToCell(go.transform.position));
     }
 
-    //EditorWindowªºÅã¥Ü¤º®e
+    //EditorWindowçš„é¡¯ç¤ºå…§å®¹
     private void OnGUI()
     {
         selectedToolTab = GUILayout.Toolbar(selectedToolTab, toolTabNames);
@@ -196,26 +196,26 @@ public class LevelEditorWindow : EditorWindow
         }
     }    
 
-    //³]©wTabªº¤º®e
+    //è¨­å®šTabçš„å…§å®¹
     private void SettingsTabGUI()
     {
         EditorGUILayout.BeginHorizontal();
 
-        EditorGUILayout.LabelField("¹ï»ô¼Ò¦¡", GUILayout.Width(50));
+        EditorGUILayout.LabelField("å°é½Šæ¨¡å¼", GUILayout.Width(50));
         selectedGridAlignModeTab = GUILayout.Toolbar(selectedGridAlignModeTab, gridAlignModeTabNames);
 
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
 
-        if (GUILayout.Button("±N¿ï¨úª«¥ó¹ï»ô«Ø¿vºô®æ"))
+        if (GUILayout.Button("å°‡é¸å–ç‰©ä»¶å°é½Šå»ºç¯‰ç¶²æ ¼"))
         {
             foreach (var go in Selection.gameObjects)
             {
                 AlignToGrid(buildingGrid, go);
             }
         }
-        if (GUILayout.Button("±N¿ï¨úª«¥ó¹ï»ô²¾°Êºô®æ"))
+        if (GUILayout.Button("å°‡é¸å–ç‰©ä»¶å°é½Šç§»å‹•ç¶²æ ¼"))
         {
             foreach (var go in Selection.gameObjects)
             {
@@ -231,7 +231,7 @@ public class LevelEditorWindow : EditorWindow
         GUILayout.Label("Level Object", EditorStyles.boldLabel);
         level = (GameObject)EditorGUILayout.ObjectField("Level Object", level, typeof(GameObject), true);
 
-        EditorGUILayout.LabelField("", GUI.skin.horizontalSlider); // ¤À¹j½u
+        EditorGUILayout.LabelField("", GUI.skin.horizontalSlider); // åˆ†éš”ç·š
 
         gridOffset = EditorGUILayout.Vector3Field("Grid offset", gridOffset);
 
@@ -251,7 +251,7 @@ public class LevelEditorWindow : EditorWindow
 
 
         /*
-        EditorGUILayout.LabelField("", GUI.skin.horizontalSlider); // ¤À¹j½u
+        EditorGUILayout.LabelField("", GUI.skin.horizontalSlider); // åˆ†éš”ç·š
 
         GUILayout.Label("Save Scene As...", EditorStyles.boldLabel);
         savePath = EditorGUILayout.TextField("Save Path", savePath);
@@ -277,12 +277,12 @@ public class LevelEditorWindow : EditorWindow
         EditorGUILayout.EndScrollView();
     }
 
-    //ºô®æµøÄ±»²§U
+    //ç¶²æ ¼è¦–è¦ºè¼”åŠ©
     private void DrawGrid(Grid grid, Color color, int gridSize, Vector3 offset)
     {
         if (grid == null) return;
 
-        Handles.zTest = UnityEngine.Rendering.CompareFunction.LessEqual; // ¶}±Ò²`«×´ú¸Õ
+        Handles.zTest = UnityEngine.Rendering.CompareFunction.LessEqual; // é–‹å•Ÿæ·±åº¦æ¸¬è©¦
 
         Handles.color = color;
         Vector3 origin = grid.transform.position;
@@ -304,7 +304,7 @@ public class LevelEditorWindow : EditorWindow
             Handles.DrawLine(start, end);
         }
 
-        Handles.zTest = UnityEngine.Rendering.CompareFunction.Always; // «ì´_¬°µLµø²`«×
+        Handles.zTest = UnityEngine.Rendering.CompareFunction.Always; // æ¢å¾©ç‚ºç„¡è¦–æ·±åº¦
     }
 
     /*
@@ -312,20 +312,20 @@ public class LevelEditorWindow : EditorWindow
     {
         if (!Directory.Exists(savePath))
         {
-            Debug.LogError($"«ü©wªº¸ô®|¤£¦s¦b: {savePath}");
+            Debug.LogError($"æŒ‡å®šçš„è·¯å¾‘ä¸å­˜åœ¨: {savePath}");
             return;
         }
 
         string originalScenePath = EditorSceneManager.GetActiveScene().path;
         if (string.IsNullOrEmpty(originalScenePath))
         {
-            Debug.LogError("·í«e³õ´º©|¥¼Àx¦s¹L¡A½Ğ¥ı¤â°ÊÀx¦s³õ´º¡I");
+            Debug.LogError("ç•¶å‰å ´æ™¯å°šæœªå„²å­˜éï¼Œè«‹å…ˆæ‰‹å‹•å„²å­˜å ´æ™¯ï¼");
             return;
         }
 
         string newScenePath = $"{savePath}/{sceneName}.unity";
 
-        // ½T«OÀÉ¦W¤£­«½Æ
+        // ç¢ºä¿æª”åä¸é‡è¤‡
         int count = 1;
         while (File.Exists(newScenePath))
         {
@@ -333,16 +333,16 @@ public class LevelEditorWindow : EditorWindow
             count++;
         }
 
-        // ¥t¦s³õ´º¦ı¤£¤Á´«
+        // å¦å­˜å ´æ™¯ä½†ä¸åˆ‡æ›
         bool success = EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene(), newScenePath, false);
 
         if (success)
         {
-            Debug.Log($"³õ´º¦¨¥\¥t¦s¬°: {newScenePath}¡A¦ı¤´«O«ù¦b­ì¥»ªº½s¿è³õ´º¡I");
+            Debug.Log($"å ´æ™¯æˆåŠŸå¦å­˜ç‚º: {newScenePath}ï¼Œä½†ä»ä¿æŒåœ¨åŸæœ¬çš„ç·¨è¼¯å ´æ™¯ï¼");
         }
         else
         {
-            Debug.LogError("Àx¦s³õ´º®Éµo¥Í¿ù»~¡I");
+            Debug.LogError("å„²å­˜å ´æ™¯æ™‚ç™¼ç”ŸéŒ¯èª¤ï¼");
         }
     }
     */

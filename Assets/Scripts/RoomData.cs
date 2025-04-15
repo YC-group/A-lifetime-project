@@ -1,7 +1,7 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using UnityEngine;
 /// <summary>
-/// ©Ð¶¡¸ê®Æ - js5515
+/// æˆ¿é–“è³‡æ–™ - js5515
 /// </summary>
 [CreateAssetMenu(fileName = "RoomData", menuName = "Game/Room Data")]
 public class RoomData : ScriptableObject

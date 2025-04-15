@@ -1,7 +1,7 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using UnityEngine;
 /// <summary>
-/// Ãö¥d¸ê®Æ - js5515
+/// é—œå¡è³‡æ–™ - js5515
 /// </summary>
 [CreateAssetMenu(fileName = "LevelData", menuName = "Game/Level Data")]
 public class LevelData : ScriptableObject

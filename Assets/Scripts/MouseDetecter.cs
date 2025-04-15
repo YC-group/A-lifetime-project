@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class MouseDetecter : MonoBehaviour
@@ -8,21 +8,21 @@ public class MouseDetecter : MonoBehaviour
     private Vector3 hitPosition;
     private Vector3 rayOrigin;
     private Vector3 rayDirection;
-    private bool hitSomething = false; // ¬O§_¦³À»¤¤ª«Åé
+    private bool hitSomething = false; // æ˜¯å¦æœ‰æ“Šä¸­ç‰©é«”
 
     private void OnDrawGizmos()
     {
         if (hitSomething)
         {
             Gizmos.color = Color.green;
-            Gizmos.DrawRay(rayOrigin, rayDirection * Vector3.Distance(rayOrigin, hitPosition)); // ¥uµe¨ì¸I¼²ÂI
+            Gizmos.DrawRay(rayOrigin, rayDirection * Vector3.Distance(rayOrigin, hitPosition)); // åªç•«åˆ°ç¢°æ’é»
             Gizmos.color = Color.red;
-            Gizmos.DrawSphere(hitPosition, 0.1f); // ¦bÀ»¤¤ÂIµe¤@­Ó¬õ¦â¤p¶ê²y
+            Gizmos.DrawSphere(hitPosition, 0.1f); // åœ¨æ“Šä¸­é»ç•«ä¸€å€‹ç´…è‰²å°åœ“çƒ
         }
         else
         {
             Gizmos.color = Color.yellow;
-            Gizmos.DrawRay(rayOrigin, rayDirection * 100f); // ¨SÀ»¤¤®É¡Aµe¤@±øªø 100 ³æ¦ìªº®g½u
+            Gizmos.DrawRay(rayOrigin, rayDirection * 100f); // æ²’æ“Šä¸­æ™‚ï¼Œç•«ä¸€æ¢é•· 100 å–®ä½çš„å°„ç·š
         }
     }
 
@@ -36,15 +36,15 @@ public class MouseDetecter : MonoBehaviour
         if (Physics.Raycast(ray, out hit, 100, gridLayer))
         {
             hitPosition = hit.point;
-            hitSomething = true; // °O¿ıÀ»¤¤ª¬ºA
+            hitSomething = true; // è¨˜éŒ„æ“Šä¸­ç‹€æ…‹
         }
         else
         {
-            hitSomething = false; // ¨S¦³À»¤¤
+            hitSomething = false; // æ²’æœ‰æ“Šä¸­
         }
 
-        rayOrigin = ray.origin;       // °O¿ı®g½u°_ÂI
-        rayDirection = ray.direction; // °O¿ı®g½u¤è¦V
+        rayOrigin = ray.origin;       // è¨˜éŒ„å°„ç·šèµ·é»
+        rayDirection = ray.direction; // è¨˜éŒ„å°„ç·šæ–¹å‘
 
         return hitPosition;
     }
