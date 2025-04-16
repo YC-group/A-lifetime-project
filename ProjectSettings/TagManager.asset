@@ -9,6 +9,7 @@ TagManager:
   - MoveGrid
   - Building
   - Enemy
+  - Barrier
   layers:
   - Default
   - TransparentFX

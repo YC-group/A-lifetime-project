@@ -288,7 +288,7 @@ public class LevelEditorWindow : EditorWindow
         Vector3 origin = grid.transform.position;
         Vector3 cellSize = grid.cellSize;
 
-        offset = Vector3.Scale(offset, moveGrid.cellSize);
+        offset = Vector3.Scale(offset, buildingGrid.cellSize);
 
         for (int x = 0; x <= gridSize; x++)
         {
