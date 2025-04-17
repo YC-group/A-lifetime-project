@@ -4,11 +4,11 @@ using UnityEngine;
 /// </summary>
 
 [CreateAssetMenu(fileName = "playerObject", menuName = "CreatePlayer")]
-public class PlayerScriptableObject : ScriptableObject
+public class PlayerData : ScriptableObject
 {
     public string playerName;
     public float attack;
     public float hp;
-    public float moveDistance; // 每步移動距離
+    public int moveDistance; // 每步移動距離
     public float moveTime; // 每步移動時間
 }

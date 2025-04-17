@@ -5,6 +5,12 @@ using UnityEngine.InputSystem;
 /// <summary>
 /// 回合控制腳本 - Jerry0401
 /// </summary>
+public enum RoundState // 回合列舉
+{
+    PlayerTurn,
+    EnemyTurn,
+    EndingTurn
+}
 public class GameManager : MonoBehaviour
 {
     public static GameManager GameState;
