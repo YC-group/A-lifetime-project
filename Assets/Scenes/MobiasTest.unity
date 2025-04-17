@@ -341,11 +341,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da9bb600fcba41f4daae9f8ada52b5a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buildingName: 
-  buildingType: 2
-  visionBlockage: 1
-  isDestructible: 1
-  isInteractable: 0
+  buildingObj: {fileID: 11400000, guid: 38cdae072b9fee64a9e3a576869de807, type: 2}
 --- !u!1001 &944998050
 PrefabInstance:
   m_ObjectHideFlags: 0
