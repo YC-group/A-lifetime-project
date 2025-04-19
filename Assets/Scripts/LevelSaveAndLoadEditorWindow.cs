@@ -1,19 +1,29 @@
 ﻿using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+/// <summary>
+/// 關卡存讀檔流程 - js5515
+/// </summary>
 
 public class LevelSaveAndLoadEditorWindow : EditorWindow
 {
+    #region 變數
     private Grid buildingGrid;
 
-    private Vector3Int gridSize = new Vector3Int(10, 3, 10); // 可編輯的 3D 地圖格子大小（包含 Y 軸）
-    private int yMin = 0; // Y 軸最小值
-    private int yMax = 0; // Y 軸最大值
+    private Vector3Int detectBoundsStart = Vector3Int.zero;
+    private Vector3Int detectBoundsEnd = new Vector3Int(10, 4, 10);
+    private Vector3 gridOffset = new Vector3(0f, 0.5f, 0f);
 
-    private Vector3 offset = new Vector3(0f, 0.5f, 0f); // 用於微調房間框框視覺化位置的偏移量
+    private Color roomColor = new Color(0f, 1f, 0f, 0.25f);
+    private Color detectBoundsColor = new Color(1f, 0f, 0f, 1f);
+    private Color roomConnectionLineColor = new Color(0.5f, 0f, 1f, 1f);
+    private float roomConnectionLineThickness = 10f;
 
-    private HashSet<Vector3Int> wallPositions = new HashSet<Vector3Int>(); // 所有牆壁的位置集合
-    private List<HashSet<Vector3Int>> detectedRooms = new List<HashSet<Vector3Int>>(); // 偵測到的房間（封閉區域）
+    private HashSet<Vector3Int> barrierPositions = new HashSet<Vector3Int>();
+    private HashSet<Vector3Int> doorPositions = new HashSet<Vector3Int>();
+    private List<HashSet<Vector3Int>> detectedRooms = new List<HashSet<Vector3Int>>();
+    private Dictionary<int, List<int>> roomConnections = new Dictionary<int, List<int>>();
+    #endregion
 
     [MenuItem("Tools/Level Save And Load")]
     public static void ShowWindow()
@@ -24,7 +34,6 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
     private void OnEnable()
     {
         if (buildingGrid == null) buildingGrid = GameObject.FindWithTag("BuildingGrid")?.GetComponent<Grid>();
-
         SceneView.duringSceneGui += OnSceneGUI;
     }
 
@@ -33,7 +42,6 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
         SceneView.duringSceneGui -= OnSceneGUI;
     }
 
-    // 在 Scene 中繪製偵測到的房間格子（以半透明的綠色框顯示）
     private void OnSceneGUI(SceneView sceneView)
     {
         if (detectedRooms == null) return;
@@ -42,95 +50,103 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
         {
             foreach (var pos in room)
             {
-                // 計算顯示位置，加入偏移量調整（可在 Inspector 調整）
-                Vector3 worldPos = buildingGrid.CellToWorld(pos) + offset;
+                Vector3 worldPos = buildingGrid.GetCellCenterWorld(pos) + Vector3.Scale(gridOffset, buildingGrid.cellSize);
+                Handles.color = roomColor;
+                Handles.CubeHandleCap(0, worldPos, Quaternion.identity, Mathf.Max(buildingGrid.cellSize.x, buildingGrid.cellSize.z), EventType.Repaint);
+            }
+        }
 
-                // 繪製綠色透明框表示此為偵測到的房間格子
-                Handles.color = new Color(0f, 1f, 0f, 0.25f);
-                Handles.DrawWireCube(worldPos, buildingGrid.cellSize);
+        Handles.zTest = UnityEngine.Rendering.CompareFunction.LessEqual;
+        Handles.color = detectBoundsColor;
+        Vector3 min = buildingGrid.CellToWorld(detectBoundsStart) + Vector3.Scale(gridOffset, buildingGrid.cellSize);
+        Vector3 max = buildingGrid.CellToWorld(detectBoundsEnd) + Vector3.Scale(gridOffset, buildingGrid.cellSize);
+        Vector3 size = max - min + buildingGrid.cellSize;
+        Handles.DrawWireCube(min + size / 2f, size);
+        Handles.zTest = UnityEngine.Rendering.CompareFunction.Always;
 
-                // --- 以下為可選的地板視覺化效果 ---
-                // 註解掉平面區塊顯示（若需要地面效果可取消註解）
-                /*
-                Handles.DrawSolidRectangleWithOutline(
-                    new Vector3[] {
-                        worldPos + new Vector3(-0.5f, -0.5f, -0.5f),
-                        worldPos + new Vector3(0.5f, -0.5f, -0.5f),
-                        worldPos + new Vector3(0.5f, -0.5f, 0.5f),
-                        worldPos + new Vector3(-0.5f, -0.5f, 0.5f)
-                    },
-                    new Color(0f, 1f, 0f, 0.05f),
-                    new Color(0f, 1f, 0f, 0.3f)
-                );
-                */
+        foreach (var kvp in roomConnections)
+        {
+            int roomAIndex = kvp.Key;
+            Vector3 centerA = GetRoomCenter(detectedRooms[roomAIndex]);
+
+            foreach (int roomBIndex in kvp.Value)
+            {
+                if (roomBIndex > roomAIndex)
+                {
+                    Vector3 centerB = GetRoomCenter(detectedRooms[roomBIndex]);
+                    Handles.color = roomConnectionLineColor;
+                    Handles.DrawAAPolyLine(roomConnectionLineThickness, new Vector3[] { centerA, centerB });
+                }
             }
         }
     }
 
     private void OnGUI()
     {
-        // 設定關聯的 Grid
         buildingGrid = (Grid)EditorGUILayout.ObjectField("Building Grid", buildingGrid, typeof(Grid), true);
 
-        // 設定地圖範圍與 Y 軸偵測上下界
-        gridSize = EditorGUILayout.Vector3IntField("Grid Size", gridSize);
-        yMin = EditorGUILayout.IntSlider("Y Min", yMin, 0, gridSize.y - 1);
-        yMax = EditorGUILayout.IntSlider("Y Max", yMax, 0, gridSize.y - 1);
-        yMin = Mathf.Min(yMin, yMax);
+        detectBoundsStart = EditorGUILayout.Vector3IntField("Grid Start", detectBoundsStart);
+        detectBoundsEnd = EditorGUILayout.Vector3IntField("Grid End", detectBoundsEnd);
+        gridOffset = EditorGUILayout.Vector3Field("Visual Offset", gridOffset);
 
-        // 顯示視覺化偏移量（可手動調整）
-        offset = EditorGUILayout.Vector3Field("Visual Offset", offset);
+        roomColor = EditorGUILayout.ColorField("Room Color", roomColor);
+        detectBoundsColor = EditorGUILayout.ColorField("Bounds Color", detectBoundsColor);
+        roomConnectionLineColor = EditorGUILayout.ColorField("Connection Line Color", roomConnectionLineColor);
+        roomConnectionLineThickness = EditorGUILayout.Slider("Connection Line Thickness", roomConnectionLineThickness, 0.1f, 10f);
 
-        // 按鈕：從場景收集牆壁方塊
-        if (GUILayout.Button("Collect Wall Positions from Scene"))
+        if (GUILayout.Button("Collect Wall & Door Positions from Scene"))
         {
-            CollectWallPositions();
+            CollectWallAndDoorPositions();
         }
 
-        // 按鈕：開始進行房間偵測
         if (GUILayout.Button("Detect Rooms"))
         {
             DetectRooms();
         }
 
-        // 顯示偵測到的房間數量
         GUILayout.Label($"Detected {detectedRooms.Count} room(s).", EditorStyles.boldLabel);
     }
 
-    // 從場景中收集所有具有 Barrier 標籤的物件位置
-    private void CollectWallPositions()
+    private void CollectWallAndDoorPositions()
     {
-        wallPositions.Clear();
+        barrierPositions.Clear();
+        doorPositions.Clear();
         GameObject[] allObjects = GameObject.FindObjectsByType<GameObject>(FindObjectsSortMode.None);
 
         foreach (GameObject go in allObjects)
         {
+            Vector3Int pos = buildingGrid.WorldToCell(go.transform.position);
+            if (!IsInBounds(pos)) continue;
+
             if (go.CompareTag("Barrier"))
             {
-                Vector3Int pos = buildingGrid.WorldToCell(go.transform.position);
-                if (pos.y >= yMin && pos.y <= yMax)
-                {
-                    wallPositions.Add(pos);
-                }
+                barrierPositions.Add(pos);
+            }
+            else if (go.CompareTag("Door"))
+            {
+                doorPositions.Add(pos);
+                barrierPositions.Add(pos);
             }
         }
-        Debug.Log($"收集到 {wallPositions.Count} 個屏障方塊 (Y 範圍 {yMin}~{yMax})。\n");
+
+        Debug.Log($"收集到 {barrierPositions.Count} 個邊界格子 (包含 {doorPositions.Count} 個門) (範圍 {detectBoundsStart} ~ {detectBoundsEnd})。\n");
     }
 
-    // 執行 Flood Fill 偵測所有被牆壁完全包圍的封閉空間
     private void DetectRooms()
     {
         detectedRooms.Clear();
+        roomConnections.Clear();
         HashSet<Vector3Int> visited = new HashSet<Vector3Int>();
 
-        for (int y = yMin; y <= yMax; y++)
+        for (int x = detectBoundsStart.x; x <= detectBoundsEnd.x; x++)
         {
-            for (int x = 0; x < gridSize.x; x++)
+            for (int y = detectBoundsStart.y; y <= detectBoundsEnd.y; y++)
             {
-                for (int z = 0; z < gridSize.z; z++)
+                for (int z = detectBoundsStart.z; z <= detectBoundsEnd.z; z++)
                 {
                     Vector3Int pos = new Vector3Int(x, y, z);
-                    if (!wallPositions.Contains(pos) && !visited.Contains(pos))
+
+                    if (!visited.Contains(pos) && !barrierPositions.Contains(pos))
                     {
                         var room = FloodFill(pos, visited);
                         if (IsRoomEnclosed(room))
@@ -141,10 +157,64 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
                 }
             }
         }
+
         Debug.Log($"總共偵測到 {detectedRooms.Count} 間房間。\n");
+
+        BuildDoorBasedRoomConnections();
     }
 
-    // 使用 Flood Fill 找出所有相連的非牆壁格子區域
+    private void BuildDoorBasedRoomConnections()
+    {
+        roomConnections.Clear();
+
+        Dictionary<Vector3Int, int> cellToRoom = new Dictionary<Vector3Int, int>();
+        for (int i = 0; i < detectedRooms.Count; i++)
+        {
+            foreach (var cell in detectedRooms[i])
+            {
+                cellToRoom[cell] = i;
+            }
+        }
+
+        foreach (var door in doorPositions)
+        {
+            HashSet<int> connectedRooms = new HashSet<int>();
+            foreach (var dir in GetFourDirections())
+            {
+                Vector3Int neighbor = door + dir;
+                if (cellToRoom.TryGetValue(neighbor, out int roomIndex))
+                {
+                    connectedRooms.Add(roomIndex);
+                }
+            }
+
+            int[] roomArray = new int[connectedRooms.Count];
+            connectedRooms.CopyTo(roomArray);
+
+            for (int i = 0; i < roomArray.Length; i++)
+            {
+                for (int j = i + 1; j < roomArray.Length; j++)
+                {
+                    if (!roomConnections.ContainsKey(roomArray[i])) roomConnections[roomArray[i]] = new List<int>();
+                    if (!roomConnections[roomArray[i]].Contains(roomArray[j])) roomConnections[roomArray[i]].Add(roomArray[j]);
+
+                    if (!roomConnections.ContainsKey(roomArray[j])) roomConnections[roomArray[j]] = new List<int>();
+                    if (!roomConnections[roomArray[j]].Contains(roomArray[i])) roomConnections[roomArray[j]].Add(roomArray[i]);
+                }
+            }
+        }
+    }
+
+    private Vector3 GetRoomCenter(HashSet<Vector3Int> room)
+    {
+        Vector3 sum = Vector3.zero;
+        foreach (var cell in room)
+        {
+            sum += buildingGrid.GetCellCenterWorld(cell) + Vector3.Scale(gridOffset, buildingGrid.cellSize);
+        }
+        return sum / room.Count;
+    }
+
     private HashSet<Vector3Int> FloodFill(Vector3Int start, HashSet<Vector3Int> visited)
     {
         HashSet<Vector3Int> region = new HashSet<Vector3Int>();
@@ -154,17 +224,16 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
         while (queue.Count > 0)
         {
             Vector3Int current = queue.Dequeue();
-            if (visited.Contains(current) || wallPositions.Contains(current)) continue;
+            if (visited.Contains(current) || barrierPositions.Contains(current)) continue;
             if (!IsInBounds(current)) continue;
 
             visited.Add(current);
             region.Add(current);
 
-            // 加入四個方向相鄰的方塊
-            foreach (Vector3Int dir in GetFourDirections())
+            foreach (Vector3Int dir in GetSixDirections())
             {
                 Vector3Int next = current + dir;
-                if (!visited.Contains(next) && !wallPositions.Contains(next))
+                if (!visited.Contains(next) && !barrierPositions.Contains(next))
                 {
                     queue.Enqueue(next);
                 }
@@ -174,7 +243,6 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
         return region;
     }
 
-    // 檢查 Flood Fill 找出的區域是否為被 Barrier 完全圍住的封閉房間
     private bool IsRoomEnclosed(HashSet<Vector3Int> region)
     {
         foreach (var pos in region)
@@ -182,23 +250,39 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
             foreach (Vector3Int dir in GetFourDirections())
             {
                 Vector3Int neighbor = pos + dir;
-                if (!region.Contains(neighbor) && !wallPositions.Contains(neighbor))
+                if (!region.Contains(neighbor) && !barrierPositions.Contains(neighbor))
                 {
-                    return false; // 有相鄰格為空氣且未被 Barrier 擋住，代表不封閉
+                    return false;
+                }
+                if (!IsInBounds(neighbor))
+                {
+                    return false;
                 }
             }
         }
         return true;
     }
 
-    // 限制位置是否在使用者指定的區域內（避免檢查到範圍外）
     private bool IsInBounds(Vector3Int pos)
     {
-        return pos.x >= 0 && pos.y >= yMin && pos.z >= 0 &&
-               pos.x < gridSize.x && pos.y <= yMax && pos.z < gridSize.z;
+        return pos.x >= detectBoundsStart.x && pos.x <= detectBoundsEnd.x &&
+               pos.y >= detectBoundsStart.y && pos.y <= detectBoundsEnd.y &&
+               pos.z >= detectBoundsStart.z && pos.z <= detectBoundsEnd.z;
     }
 
-    // 四個主要方向（不考慮 Y 軸）
+    private List<Vector3Int> GetSixDirections()
+    {
+        return new List<Vector3Int>
+        {
+            Vector3Int.right,
+            Vector3Int.left,
+            Vector3Int.forward,
+            Vector3Int.back,
+            Vector3Int.up,
+            Vector3Int.down
+        };
+    }
+
     private List<Vector3Int> GetFourDirections()
     {
         return new List<Vector3Int>

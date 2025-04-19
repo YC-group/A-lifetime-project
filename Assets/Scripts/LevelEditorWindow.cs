@@ -26,11 +26,13 @@ public class LevelEditorWindow : EditorWindow
     private Vector3 gridOffset = new Vector3(0, 0.5f, 0); //改變網格視覺上顯示的位置(不會影響真正的網格)
 
     //建築用網格參數
+    private bool isShowingBuildingGrid = true;
     private Grid buildingGrid;
     private Color buildingGridColor = Color.blue;
     private int buildingGridSize = 31;
 
     //移動用網格參數
+    private bool isShowingMoveGrid = true;
     private Grid moveGrid;
     private Color moveGridColor = Color.yellow;
     private int moveGridSize = 10;
@@ -68,8 +70,8 @@ public class LevelEditorWindow : EditorWindow
     //持續調用，類似Update
     private void OnSceneGUI(SceneView sceneView)
     {
-        if (buildingGrid) DrawGrid(buildingGrid, buildingGridColor, buildingGridSize, gridOffset);
-        if (moveGrid) DrawGrid(moveGrid, moveGridColor, moveGridSize, gridOffset);
+        if (buildingGrid && isShowingBuildingGrid) DrawGrid(buildingGrid, buildingGridColor, buildingGridSize, gridOffset);
+        if (moveGrid && isShowingMoveGrid) DrawGrid(moveGrid, moveGridColor, moveGridSize, gridOffset);
 
         switch (selectedGridAlignModeTab)
         {
@@ -236,6 +238,7 @@ public class LevelEditorWindow : EditorWindow
         gridOffset = EditorGUILayout.Vector3Field("Grid offset", gridOffset);
 
         GUILayout.Label("Building Grid Settings", EditorStyles.boldLabel);
+        isShowingBuildingGrid = EditorGUILayout.Toggle("Show Building Grid", isShowingBuildingGrid);
         buildingGrid = (Grid)EditorGUILayout.ObjectField("Building Grid", buildingGrid, typeof(Grid), true);
         buildingGridColor = EditorGUILayout.ColorField("Building Grid Color", buildingGridColor);
         buildingGridSize = EditorGUILayout.IntSlider("Building Grid Size", buildingGridSize, 1, 50);
@@ -243,6 +246,7 @@ public class LevelEditorWindow : EditorWindow
         GUILayout.Space(10);
 
         GUILayout.Label("Move Grid Settings", EditorStyles.boldLabel);
+        isShowingMoveGrid = EditorGUILayout.Toggle("Show Move Grid", isShowingMoveGrid);
         moveGrid = (Grid)EditorGUILayout.ObjectField("Move Grid", moveGrid, typeof(Grid), true);
         moveGridColor = EditorGUILayout.ColorField("Move Grid Color", moveGridColor);
         moveGridSize = EditorGUILayout.IntSlider("Move Grid Size", moveGridSize, 1, 50);

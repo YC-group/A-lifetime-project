@@ -10,6 +10,7 @@ TagManager:
   - Building
   - Enemy
   - Barrier
+  - Door
   layers:
   - Default
   - TransparentFX
