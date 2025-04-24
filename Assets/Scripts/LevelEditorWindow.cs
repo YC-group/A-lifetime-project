@@ -23,7 +23,7 @@ public class LevelEditorWindow : EditorWindow
     private static Vector3Int lastGridPosition;
 
     private GameObject level;
-    private Vector3 gridOffset = new Vector3(0, 0.5f, 0); //改變網格視覺上顯示的位置(不會影響真正的網格)
+    private Vector3 gridOffset = new Vector3(0, 1.5f, 0); //改變網格視覺上顯示的位置(不會影響真正的網格)
 
     //建築用網格參數
     private bool isShowingBuildingGrid = true;
