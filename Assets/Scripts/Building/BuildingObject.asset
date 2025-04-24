@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14667ae802a4bce47b84fd7cd83cd8a3, type: 3}
   m_Name: BuildingObject
   m_EditorClassIdentifier: 
-  BulidingName: 54
+  BulidingName: test
   buildingType: 1
   visionBlockage: 1
