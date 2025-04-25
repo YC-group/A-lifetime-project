@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 /// <summary>
@@ -49,15 +50,26 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
         if (detectedRooms == null) return;
 
         //房間顯示
-        foreach (var room in detectedRooms)
+        for (int i = 0; i < detectedRooms.Count; i++)
         {
+            var room = detectedRooms[i];
+
+            // 畫出每個房間格子
             foreach (var pos in room)
             {
                 Vector3 worldPos = buildingGrid.GetCellCenterWorld(pos) + Vector3.Scale(gridOffset, buildingGrid.cellSize);
                 Handles.color = roomColor;
                 Handles.CubeHandleCap(0, worldPos, Quaternion.identity, Mathf.Max(buildingGrid.cellSize.x, buildingGrid.cellSize.z), EventType.Repaint);
             }
+
+            // 加上房間編號標籤
+            Vector3 roomCenter = GetRoomCenter(room);
+            GUIStyle style = new GUIStyle(GUI.skin.label);
+            style.fontSize = 20;
+            style.normal.textColor = Color.yellow;
+            Handles.Label(roomCenter, $"Room {i}", style);
         }
+
 
         //房間偵測範圍顯示
         Handles.zTest = UnityEngine.Rendering.CompareFunction.LessEqual;
@@ -96,10 +108,14 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
         detectBoundsEnd = EditorGUILayout.Vector3IntField("Grid End", detectBoundsEnd);
         gridOffset = EditorGUILayout.Vector3Field("Visual Offset", gridOffset);
 
+        EditorGUILayout.Space(10);
+
         roomColor = EditorGUILayout.ColorField("Room Color", roomColor);
         detectBoundsColor = EditorGUILayout.ColorField("Bounds Color", detectBoundsColor);
         roomConnectionLineColor = EditorGUILayout.ColorField("Connection Line Color", roomConnectionLineColor);
         roomConnectionLineThickness = EditorGUILayout.Slider("Connection Line Thickness", roomConnectionLineThickness, 0.1f, 10f);
+
+        EditorGUILayout.Space(10);
 
         if (GUILayout.Button("Collect Wall & Door Positions from Scene"))
         {
@@ -185,6 +201,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
     }
 
     //偵測由門所連結的房間
+    //偵測由門所連結的房間
     private void BuildDoorBasedRoomConnections()
     {
         // 重置房間連線資料
@@ -196,7 +213,6 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
         {
             foreach (var cell in detectedRooms[i])
             {
-                // 把房間內每個格子位置對應到房間編號 i
                 cellToRoom[cell] = i;
             }
         }
@@ -204,15 +220,14 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
         // 遍歷所有門的位置
         foreach (var door in doorPositions)
         {
-            // 用來儲存「此門鄰近」的所有房間編號
+            // 儲存「此門鄰近」的所有房間編號
             HashSet<int> connectedRooms = new HashSet<int>();
 
-            // 檢查門的四個方向（上、下、左、右）
+            // 檢查門的四個方向
             foreach (var dir in GetFourDirections())
             {
                 Vector3Int neighbor = door + dir;
 
-                // 如果鄰近格子在 cellToRoom 中，代表它屬於某個房間
                 if (cellToRoom.TryGetValue(neighbor, out int roomIndex))
                 {
                     connectedRooms.Add(roomIndex);
@@ -223,40 +238,52 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
             int[] roomArray = new int[connectedRooms.Count];
             connectedRooms.CopyTo(roomArray);
 
-            // 對所有房間組合配對，建立「雙向」的房間連線關係
+            // 記錄雙向房間連結
             for (int i = 0; i < roomArray.Length; i++)
             {
                 for (int j = i + 1; j < roomArray.Length; j++)
                 {
-                    // roomArray[i] --> roomArray[j]
                     if (!roomConnections.ContainsKey(roomArray[i]))
                         roomConnections[roomArray[i]] = new List<int>();
-
                     if (!roomConnections[roomArray[i]].Contains(roomArray[j]))
                         roomConnections[roomArray[i]].Add(roomArray[j]);
 
-                    // roomArray[j] --> roomArray[i]
                     if (!roomConnections.ContainsKey(roomArray[j]))
                         roomConnections[roomArray[j]] = new List<int>();
-
                     if (!roomConnections[roomArray[j]].Contains(roomArray[i]))
                         roomConnections[roomArray[j]].Add(roomArray[i]);
                 }
             }
-        }
 
-        /*
-        foreach (var kvp in roomConnections)
-        {
-            Debug.Log("Key: " + kvp.Key);
-            foreach (var v in kvp.Value)
+            //將房間資訊指定給門 GameObject
+            Vector3 worldPos = buildingGrid.GetCellCenterWorld(door);
+            //Debug.Log("Try find door world position: " + worldPos);
+            Collider[] hits = Physics.OverlapSphere(worldPos, 0.1f); // 找該位置附近的物件
+            GameObject doorObject = null;
+
+            foreach (var hit in hits)
             {
-                Debug.Log("Value: " + v);
+                //Debug.Log(hit);
+                if (hit.CompareTag("Door"))
+                {
+                    doorObject = hit.gameObject;
+                    break;
+                }
+                //Debug.Log("==============");
             }
-            Debug.Log("===============");
+            /*
+            if (doorObject != null)
+            {
+                DoorRoomLink link = doorObject.GetComponent<DoorRoomLink>();
+                if (link == null)
+                    link = doorObject.AddComponent<DoorRoomLink>();
+
+                link.connectedRoomIndices = roomArray.ToList();
+            }
+            */
         }
-        */
     }
+
 
     //取得房間中心
     private Vector3 GetRoomCenter(HashSet<Vector3Int> room)
