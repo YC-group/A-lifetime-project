@@ -11,6 +11,8 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
     #region 變數
     private Vector2 scrollPos; //滾動視窗參數
 
+    private string levelName;
+
     private Grid buildingGrid; //建築用網格
 
     private Vector3Int detectBoundsStart = new Vector3Int(0, 1, 0); //房間偵測範圍起點
@@ -102,6 +104,8 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
     {
         scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.ExpandHeight(true));
 
+        levelName = EditorGUILayout.TextField("Level Name", levelName);
+
         buildingGrid = (Grid)EditorGUILayout.ObjectField("Building Grid", buildingGrid, typeof(Grid), true);
 
         detectBoundsStart = EditorGUILayout.Vector3IntField("Grid Start", detectBoundsStart);
@@ -117,6 +121,11 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
 
         EditorGUILayout.Space(10);
 
+        if (GUILayout.Button("Clear All Data"))
+        {
+            ClearAllData();
+        }
+
         if (GUILayout.Button("Collect Wall & Door Positions from Scene"))
         {
             CollectBarrierAndDoorPositions();
@@ -130,6 +139,14 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
         GUILayout.Label($"Detected {detectedRooms.Count} room(s).", EditorStyles.boldLabel);
 
         EditorGUILayout.EndScrollView();
+    }
+
+    private void ClearAllData()
+    {
+        barrierPositions.Clear();
+        doorPositions.Clear();
+        detectedRooms.Clear();
+        roomConnections.Clear();
     }
 
     //取得所有barrier和door
@@ -201,7 +218,6 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
     }
 
     //偵測由門所連結的房間
-    //偵測由門所連結的房間
     private void BuildDoorBasedRoomConnections()
     {
         // 重置房間連線資料
@@ -218,7 +234,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
         }
 
         // 遍歷所有門的位置
-        foreach (var door in doorPositions)
+        foreach (var doorPos in doorPositions)
         {
             // 儲存「此門鄰近」的所有房間編號
             HashSet<int> connectedRooms = new HashSet<int>();
@@ -226,7 +242,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
             // 檢查門的四個方向
             foreach (var dir in GetFourDirections())
             {
-                Vector3Int neighbor = door + dir;
+                Vector3Int neighbor = doorPos + dir;
 
                 if (cellToRoom.TryGetValue(neighbor, out int roomIndex))
                 {
@@ -255,34 +271,55 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
                 }
             }
 
-            //將房間資訊指定給門 GameObject
-            Vector3 worldPos = buildingGrid.GetCellCenterWorld(door);
-            //Debug.Log("Try find door world position: " + worldPos);
-            Collider[] hits = Physics.OverlapSphere(worldPos, 0.1f); // 找該位置附近的物件
+            // 將房間資訊指定給門 GameObject
+            Vector3 worldPos = buildingGrid.GetCellCenterWorld(doorPos);
+            Collider[] hits = Physics.OverlapSphere(worldPos, 0.1f);
             GameObject doorObject = null;
 
             foreach (var hit in hits)
             {
-                //Debug.Log(hit);
                 if (hit.CompareTag("Door"))
-                {
+                {   
                     doorObject = hit.gameObject;
                     break;
                 }
-                //Debug.Log("==============");
             }
-            /*
+
             if (doorObject != null)
             {
-                DoorRoomLink link = doorObject.GetComponent<DoorRoomLink>();
-                if (link == null)
-                    link = doorObject.AddComponent<DoorRoomLink>();
+                Undo.RecordObject(doorObject, "Assign Door Component");
 
-                link.connectedRoomIndices = roomArray.ToList();
+                Door door = doorObject.GetComponent<Door>();
+                if (door == null)
+                {
+                    door = Undo.AddComponent<Door>(doorObject);
+                }
+                else
+                {
+                    Undo.RecordObject(door, "Modify Door Links");
+                }
+
+                string path = "Assets/Levels/" + levelName + "/" + doorObject.name + ".asset";
+                DoorData doorData = AssetDatabase.LoadAssetAtPath<DoorData>(path);
+
+                if (doorData == null)
+                {
+                    AssetCreator.CreateOrUpdateAsset<DoorData>("Assets/Levels/" + levelName, doorObject.name);
+                    doorData = AssetDatabase.LoadAssetAtPath<DoorData>(path);
+                }
+                
+                door.SetDataAndLinks(doorData, roomArray.ToList());
+
+                // 標記物件Dirty
+                EditorUtility.SetDirty(doorObject);
+                EditorUtility.SetDirty(door);
+
+                // 標記場景Dirty
+                UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(doorObject.scene);
             }
-            */
         }
     }
+
 
 
     //取得房間中心
