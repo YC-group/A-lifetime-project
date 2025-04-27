@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -10,6 +11,9 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
 {
     #region 變數
     private Vector2 scrollPos; //滾動視窗參數
+
+    private int selectedTab = 0; //選擇tab的參數
+    private string[] tabNames = { "設定", "存讀檔" }; //選擇tab的選項
 
     private string levelName;
 
@@ -102,9 +106,22 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
 
     private void OnGUI()
     {
-        scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.ExpandHeight(true));
+        selectedTab = GUILayout.Toolbar(selectedTab, tabNames);
 
-        levelName = EditorGUILayout.TextField("Level Name", levelName);
+        switch (selectedTab)
+        {
+            case 0:
+                SettingsTabGUI();
+                break;
+            case 1:
+                SaveAndLoadTabGUI();
+                break;
+        }
+    }
+
+    private void SettingsTabGUI()
+    {
+        scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.ExpandHeight(true));
 
         buildingGrid = (Grid)EditorGUILayout.ObjectField("Building Grid", buildingGrid, typeof(Grid), true);
 
@@ -118,6 +135,15 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
         detectBoundsColor = EditorGUILayout.ColorField("Bounds Color", detectBoundsColor);
         roomConnectionLineColor = EditorGUILayout.ColorField("Connection Line Color", roomConnectionLineColor);
         roomConnectionLineThickness = EditorGUILayout.Slider("Connection Line Thickness", roomConnectionLineThickness, 0.1f, 10f);
+
+        EditorGUILayout.EndScrollView();
+    }
+
+    private void SaveAndLoadTabGUI()
+    {
+        scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.ExpandHeight(true));
+
+        levelName = EditorGUILayout.TextField("Level Name", levelName);
 
         EditorGUILayout.Space(10);
 
@@ -134,6 +160,11 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
         if (GUILayout.Button("Detect Rooms"))
         {
             DetectRooms();
+        }
+
+        if (GUILayout.Button("Save Level"))
+        {
+            SaveLevel();
         }
 
         GUILayout.Label($"Detected {detectedRooms.Count} room(s).", EditorStyles.boldLabel);
@@ -220,10 +251,8 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
     //偵測由門所連結的房間
     private void BuildDoorBasedRoomConnections()
     {
-        // 重置房間連線資料
         roomConnections.Clear();
 
-        // 建立一個字典：紀錄每一個格子所屬的房間索引
         Dictionary<Vector3Int, int> cellToRoom = new Dictionary<Vector3Int, int>();
         for (int i = 0; i < detectedRooms.Count; i++)
         {
@@ -233,28 +262,22 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
             }
         }
 
-        // 遍歷所有門的位置
         foreach (var doorPos in doorPositions)
         {
-            // 儲存「此門鄰近」的所有房間編號
             HashSet<int> connectedRooms = new HashSet<int>();
 
-            // 檢查門的四個方向
             foreach (var dir in GetFourDirections())
             {
                 Vector3Int neighbor = doorPos + dir;
-
                 if (cellToRoom.TryGetValue(neighbor, out int roomIndex))
                 {
                     connectedRooms.Add(roomIndex);
                 }
             }
 
-            // 把 HashSet 轉為陣列，方便兩兩配對
             int[] roomArray = new int[connectedRooms.Count];
             connectedRooms.CopyTo(roomArray);
 
-            // 記錄雙向房間連結
             for (int i = 0; i < roomArray.Length; i++)
             {
                 for (int j = i + 1; j < roomArray.Length; j++)
@@ -270,8 +293,49 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
                         roomConnections[roomArray[j]].Add(roomArray[i]);
                 }
             }
+        }
+    }
 
-            // 將房間資訊指定給門 GameObject
+    private GameObject GetPrefab(GameObject go)
+    {
+        return PrefabUtility.GetCorrespondingObjectFromSource(go);
+    }
+
+    private void SaveLevel()
+    {
+        SaveDoorData();
+    }
+
+    //存所有門的資料
+    private void SaveDoorData()
+    {
+        // 建立 cell 對房間的對應表
+        Dictionary<Vector3Int, int> cellToRoom = new Dictionary<Vector3Int, int>();
+        for (int i = 0; i < detectedRooms.Count; i++)
+        {
+            foreach (var cell in detectedRooms[i])
+            {
+                cellToRoom[cell] = i;
+            }
+        }
+
+        foreach (var doorPos in doorPositions)
+        {
+            HashSet<int> connectedRooms = new HashSet<int>();
+
+            foreach (var dir in GetFourDirections())
+            {
+                Vector3Int neighbor = doorPos + dir;
+                if (cellToRoom.TryGetValue(neighbor, out int roomIndex))
+                {
+                    connectedRooms.Add(roomIndex);
+                }
+            }
+
+            int[] roomArray = new int[connectedRooms.Count];
+            connectedRooms.CopyTo(roomArray);
+
+            // --- 以下是保存 Door 資料 ---
             Vector3 worldPos = buildingGrid.GetCellCenterWorld(doorPos);
             Collider[] hits = Physics.OverlapSphere(worldPos, 0.1f);
             GameObject doorObject = null;
@@ -279,48 +343,40 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
             foreach (var hit in hits)
             {
                 if (hit.CompareTag("Door"))
-                {   
+                {
                     doorObject = hit.gameObject;
                     break;
                 }
             }
 
-            if (doorObject != null)
+            if (doorObject == null)
+                continue;
+
+            Undo.RecordObject(doorObject, "Assign Door Component");
+
+            Door door = doorObject.GetComponent<Door>();
+            if (door == null)
             {
-                Undo.RecordObject(doorObject, "Assign Door Component");
-
-                Door door = doorObject.GetComponent<Door>();
-                if (door == null)
-                {
-                    door = Undo.AddComponent<Door>(doorObject);
-                }
-                else
-                {
-                    Undo.RecordObject(door, "Modify Door Links");
-                }
-
-                string path = "Assets/Levels/" + levelName + "/" + doorObject.name + ".asset";
-                DoorData doorData = AssetDatabase.LoadAssetAtPath<DoorData>(path);
-
-                if (doorData == null)
-                {
-                    AssetCreator.CreateOrUpdateAsset<DoorData>("Assets/Levels/" + levelName, doorObject.name);
-                    doorData = AssetDatabase.LoadAssetAtPath<DoorData>(path);
-                }
-                
-                door.SetDataAndLinks(doorData, roomArray.ToList());
-
-                // 標記物件Dirty
-                EditorUtility.SetDirty(doorObject);
-                EditorUtility.SetDirty(door);
-
-                // 標記場景Dirty
-                UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(doorObject.scene);
+                door = Undo.AddComponent<Door>(doorObject);
             }
+            else
+            {
+                Undo.RecordObject(door, "Modify Door Links");
+            }
+
+            AssetCreator.CreateOrUpdateAsset<DoorData>($"Assets/Levels/{levelName}/DoorDatas", doorObject.name);
+            string path = $"Assets/Levels/{levelName}/DoorDatas/{doorObject.name}.asset";
+            DoorData doorData = AssetDatabase.LoadAssetAtPath<DoorData>(path);
+
+            door.SetDataAndLinks(doorData, roomArray.ToList());
+
+            EditorUtility.SetDirty(doorObject);
+            EditorUtility.SetDirty(door);
+            UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(doorObject.scene);
         }
+
+        Debug.Log("Door Data Saved");
     }
-
-
 
     //取得房間中心
     private Vector3 GetRoomCenter(HashSet<Vector3Int> room)

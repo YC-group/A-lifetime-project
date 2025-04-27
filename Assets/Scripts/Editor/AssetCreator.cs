@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System.IO;
-
+/// <summary>
+/// 創建asset檔的工具 - js5515
+/// </summary>
 public static class AssetCreator
 {
     // 創建或更新指定資料，並自訂檔名

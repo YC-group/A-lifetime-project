@@ -1704,7 +1704,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 580fa597d87dc4c44a8c4197dadc65ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  doorData: {fileID: 11400000, guid: 648616a839c7ac04e827469a8002b80e, type: 2}
+  doorData: {fileID: 11400000, guid: e3519f5d2dcedf048909eafa20589c1d, type: 2}
 --- !u!1001 &802790348
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2397,7 +2397,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 580fa597d87dc4c44a8c4197dadc65ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  doorData: {fileID: 11400000, guid: aaf152953535e614b917d9968cfe2aed, type: 2}
+  doorData: {fileID: 11400000, guid: 785f38f3b5508b14883792eb599912e5, type: 2}
 --- !u!1001 &1423511773
 PrefabInstance:
   m_ObjectHideFlags: 0
