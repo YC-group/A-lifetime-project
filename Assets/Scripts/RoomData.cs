@@ -6,8 +6,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "RoomData", menuName = "Game/Room Data")]
 public class RoomData : ScriptableObject
 {
-    public List<PrefabSpawnData> enemies;
-    public List<PrefabSpawnData> items;
-    public List<PrefabSpawnData> buildings;
-    public List<RoomData> linkRooms;
+    [SerializeField] private List<PrefabSpawnData> enemies;
+    [SerializeField] private List<PrefabSpawnData> items;
+    [SerializeField] private List<PrefabSpawnData> buildings;
+    [SerializeField] private List<RoomData> linkRooms;
 }

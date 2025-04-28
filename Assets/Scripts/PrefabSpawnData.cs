@@ -5,9 +5,17 @@
 [System.Serializable]
 public class PrefabSpawnData
 {
-    public GameObject prefab;
-    public Vector3 position = Vector3.zero;
-    public Quaternion rotation = Quaternion.identity;
-    public Vector3 scale = Vector3.one;
+    [SerializeField] private GameObject prefab;
+    [SerializeField] private Vector3 position = Vector3.zero;
+    [SerializeField] private Quaternion rotation = Quaternion.identity;
+    [SerializeField] private Vector3 scale = Vector3.one;
+
+    public PrefabSpawnData(GameObject prefab, Vector3 position, Quaternion rotation, Vector3 scale)
+    {
+        this.prefab = prefab;
+        this.position = position;
+        this.rotation = rotation;
+        this.scale = scale;
+    }
 }
 

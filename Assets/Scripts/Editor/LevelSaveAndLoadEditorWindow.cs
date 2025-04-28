@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Codice.Client.BaseCommands;
 using UnityEditor;
 using UnityEngine;
 /// <summary>
@@ -32,6 +33,8 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
     private HashSet<Vector3Int> doorPositions = new HashSet<Vector3Int>(); //所有door的網格座標
     private List<HashSet<Vector3Int>> detectedRooms = new List<HashSet<Vector3Int>>(); //所有房間內部網格座標的清單
     private Dictionary<int, List<int>> roomConnections = new Dictionary<int, List<int>>(); //所有房間之間的連結
+
+    private List<GameObject> barrierList = new List<GameObject>();
     #endregion
 
     [MenuItem("Tools/Level Save And Load")]
@@ -147,7 +150,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
 
         EditorGUILayout.Space(10);
 
-        if (GUILayout.Button("Clear All Data"))
+        if (GUILayout.Button("Clear All Detect Data"))
         {
             ClearAllData();
         }
@@ -184,6 +187,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
     private void CollectBarrierAndDoorPositions()
     {
         //重置位置資料
+        barrierList.Clear();
         barrierPositions.Clear();
         doorPositions.Clear();
         //取得所有物件
@@ -200,11 +204,13 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
             if (go.CompareTag("Barrier"))
             {
                 barrierPositions.Add(pos);
+                barrierList.Add(go);
             }
             else if (go.CompareTag("Door"))
             {
                 doorPositions.Add(pos);
                 barrierPositions.Add(pos);
+                barrierList.Add(go);
             }
         }
 
@@ -296,15 +302,163 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
         }
     }
 
+    //取得物件原本的prefab
     private GameObject GetPrefab(GameObject go)
     {
         return PrefabUtility.GetCorrespondingObjectFromSource(go);
     }
 
+    //關卡保存
     private void SaveLevel()
     {
+        //創建LevelData
+        AssetCreator.CreateOrUpdateAsset<LevelData>($"Assets/Levels/{levelName}", $"{levelName}");
+        string levelDataPath = $"Assets/Levels/{levelName}/{levelName}.asset";
+        LevelData LevelData = AssetDatabase.LoadAssetAtPath<LevelData>(levelDataPath);
+
+        //barrier資料儲存
+        List<PrefabSpawnData> barriers = new List<PrefabSpawnData>();
+        foreach (GameObject barrier in barrierList)
+        {
+            GameObject prefab = GetPrefab(barrier);
+            if (prefab != null)
+            {
+                Transform transform = barrier.transform;
+                Vector3 position = transform.position;
+                Quaternion rotation = transform.rotation;
+                Vector3 scale = transform.localScale;
+                PrefabSpawnData prefabSpawnData = new PrefabSpawnData(prefab, position, rotation, scale);
+
+                barriers.Add(prefabSpawnData);
+            }
+            else
+            {
+                Debug.LogError("無法取得barrier原先的prefab");
+                return;
+            }
+        }
+        LevelData.SetBarriers(barriers);
+
         SaveDoorData();
+
+        int roomCount = 0;
+        foreach (HashSet<Vector3Int> room in detectedRooms)
+        {
+            //創建RoomData
+            AssetCreator.CreateOrUpdateAsset<RoomData>($"Assets/Levels/{levelName}/RoomDatas", $"{levelName}_room_{roomCount}");
+            string roomDataPath = $"Assets/Levels/{levelName}/RoomDatas/{levelName}_room_{roomCount}.asset";
+            RoomData roomData = AssetDatabase.LoadAssetAtPath<RoomData>(roomDataPath);
+
+            Vector3Int min;
+            Vector3Int max;
+            GetRoomBounds(room, out min, out max);
+            Vector3 minPos = min;
+            Vector3 maxPos = max;
+            float halfCellSize = buildingGrid.cellSize.x / 2;
+            minPos += new Vector3(-halfCellSize, halfCellSize, -halfCellSize);
+            maxPos += new Vector3(halfCellSize, 3*halfCellSize, halfCellSize);
+            //Debug.Log($"{minPos} and {maxPos}");
+
+
+            List<GameObject> foundObjects = FindObjectsInAreaWithoutCollider(minPos, maxPos);
+            foreach (GameObject go in foundObjects)
+            {
+                // TODO: 存要存的物件(或是改回傳的物件)
+
+            }
+
+            ++roomCount;
+        }
     }
+
+    //取得指定空間的物件(無須碰撞箱)
+    public List<GameObject> FindObjectsInAreaWithoutCollider(Vector3 pointA, Vector3 pointB)
+    {
+        List<GameObject> foundObjects = new List<GameObject>();
+
+        Vector3 min = Vector3.Min(pointA, pointB);
+        Vector3 max = Vector3.Max(pointA, pointB);
+
+        // 搜尋場景裡所有活著的 GameObject
+        GameObject[] allObjects = GameObject.FindObjectsByType<GameObject>(FindObjectsSortMode.None);
+
+        foreach (var obj in allObjects)
+        {
+            // 只搜尋啟用中的物件
+            if (!obj.activeInHierarchy) continue;
+
+            Vector3 pos = obj.transform.position;
+
+            if (pos.x >= min.x && pos.x <= max.x &&
+                pos.y >= min.y && pos.y <= max.y &&
+                pos.z >= min.z && pos.z <= max.z)
+            {
+                foundObjects.Add(obj);
+            }
+        }
+
+        return foundObjects;
+    }
+
+    //取得指定空間的物件
+    public List<GameObject> FindObjectsInArea(Vector3 pointA, Vector3 pointB, LayerMask? layerMask = null)
+    {
+        // 計算中心點與範圍
+        Vector3 center = (pointA + pointB) / 2f;
+        Vector3 size = new Vector3(
+            Mathf.Abs(pointA.x - pointB.x),
+            Mathf.Abs(pointA.y - pointB.y),
+            Mathf.Abs(pointA.z - pointB.z)
+        );
+
+        // 避免大小為0
+        //size += Vector3.one * 0.01f;
+
+        // 決定實際用的 LayerMask
+        int maskToUse = layerMask.HasValue ? layerMask.Value : Physics.DefaultRaycastLayers;
+
+        // 使用 OverlapBox 搜尋範圍內所有碰撞體
+        Collider[] colliders = Physics.OverlapBox(center, size / 2f, Quaternion.identity, maskToUse);
+
+        List<GameObject> foundObjects = new List<GameObject>();
+
+        foreach (var collider in colliders)
+        {
+            foundObjects.Add(collider.gameObject);
+        }
+
+        return foundObjects;
+    }
+
+    //取得房間最小和最大角落
+    public void GetRoomBounds(HashSet<Vector3Int> room, out Vector3Int min, out Vector3Int max)
+    {
+        if (room == null || room.Count == 0)
+        {
+            Debug.LogError("房間是空的！");
+            min = max = Vector3Int.zero;
+            return;
+        }
+
+        // 初始值設成第一個格子
+        using (var enumerator = room.GetEnumerator())
+        {
+            enumerator.MoveNext();
+            min = max = enumerator.Current;
+        }
+
+        foreach (var cell in room)
+        {
+            if (cell.x < min.x) min.x = cell.x;
+            if (cell.y < min.y) min.y = cell.y;
+            if (cell.z < min.z) min.z = cell.z;
+
+            if (cell.x > max.x) max.x = cell.x;
+            if (cell.y > max.y) max.y = cell.y;
+            if (cell.z > max.z) max.z = cell.z;
+        }
+    }
+
 
     //存所有門的資料
     private void SaveDoorData()

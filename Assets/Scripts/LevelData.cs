@@ -6,6 +6,11 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "LevelData", menuName = "Game/Level Data")]
 public class LevelData : ScriptableObject
 {
-    public List<PrefabSpawnData> barriers;
-    public List<RoomData> rooms;
+    [SerializeField] private List<PrefabSpawnData> barriers;
+    [SerializeField] private List<RoomData> rooms;
+
+    public void SetBarriers(List<PrefabSpawnData> barriers)
+    {
+        this.barriers = barriers;
+    }
 }
