@@ -308,6 +308,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
         return PrefabUtility.GetCorrespondingObjectFromSource(go);
     }
 
+
     //關卡保存
     private void SaveLevel()
     {
@@ -323,11 +324,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
             GameObject prefab = GetPrefab(barrier);
             if (prefab != null)
             {
-                Transform transform = barrier.transform;
-                Vector3 position = transform.position;
-                Quaternion rotation = transform.rotation;
-                Vector3 scale = transform.localScale;
-                PrefabSpawnData prefabSpawnData = new PrefabSpawnData(prefab, position, rotation, scale);
+                PrefabSpawnData prefabSpawnData = PrefabSpawnData.MakeData(barrier, prefab);
 
                 barriers.Add(prefabSpawnData);
             }
@@ -361,10 +358,30 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
 
 
             List<GameObject> foundObjects = FindObjectsInAreaWithoutCollider(minPos, maxPos);
+            List<PrefabSpawnData> enemies = new List<PrefabSpawnData>();
+            List<PrefabSpawnData> items = new List<PrefabSpawnData>();
+            List<PrefabSpawnData> buildings = new List<PrefabSpawnData>();
             foreach (GameObject go in foundObjects)
             {
-                // TODO: 存要存的物件(或是改回傳的物件)
+                if (go.CompareTag("Enemy"))
+                {
 
+                }
+                else if (go.CompareTag("Item"))
+                {
+
+                }
+                else if (go.CompareTag("Building"))
+                {
+
+                }
+                else
+                {
+                    //不是任何指定tag的物件處理(預計不做任何處理，頂多提醒開發者)
+                    PrefabSpawnData prefabSpawnData = PrefabSpawnData.MakeData(go, GetPrefab(go));
+
+
+                }
             }
 
             ++roomCount;
@@ -489,7 +506,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
             int[] roomArray = new int[connectedRooms.Count];
             connectedRooms.CopyTo(roomArray);
 
-            // --- 以下是保存 Door 資料 ---
+            //以下是保存 Door 資料
             Vector3 worldPos = buildingGrid.GetCellCenterWorld(doorPos);
             Collider[] hits = Physics.OverlapSphere(worldPos, 0.1f);
             GameObject doorObject = null;
@@ -517,11 +534,11 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
             {
                 Undo.RecordObject(door, "Modify Door Links");
             }
-
+                        
             AssetCreator.CreateOrUpdateAsset<DoorData>($"Assets/Levels/{levelName}/DoorDatas", doorObject.name);
             string path = $"Assets/Levels/{levelName}/DoorDatas/{doorObject.name}.asset";
             DoorData doorData = AssetDatabase.LoadAssetAtPath<DoorData>(path);
-
+            
             door.SetDataAndLinks(doorData, roomArray.ToList());
 
             EditorUtility.SetDirty(doorObject);

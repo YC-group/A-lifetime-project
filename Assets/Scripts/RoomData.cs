@@ -9,5 +9,4 @@ public class RoomData : ScriptableObject
     [SerializeField] private List<PrefabSpawnData> enemies;
     [SerializeField] private List<PrefabSpawnData> items;
     [SerializeField] private List<PrefabSpawnData> buildings;
-    [SerializeField] private List<RoomData> linkRooms;
 }
