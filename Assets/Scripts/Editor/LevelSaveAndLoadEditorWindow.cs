@@ -535,9 +535,13 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
                 Undo.RecordObject(door, "Modify Door Links");
             }
                         
+            /*
             AssetCreator.CreateOrUpdateAsset<DoorData>($"Assets/Levels/{levelName}/DoorDatas", doorObject.name);
             string path = $"Assets/Levels/{levelName}/DoorDatas/{doorObject.name}.asset";
             DoorData doorData = AssetDatabase.LoadAssetAtPath<DoorData>(path);
+            */
+
+            DoorData doorData = new DoorData();
             
             door.SetDataAndLinks(doorData, roomArray.ToList());
 
