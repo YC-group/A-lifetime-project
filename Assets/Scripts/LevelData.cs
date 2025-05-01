@@ -8,9 +8,27 @@ public class LevelData : ScriptableObject
 {
     [SerializeField] private List<PrefabSpawnData> barriers;
     [SerializeField] private List<RoomData> rooms;
+    [SerializeField] private List<DoorData> doors;
+    [SerializeField] private string startRoomDataName;
 
-    public void SetBarriers(List<PrefabSpawnData> barriers)
+    public List<PrefabSpawnData> Barriers
     {
-        this.barriers = barriers;
+        get => barriers;
+        set => barriers = value;
+    }
+    public List<RoomData> Rooms
+    {
+        get => rooms;
+        set => rooms = value;
+    }
+    public List<DoorData> Doors
+    {
+        get => doors;
+        set => doors = value;
+    }
+    public string StartRoomDataName
+    {
+        get => startRoomDataName;
+        set => startRoomDataName = value;
     }
 }

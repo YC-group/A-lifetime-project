@@ -5,11 +5,12 @@ using UnityEngine;
 /// </summary>
 public class Door : MonoBehaviour
 {
-    [SerializeField] private DoorData doorData;
+    [SerializeField][HideInInspector] private string roomName1;
+    [SerializeField][HideInInspector] private string roomName2;
 
-    public void SetDataAndLinks(DoorData data, List<int> value)
+    public void SetRoomName(DoorData doorData)
     {
-        this.doorData = data;
-        this.doorData.SetLinks(value);
+        this.roomName1 = doorData.RoomName1;
+        this.roomName2 = doorData.RoomName2;
     }
 }

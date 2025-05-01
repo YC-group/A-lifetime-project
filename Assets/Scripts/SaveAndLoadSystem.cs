@@ -62,12 +62,15 @@ public class SaveAndLoadSystem
 
         Directory.CreateDirectory(Path.GetDirectoryName(path));
 
-        if (AssetDatabase.LoadAssetAtPath<T>(path) != null)
+        if (AssetDatabase.LoadAssetAtPath<T>(path) == null)
         {
-            AssetDatabase.DeleteAsset(path);
+            AssetDatabase.CreateAsset(t, path);
+        }
+        else
+        {
+            EditorUtility.SetDirty(t);
         }
 
-        AssetDatabase.CreateAsset(t, path);
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
     }

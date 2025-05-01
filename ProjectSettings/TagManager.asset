@@ -12,6 +12,7 @@ TagManager:
   - Barrier
   - Door
   - Item
+  - Spawnpoint
   layers:
   - Default
   - TransparentFX
