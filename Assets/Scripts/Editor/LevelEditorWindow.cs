@@ -29,13 +29,13 @@ public class LevelEditorWindow : EditorWindow
     private bool isShowingBuildingGrid = true;
     private Grid buildingGrid;
     private Color buildingGridColor = Color.blue;
-    private int buildingGridSize = 31;
+    private int buildingGridSize = 10;
 
     //移動用網格參數
     private bool isShowingMoveGrid = true;
     private Grid moveGrid;
     private Color moveGridColor = Color.yellow;
-    private int moveGridSize = 10;
+    private int moveGridSize = 3;
 
     /*
     private string savePath = "Assets/Scenes/Levels"; // 預設儲存路徑
@@ -57,9 +57,7 @@ public class LevelEditorWindow : EditorWindow
         SceneView.duringSceneGui += OnSceneGUI;
 
         //自動尋找物件
-        if (level == null) level = GameObject.FindWithTag("Level");
-        if (buildingGrid == null) buildingGrid = GameObject.FindWithTag("BuildingGrid").GetComponent<Grid>();
-        if (moveGrid == null) moveGrid = GameObject.FindWithTag("MoveGrid").GetComponent<Grid>();
+        AutoFindLevelAndGrid();
     }
 
     private void OnDisable()
@@ -67,9 +65,19 @@ public class LevelEditorWindow : EditorWindow
         SceneView.duringSceneGui -= OnSceneGUI;
     }
 
+    //自動尋找物件
+    private void AutoFindLevelAndGrid()
+    {
+        if (level == null) level = GameObject.FindWithTag("Level");
+        if (buildingGrid == null) buildingGrid = GameObject.FindWithTag("BuildingGrid").GetComponent<Grid>();
+        if (moveGrid == null) moveGrid = GameObject.FindWithTag("MoveGrid").GetComponent<Grid>();
+    }
+
     //持續調用，類似Update
     private void OnSceneGUI(SceneView sceneView)
     {
+        AutoFindLevelAndGrid();
+
         if (buildingGrid && isShowingBuildingGrid) DrawGrid(buildingGrid, buildingGridColor, buildingGridSize, gridOffset);
         if (moveGrid && isShowingMoveGrid) DrawGrid(moveGrid, moveGridColor, moveGridSize, gridOffset);
 

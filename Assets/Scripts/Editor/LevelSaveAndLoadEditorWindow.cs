@@ -22,7 +22,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
     private Grid buildingGrid; //建築用網格
 
     private Vector3Int detectBoundsStart = new Vector3Int(0, 1, 0); //房間偵測範圍起點
-    private Vector3Int detectBoundsEnd = new Vector3Int(10, 3, 10); //房間偵測範圍終點
+    private Vector3Int detectBoundsEnd = new Vector3Int(9, 3, 9); //房間偵測範圍終點
     private Vector3 gridOffset = new Vector3(0f, 0.5f, 0f); //網格顯示偏移值
 
     private Color roomColor = new Color(0f, 1f, 0f, 0.25f); //偵測房間顏色
@@ -190,6 +190,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
     {
         //重置位置資料
         barrierList.Clear();
+        doorList.Clear();
         barrierPositions.Clear();
         doorPositions.Clear();
         //取得所有物件
@@ -307,6 +308,40 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
         }
     }
 
+    /// <summary>
+    /// 檢查關卡名稱是否在 Assets/Levels 下已存在資料夾。
+    /// </summary>
+    /// <param name="levelName">要檢查的關卡名稱</param>
+    /// <returns>若名稱重複則回傳 true，否則為 false</returns>
+    public bool IsLevelNameDuplicate(string levelName)
+    {
+        if (string.IsNullOrEmpty(levelName))
+        {
+            Debug.LogError("關卡名稱為空!");
+            return true;
+        }
+
+        string levelsPath = "Assets/Levels";
+        if (!Directory.Exists(levelsPath))
+        {
+            Debug.LogError("Levels資料夾不存在");
+            return true;
+        }
+
+        string[] subFolders = Directory.GetDirectories(levelsPath, "*", SearchOption.TopDirectoryOnly);
+        foreach (string subFolder in subFolders)
+        {
+            string folderName = Path.GetFileName(subFolder);
+            if (levelName.Equals(folderName))
+            {
+                Debug.LogError("關卡名稱重複!");
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     //取得物件原本的prefab
     private GameObject GetPrefab(GameObject go)
     {
@@ -317,6 +352,8 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
     //關卡保存
     private void SaveLevel()
     {
+        if(IsLevelNameDuplicate(levelName)) return;
+
         //創建LevelData
         LevelData levelData = ScriptableObject.CreateInstance<LevelData>();
 
@@ -363,13 +400,18 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
 
             //找到房間內所有的物件
             List<GameObject> foundObjects = FindObjectsInAreaWithoutCollider(minPos, maxPos);
+            Debug.Log($"Room {roomCount} 有 {foundObjects.Count} 個物件");
 
             //找到的物件處理
             List<PrefabSpawnData> enemies = new List<PrefabSpawnData>();
             List<PrefabSpawnData> items = new List<PrefabSpawnData>();
             List<PrefabSpawnData> buildings = new List<PrefabSpawnData>();
+            bool isSetSpawnpoint = false;
             foreach (GameObject go in foundObjects)
             {
+                Vector3Int cellPos = buildingGrid.WorldToCell(go.transform.position);
+                if (!room.Contains(cellPos)) continue; // 不屬於房間，略過
+
                 if (go.CompareTag("Enemy"))
                 {
                     PrefabSpawnData prefabSpawnData = PrefabSpawnData.MakeData(go, GetPrefab(go));
@@ -387,11 +429,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
                 }
                 else if (go.CompareTag("Spawnpoint"))
                 {
-                    if(roomData.Spawnpoint == Vector3.zero) //因為網格座標定位在設定上不會是(0,0,0)所以才可以這樣寫
-                    {
-                        roomData.Spawnpoint = go.transform.position;
-                    }
-                    else
+                    if(isSetSpawnpoint) //已經設定過重生點
                     {
                         Debug.LogError("單一房間擁有複數重生點");
 
@@ -402,6 +440,11 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
                         );
                         return;
                     }
+                    else 
+                    {
+                        roomData.Spawnpoint = go.transform.position;
+                        isSetSpawnpoint = true;
+                    }
                 }
                 else
                 {
@@ -410,6 +453,18 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
 
 
                 }
+            }
+
+            if (!isSetSpawnpoint)
+            {
+                Debug.LogError("單一房間未擁有重生點");
+
+                EditorUtility.DisplayDialog(
+                    "儲存失敗",
+                    $"房間 {roomCount} 未擁有 Spawnpoint，請確認每個房間都有一個重生點。",
+                    "我知道了"
+                );
+                return;
             }
 
             if(enemies.Count != 0) roomData.Enemies = enemies;

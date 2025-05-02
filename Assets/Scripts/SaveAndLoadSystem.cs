@@ -4,6 +4,8 @@ using UnityEditor;
 using Newtonsoft.Json;
 /// <summary>
 /// 存讀檔工具 - js5515
+/// 存讀JSON檔
+/// 存讀asset檔
 /// </summary>
 public class SaveAndLoadSystem
 {
