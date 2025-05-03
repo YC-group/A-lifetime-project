@@ -58,6 +58,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
 
     private void OnSceneGUI(SceneView sceneView)
     {
+        if (buildingGrid == null) buildingGrid = GameObject.FindWithTag("BuildingGrid")?.GetComponent<Grid>();
         if (detectedRooms == null) return;
 
         //房間顯示
@@ -147,9 +148,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
     private void SaveAndLoadTabGUI()
     {
         scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.ExpandHeight(true));
-
-        levelName = EditorGUILayout.TextField("Level Name", levelName);
-
+        
         EditorGUILayout.Space(10);
 
         if (GUILayout.Button("Clear All Detect Data"))
@@ -167,9 +166,20 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
             DetectRooms();
         }
 
+        EditorGUILayout.Space(10);
+
+        levelName = EditorGUILayout.TextField("Level Name", levelName);
+
+        EditorGUILayout.Space(10);
+
         if (GUILayout.Button("Save Level"))
         {
             SaveLevel();
+        }
+
+        if (GUILayout.Button("Load Level"))
+        {
+            LoadLevel();
         }
 
         GUILayout.Label($"Detected {detectedRooms.Count} room(s).", EditorStyles.boldLabel);
@@ -348,6 +358,48 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
         return PrefabUtility.GetCorrespondingObjectFromSource(go);
     }
 
+    //關卡載入
+    private void LoadLevel()
+    {
+        string levelDataPath = $"Assets/Levels/{levelName}/{levelName}.asset";
+        LevelData levelData = SaveAndLoadSystem.LoadFromAsset<LevelData>(levelDataPath);
+
+        //生成barriers
+        foreach (PrefabSpawnData barriers in levelData.Barriers)
+        {
+            barriers.Spawn();
+        }
+        //生成Doors
+        foreach (DoorData doorData in levelData.Doors)
+        {
+            GameObject door = doorData.Psd.Spawn();
+            door.GetComponent<Door>().SetRoomName(doorData);
+        }
+        //生成所有房間(正式遊戲應為到房間才生成，如果效能足夠就沒差)
+        foreach (RoomData roomData in levelData.Rooms)
+        {
+            foreach (PrefabSpawnData enemy in roomData.Enemies)
+            {
+                enemy.Spawn();
+            }
+            foreach (PrefabSpawnData item in roomData.Items)
+            {
+                item.Spawn();
+            }
+            foreach (PrefabSpawnData building in roomData.Buildings)
+            {
+                building.Spawn();
+            }
+
+            //玩家生成在初始房間
+            if (levelData.StartRoomData == roomData)
+            {
+                string playerPath = "Assets/Prefabs/Test/TestPlayer.prefab";
+                GameObject playerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(playerPath);
+                GameObject.Instantiate(playerPrefab, roomData.Spawnpoint, Quaternion.identity);
+            }
+        }
+    }
 
     //關卡保存
     private void SaveLevel()
@@ -470,9 +522,11 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
             if(enemies.Count != 0) roomData.Enemies = enemies;
             if(items.Count != 0) roomData.Items = items;
             if(buildings.Count != 0) roomData.Buildings = buildings;
-            
+
             //roomData寫成asset檔
-            string roomDataPath = $"Assets/Levels/{levelName}/RoomDatas/{levelName}_room_{roomCount}.asset";
+            string roomName = $"{levelName}_room_{roomCount}";
+            roomData.RoomName = roomName;
+            string roomDataPath = $"Assets/Levels/{levelName}/RoomDatas/{roomName}.asset";
             SaveAndLoadSystem.SaveAsAsset<RoomData>(roomData, roomDataPath);
 
             // 使用儲存後的 asset 實例來填入 levelData

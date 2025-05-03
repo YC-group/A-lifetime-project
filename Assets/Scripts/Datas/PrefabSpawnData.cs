@@ -33,5 +33,13 @@ public class PrefabSpawnData
         Vector3 scale = transform.localScale;
         return new PrefabSpawnData(prefab, position, rotation, scale);
     }
+
+    public GameObject Spawn()
+    {
+        GameObject instance = GameObject.Instantiate(prefab, position, rotation);
+        instance.transform.localScale = scale;
+
+        return instance;
+    }
 }
 

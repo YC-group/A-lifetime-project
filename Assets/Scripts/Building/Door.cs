@@ -5,8 +5,8 @@ using UnityEngine;
 /// </summary>
 public class Door : MonoBehaviour
 {
-    [SerializeField][HideInInspector] private string roomName1;
-    [SerializeField][HideInInspector] private string roomName2;
+    [SerializeField] private string roomName1;
+    [SerializeField] private string roomName2;
 
     public void SetRoomName(DoorData doorData)
     {
