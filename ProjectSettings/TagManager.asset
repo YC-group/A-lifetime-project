@@ -9,6 +9,10 @@ TagManager:
   - MoveGrid
   - Building
   - Enemy
+  - Barrier
+  - Door
+  - Item
+  - Spawnpoint
   layers:
   - Default
   - TransparentFX

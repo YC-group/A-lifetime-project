@@ -23,17 +23,19 @@ public class LevelEditorWindow : EditorWindow
     private static Vector3Int lastGridPosition;
 
     private GameObject level;
-    private Vector3 gridOffset = new Vector3(0, 0.5f, 0); //改變網格視覺上顯示的位置(不會影響真正的網格)
+    private Vector3 gridOffset = new Vector3(0, 1.5f, 0); //改變網格視覺上顯示的位置(不會影響真正的網格)
 
     //建築用網格參數
+    private bool isShowingBuildingGrid = true;
     private Grid buildingGrid;
     private Color buildingGridColor = Color.blue;
-    private int buildingGridSize = 31;
+    private int buildingGridSize = 10;
 
     //移動用網格參數
+    private bool isShowingMoveGrid = true;
     private Grid moveGrid;
     private Color moveGridColor = Color.yellow;
-    private int moveGridSize = 10;
+    private int moveGridSize = 3;
 
     /*
     private string savePath = "Assets/Scenes/Levels"; // 預設儲存路徑
@@ -55,9 +57,7 @@ public class LevelEditorWindow : EditorWindow
         SceneView.duringSceneGui += OnSceneGUI;
 
         //自動尋找物件
-        if (level == null) level = GameObject.FindWithTag("Level");
-        if (buildingGrid == null) buildingGrid = GameObject.FindWithTag("BuildingGrid").GetComponent<Grid>();
-        if (moveGrid == null) moveGrid = GameObject.FindWithTag("MoveGrid").GetComponent<Grid>();
+        AutoFindLevelAndGrid();
     }
 
     private void OnDisable()
@@ -65,11 +65,21 @@ public class LevelEditorWindow : EditorWindow
         SceneView.duringSceneGui -= OnSceneGUI;
     }
 
+    //自動尋找物件
+    private void AutoFindLevelAndGrid()
+    {
+        if (level == null) level = GameObject.FindWithTag("Level");
+        if (buildingGrid == null) buildingGrid = GameObject.FindWithTag("BuildingGrid").GetComponent<Grid>();
+        if (moveGrid == null) moveGrid = GameObject.FindWithTag("MoveGrid").GetComponent<Grid>();
+    }
+
     //持續調用，類似Update
     private void OnSceneGUI(SceneView sceneView)
     {
-        if (buildingGrid) DrawGrid(buildingGrid, buildingGridColor, buildingGridSize, gridOffset);
-        if (moveGrid) DrawGrid(moveGrid, moveGridColor, moveGridSize, gridOffset);
+        AutoFindLevelAndGrid();
+
+        if (buildingGrid && isShowingBuildingGrid) DrawGrid(buildingGrid, buildingGridColor, buildingGridSize, gridOffset);
+        if (moveGrid && isShowingMoveGrid) DrawGrid(moveGrid, moveGridColor, moveGridSize, gridOffset);
 
         switch (selectedGridAlignModeTab)
         {
@@ -236,6 +246,7 @@ public class LevelEditorWindow : EditorWindow
         gridOffset = EditorGUILayout.Vector3Field("Grid offset", gridOffset);
 
         GUILayout.Label("Building Grid Settings", EditorStyles.boldLabel);
+        isShowingBuildingGrid = EditorGUILayout.Toggle("Show Building Grid", isShowingBuildingGrid);
         buildingGrid = (Grid)EditorGUILayout.ObjectField("Building Grid", buildingGrid, typeof(Grid), true);
         buildingGridColor = EditorGUILayout.ColorField("Building Grid Color", buildingGridColor);
         buildingGridSize = EditorGUILayout.IntSlider("Building Grid Size", buildingGridSize, 1, 50);
@@ -243,6 +254,7 @@ public class LevelEditorWindow : EditorWindow
         GUILayout.Space(10);
 
         GUILayout.Label("Move Grid Settings", EditorStyles.boldLabel);
+        isShowingMoveGrid = EditorGUILayout.Toggle("Show Move Grid", isShowingMoveGrid);
         moveGrid = (Grid)EditorGUILayout.ObjectField("Move Grid", moveGrid, typeof(Grid), true);
         moveGridColor = EditorGUILayout.ColorField("Move Grid Color", moveGridColor);
         moveGridSize = EditorGUILayout.IntSlider("Move Grid Size", moveGridSize, 1, 50);
@@ -288,7 +300,7 @@ public class LevelEditorWindow : EditorWindow
         Vector3 origin = grid.transform.position;
         Vector3 cellSize = grid.cellSize;
 
-        offset = Vector3.Scale(offset, moveGrid.cellSize);
+        offset = Vector3.Scale(offset, buildingGrid.cellSize);
 
         for (int x = 0; x <= gridSize; x++)
         {
