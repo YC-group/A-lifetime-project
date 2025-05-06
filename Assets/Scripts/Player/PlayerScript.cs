@@ -44,8 +44,9 @@ public class PlayerScript : MonoBehaviour
             Debug.Log("偵測結果：" + result);
 
             moveVector = ctx.ReadValue<Vector2>();
-            // print(moveVector);
-            if (moveVector != Vector2.zero)
+            Debug.Log(moveVector);
+            
+            if (moveVector != Vector2.zero && moveVector.x % 1f == 0f && moveVector.y % 1f == 0f)
             {
                 Vector3Int direction = new Vector3Int(Mathf.RoundToInt(moveVector.x), 0, Mathf.RoundToInt(moveVector.y)); 
                 currentCell += direction * playerObj.moveDistance;
