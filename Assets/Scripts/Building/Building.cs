@@ -19,7 +19,7 @@ public class Building : MonoBehaviour
 
         print("Building Name: " + buildingObj.name);
         Debug.Log("Building Type: " + buildingObj.buildingType);
-        Debug.Log("Vision Blockage: " + buildingObj.visionBlockage);
+        Debug.Log("Vision Blockage: " + buildingObj.isVisionBlocking);
     }
 
     //private void Start()

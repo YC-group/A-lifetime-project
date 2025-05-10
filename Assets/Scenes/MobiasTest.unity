@@ -2454,7 +2454,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerObj: {fileID: 11400000, guid: 392ebe829a483cf4187e06ec49953088, type: 2}
   grid: {fileID: 1938498122}
-  FREEMOVE: 0
+  FREEMOVE: 1
   lineDistance: 2.1
   lineHigh: 0.1
 --- !u!1 &1760070311

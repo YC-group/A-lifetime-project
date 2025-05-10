@@ -155,7 +155,7 @@ public class PlayerScript : MonoBehaviour
                 // 取得 ScriptableObject 的資料
                 string name = building.buildingObj.name;
                 string type = building.buildingObj.buildingType.ToString();
-                bool block = building.buildingObj.visionBlockage;
+                bool block = building.buildingObj.isVisionBlocking;
 
                 //Debug.Log($"偵測到建築：{name} | 類型：{type} | 擋視線：{block}");
                 return type;  // 你可以改成 return $"{type} ({block})"; 或其他格式

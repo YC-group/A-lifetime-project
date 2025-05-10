@@ -15,6 +15,9 @@ public class BuildingData : ScriptableObject
     public BuildingType buildingType;
 
     // 是否阻擋視線
-    public bool visionBlockage;
+    public bool isVisionBlocking;
+
+    //是否可跨越
+    public bool isCrossable;
 
 }
