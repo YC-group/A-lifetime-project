@@ -92,8 +92,11 @@ public class PlayerScript : MonoBehaviour
     /// <summary>
     /// 偵測角色前方兩格內的 Building 物件（每格一組）- mobias
     /// </summary>
-    [Range(0f, 1f)]
-    [SerializeField] float overlapBoxYOffset = 0.5f;
+    [SerializeField] public Vector3 buildDetectionBox = new Vector3(0.9f, 0.1f, 0.8f) ;
+    [SerializeField] public Vector3 moveDetectionBox = new Vector3(0.9f, 0.1f, 0.9f) ;
+
+    [Range(0f, 3f)]
+    [SerializeField] float overlapDetectionBoxYOffset = 0.5f;
     private Dictionary<string, List<Building>> DetectBuildingsInFrontTwoTilesAdvanced() //道具偵測可由此修改
     {
         Dictionary<string, List<Building>> result = new Dictionary<string, List<Building>>
@@ -117,38 +120,30 @@ public class PlayerScript : MonoBehaviour
 
             // ========= moveX: 格子中心 OverlapBox =========
             Vector3Int checkCell = currentCell + forwardGridDir * i;
-            Vector3 worldPos = grid.GetCellCenterWorld(checkCell)+Vector3.up* overlapBoxYOffset;
+            Vector3 worldPos = grid.GetCellCenterWorld(checkCell)+Vector3.up* overlapDetectionBoxYOffset;
 
-            Collider[] hitsA = Physics.OverlapBox(worldPos, new Vector3(2, 0.1f, 2) * 0.8f); // 格子中心偵測
+            Collider[] hitsA = Physics.OverlapBox(worldPos, moveDetectionBox); // 格子中心偵測
             foreach (var hit in hitsA)
             {
                 Building b = hit.GetComponent<Building>();
                 if (b != null)
+                {
                     result[$"move{i}"].Add(b);
-                    var renderer = b.GetComponent<Renderer>();
-                    if (renderer != null)
-                    {
-                        renderer.material.color = Color.yellow;
-                    }
-
+                }
             }
 
             // ========= buildX: 偏移位置偵測 =========
-            Vector3 detectCenter = worldPos - forwardDir * 1.5f + Vector3.up* overlapBoxYOffset;
-            Vector3 boxHalfExtents = new Vector3(2f, 0.1f, 1f) * 0.8f;
+            Vector3 detectCenter = worldPos - forwardDir * 1.5f + Vector3.up* overlapDetectionBoxYOffset;
             Quaternion rotation = Quaternion.LookRotation(forwardDir);
 
-            Collider[] hitsB = Physics.OverlapBox(detectCenter, boxHalfExtents, rotation);
+            Collider[] hitsB = Physics.OverlapBox(detectCenter, buildDetectionBox, rotation);
             foreach (var hit in hitsB)
             {
                 Building b = hit.GetComponent<Building>();
                 if (b != null)
+                {
                     result[$"build{i}"].Add(b);
-                    var renderer = b.GetComponent<Renderer>();
-                    if (renderer != null)
-                    {
-                        renderer.material.color = Color.blue;
-                    }
+                }
             }
         }
 
@@ -171,12 +166,12 @@ public class PlayerScript : MonoBehaviour
 
         // --------- 🔴 原本前方兩格的紅色格子 ----------
         Gizmos.color = Color.red;
-        Vector3 cellSize = new Vector3(2, 0.1f, 2)*0.8f; // Y壓扁
+
         for (int i = 1; i <= 2; i++)
         {
             Vector3Int targetCell = currentCellGizmo + forwardGridDir * i;
-            Vector3 cellCenter = grid.GetCellCenterWorld(targetCell)+ Vector3.up* overlapBoxYOffset;
-            Gizmos.DrawCube(cellCenter, cellSize);
+            Vector3 cellCenter = grid.GetCellCenterWorld(targetCell)+ Vector3.up* overlapDetectionBoxYOffset;
+            Gizmos.DrawCube(cellCenter, moveDetectionBox);
         }
 
         // --------- 🔵 新增偵測區塊（藍色框） ----------
@@ -190,16 +185,16 @@ public class PlayerScript : MonoBehaviour
             if (forwardDir == Vector3.zero) return;
 
             // 往相反方向退後 1.5 單位（從中心點）
-            Vector3 detectCenter = frontCenter - forwardDir * 1.5f + Vector3.up* overlapBoxYOffset;;
+            Vector3 detectCenter = frontCenter - forwardDir * 1.5f + Vector3.up* overlapDetectionBoxYOffset;;
 
             // 設定偵測框的大小與旋轉
-            Vector3 boxSize = new Vector3(2f, 0.1f, 1f)*0.8f; 
+
             Quaternion rotation = Quaternion.LookRotation(forwardDir);
 
             // 畫出藍色框
             Gizmos.color = Color.blue;
             Gizmos.matrix = Matrix4x4.TRS(detectCenter, rotation, Vector3.one);
-            Gizmos.DrawCube(Vector3.zero, boxSize);
+            Gizmos.DrawCube(Vector3.zero, buildDetectionBox);
 
         }
     }
