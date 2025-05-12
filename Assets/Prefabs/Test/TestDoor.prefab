@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7324372194194029838}
   m_Layer: 0
   m_Name: DoorAir (1)
-  m_TagString: Barrier
+  m_TagString: FakeBarrier
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -42,7 +42,7 @@ GameObject:
   - component: {fileID: 6176676806365755361}
   m_Layer: 0
   m_Name: DoorAir (3)
-  m_TagString: Barrier
+  m_TagString: FakeBarrier
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -73,7 +73,7 @@ GameObject:
   - component: {fileID: 1677689996824704924}
   m_Layer: 0
   m_Name: DoorAir (4)
-  m_TagString: Barrier
+  m_TagString: FakeBarrier
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -104,7 +104,7 @@ GameObject:
   - component: {fileID: 5887235977655003041}
   m_Layer: 0
   m_Name: DoorAir
-  m_TagString: Barrier
+  m_TagString: FakeBarrier
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -135,7 +135,7 @@ GameObject:
   - component: {fileID: 4750377275637031189}
   m_Layer: 0
   m_Name: DoorAir (2)
-  m_TagString: Barrier
+  m_TagString: FakeBarrier
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
