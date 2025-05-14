@@ -7,17 +7,11 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "BuildingObject", menuName = "Game/Building Data")]
 public class BuildingData : ScriptableObject
 {
-    // Àð¾À¦WºÙ
-    public string BulidingName;
 
-    // Àð¾ÀÃþ«¬¡]Hardwall, Softwall, Mechanism¡^
-    public enum BuildingType { None, Hardwall, Softwall, Mechanism }
+    public string BulidingName;    // Àð¾À¦WºÙ
+    public enum BuildingType { None, Hardwall, Softwall, Mechanism }     // Àð¾ÀÃþ«¬¡]Hardwall, Softwall, Mechanism¡^
     public BuildingType buildingType;
-
-    // ¬O§_ªý¾×µø½u
-    public bool isVisionBlocking;
-
-    //¬O§_¥i¸ó¶V
-    public bool isCrossable;
+    public bool isVisionBlocking;  // ¬O§_ªý¾×µø½u
+    public bool isCrossable;    //¬O§_¥i¸ó¶V
 
 }
