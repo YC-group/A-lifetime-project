@@ -11,8 +11,6 @@ using System.Linq;
 
 public class PlayerScript : MonoBehaviour
 {
-
-
     [SerializeField] public PlayerData playerObj; // 序列化玩家物件
     private bool isMoving = false; // 判斷玩家是否正在移動
     // private Rigidbody rb;
@@ -21,9 +19,11 @@ public class PlayerScript : MonoBehaviour
     private Vector3Int currentCell;
     public bool FREEMOVE = false; // 測試移動用，會讓回合維持在玩家回合
     private InputSystemActions inputActions; // InputSystem 的 Action map
+    private GameManager gameManager;
 
     private void Start()
     {
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         currentCell = grid.WorldToCell(transform.position);
         transform.position = grid.GetCellCenterWorld(currentCell);
         // 註冊移動行為
@@ -41,7 +41,7 @@ public class PlayerScript : MonoBehaviour
 
     public void Move(InputAction.CallbackContext ctx)
     {
-        if (ctx.performed && !isMoving && GameManager.GameState.GetCurrentRound().Equals(RoundState.PlayerTurn))
+        if (ctx.performed && !isMoving && gameManager.GetCurrentRound().Equals(RoundState.PlayerTurn))
         {
             moveVector = ctx.ReadValue<Vector2>();
             //Debug.Log("輸入向量：" + moveVector);
@@ -83,7 +83,7 @@ public class PlayerScript : MonoBehaviour
 
         if (!FREEMOVE)
         {
-            GameManager.GameState.SetCurrentRound(RoundState.EnemyTurn); // 敵人回合開始
+            gameManager.SetCurrentRound(RoundState.EnemyTurn); // 敵人回合開始
         }
 
     }

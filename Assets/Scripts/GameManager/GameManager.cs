@@ -1,26 +1,31 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Unity.Behavior;
 
 /// <summary>
 /// 回合控制腳本 - Jerry0401
 /// </summary>
-public enum RoundState // 回合列舉
+///
+
+[BlackboardEnum]
+public enum RoundState
 {
     PlayerTurn,
     EnemyTurn,
     EndingTurn
 }
+
 public class GameManager : MonoBehaviour
 {
-    public static GameManager GameState;
+    // public static GameManager GameState;
     private RoundState currentRound;
 
-    private void Awake()
-    {
-        GameState = this; // 實例化 GameManager 確保全局都能使用
-        // throw new NotImplementedException();
-    }
+    // private void Awake()
+    // {
+    //     GameState = this; // 實例化 GameManager 確保全局都能使用
+    //     // throw new NotImplementedException();
+    // }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
