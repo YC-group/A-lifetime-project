@@ -21,7 +21,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
 
     private Grid buildingGrid; //建築用網格
 
-    private Vector3Int detectBoundsStart = new Vector3Int(0, 1, 0); //房間偵測範圍起點
+    private Vector3Int detectBoundsStart = new Vector3Int(0, 0, 0); //房間偵測範圍起點
     private Vector3Int detectBoundsEnd = new Vector3Int(9, 3, 9); //房間偵測範圍終點
     private Vector3 gridOffset = new Vector3(0f, 0.5f, 0f); //網格顯示偏移值
 
@@ -166,11 +166,11 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
             DetectRooms();
         }
 
+        GUILayout.Label($"Detected {detectedRooms.Count} room(s).", EditorStyles.boldLabel);
+
         EditorGUILayout.Space(10);
 
         levelName = EditorGUILayout.TextField("Level Name", levelName);
-
-        EditorGUILayout.Space(10);
 
         if (GUILayout.Button("Save Level"))
         {
@@ -182,7 +182,6 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
             LoadLevel();
         }
 
-        GUILayout.Label($"Detected {detectedRooms.Count} room(s).", EditorStyles.boldLabel);
 
         EditorGUILayout.EndScrollView();
     }
@@ -226,6 +225,10 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
                 barrierPositions.Add(pos);
 
                 doorList.Add(go);
+            }
+            else if (go.CompareTag("FakeBarrier"))
+            {
+                barrierPositions.Add(pos);
             }
         }
 
@@ -378,18 +381,9 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
         //生成所有房間(正式遊戲應為到房間才生成，如果效能足夠就沒差)
         foreach (RoomData roomData in levelData.Rooms)
         {
-            foreach (PrefabSpawnData enemy in roomData.Enemies)
-            {
-                enemy.Spawn();
-            }
-            foreach (PrefabSpawnData item in roomData.Items)
-            {
-                item.Spawn();
-            }
-            foreach (PrefabSpawnData building in roomData.Buildings)
-            {
-                building.Spawn();
-            }
+            if (roomData.Enemies != null) roomData.Enemies.ForEach(enemy => enemy.Spawn());
+            if (roomData.Items != null) roomData.Items.ForEach(item => item.Spawn());
+            if (roomData.Buildings != null) roomData.Buildings.ForEach(building => building.Spawn());
 
             //玩家生成在初始房間
             if (levelData.StartRoomData == roomData)
@@ -519,9 +513,9 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
                 return;
             }
 
-            if(enemies.Count != 0) roomData.Enemies = enemies;
-            if(items.Count != 0) roomData.Items = items;
-            if(buildings.Count != 0) roomData.Buildings = buildings;
+            roomData.Enemies = enemies;
+            roomData.Items = items;
+            roomData.Buildings = buildings;
 
             //roomData寫成asset檔
             string roomName = $"{levelName}_room_{roomCount}";
