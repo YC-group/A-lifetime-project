@@ -14,6 +14,7 @@ TagManager:
   - Item
   - Spawnpoint
   - FakeBarrier
+  - GameManager
   layers:
   - Default
   - TransparentFX

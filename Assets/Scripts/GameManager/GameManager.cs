@@ -18,15 +18,8 @@ public enum RoundState
 
 public class GameManager : MonoBehaviour
 {
-    // public static GameManager GameState;
     private RoundState currentRound;
-
-    // private void Awake()
-    // {
-    //     GameState = this; // 實例化 GameManager 確保全局都能使用
-    //     // throw new NotImplementedException();
-    // }
-
+    
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -57,7 +50,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private bool GameStart()
+    private bool GameStart() // 遊戲開始且從玩家回合開始
     {
         currentRound = RoundState.PlayerTurn; // 切換為玩家回合
         Debug.Log(currentRound);

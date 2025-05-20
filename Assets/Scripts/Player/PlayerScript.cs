@@ -11,7 +11,7 @@ using System.Linq;
 
 public class PlayerScript : MonoBehaviour
 {
-    [SerializeField] public PlayerData playerObj; // 序列化玩家物件
+    [SerializeField] public PlayerData playerSO; // 序列化玩家物件
     private bool isMoving = false; // 判斷玩家是否正在移動
     // private Rigidbody rb;
     private Vector2 moveVector;
@@ -24,6 +24,7 @@ public class PlayerScript : MonoBehaviour
     private void Start()
     {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        grid = GameObject.FindWithTag("MoveGrid").GetComponent<Grid>();
         currentCell = grid.WorldToCell(transform.position);
         transform.position = grid.GetCellCenterWorld(currentCell);
         // 註冊移動行為
@@ -53,7 +54,7 @@ public class PlayerScript : MonoBehaviour
                 int step = moveStepCount(buildings); //計算移動格數
                 if (step > 0) 
                 {
-                    currentCell += direction * playerObj.moveDistance * step;
+                    currentCell += direction * playerSO.moveDistance * step;
                     Vector3 dest = grid.GetCellCenterWorld(currentCell);
                     StartCoroutine(SmoothMove(dest));
                 }
@@ -69,7 +70,7 @@ public class PlayerScript : MonoBehaviour
         isMoving = true;
         Vector3 start = transform.position;
         float elapsed = 0f; // 已經過時間
-        float duration = playerObj.moveTime; // 移動時間，可調整
+        float duration = playerSO.moveTime; // 移動時間，可調整
 
         while (elapsed < duration)
         {
