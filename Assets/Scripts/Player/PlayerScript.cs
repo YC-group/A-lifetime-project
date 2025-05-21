@@ -213,8 +213,8 @@ public class PlayerScript : MonoBehaviour
             return 0;
 
         // 取得目前 step + 1 格的資料（因為 index 是從 1 開始）
-        bool isCrossBuild = !buildings[$"build{step + 1}"].Any(b => b.buildingObj != null && !b.buildingObj.isCrossable);
-        bool isCrossMove = !buildings[$"move{step + 1}"].Any(b => b.buildingObj != null && !b.buildingObj.isCrossable);
+        bool isCrossBuild = !buildings[$"build{step + 1}"].Any(b => b.buildingSO != null && !b.buildingSO.isCrossable);
+        bool isCrossMove = !buildings[$"move{step + 1}"].Any(b => b.buildingSO != null && !b.buildingSO.isCrossable);
         bool hasWallMove = buildings[$"move{step + 1}"].Count > 0;
 
         if (isCrossBuild && !hasWallMove) // ✅ 第一種情況：該格沒有牆，可以直接通過，step+1

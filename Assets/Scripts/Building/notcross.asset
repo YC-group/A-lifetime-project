@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   BulidingName: Barrier
   buildingType: 1
-  isVisionBlocking: 0
+  isVisionBlocking: 1
   isCrossable: 0

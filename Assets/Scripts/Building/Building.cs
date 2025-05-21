@@ -11,15 +11,15 @@ public class Building : MonoBehaviour
 {
     //// 引用 ScriptableObject 資源
 
-    public BuildingData buildingObj;
+    public BuildingData buildingSO;
 
     //// 用於顯示牆壁屬性
     private void Start()
     {
 
-        print("Building Name: " + buildingObj.name);
-        Debug.Log("Building Type: " + buildingObj.buildingType);
-        Debug.Log("Vision Blockage: " + buildingObj.isVisionBlocking);
+        //print("Building Name: " + buildingSO.BulidingName);
+        Debug.Log("Building Type: " + buildingSO.buildingType);
+        Debug.Log("Vision Blockage: " + buildingSO.isVisionBlocking);
     }
 
     //private void Start()
