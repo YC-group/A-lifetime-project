@@ -1,16 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using Codice.Client.BaseCommands;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 /// <summary>
 /// 關卡存讀檔流程 - js5515
 /// </summary>
 
 public class LevelSaveAndLoadEditorWindow : EditorWindow
 {
+    private const string BASE_LEVEL_PATH = "Assets/Levels/_asset";
+
     #region 變數
     private Vector2 scrollPos; //滾動視窗參數
 
@@ -334,14 +338,13 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
             return true;
         }
 
-        string levelsPath = "Assets/Levels";
-        if (!Directory.Exists(levelsPath))
+        if (!Directory.Exists(BASE_LEVEL_PATH))
         {
-            Debug.LogError("Levels資料夾不存在");
+            Debug.LogError("資料夾不存在，路徑:" + BASE_LEVEL_PATH);
             return true;
         }
 
-        string[] subFolders = Directory.GetDirectories(levelsPath, "*", SearchOption.TopDirectoryOnly);
+        string[] subFolders = Directory.GetDirectories(BASE_LEVEL_PATH, "*", SearchOption.TopDirectoryOnly);
         foreach (string subFolder in subFolders)
         {
             string folderName = Path.GetFileName(subFolder);
@@ -364,19 +367,19 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
     //關卡載入
     private void LoadLevel()
     {
-        string levelDataPath = $"Assets/Levels/{levelName}/{levelName}.asset";
+        string levelDataPath = BASE_LEVEL_PATH + $"/{levelName}/{levelName}.asset";
         LevelData levelData = SaveAndLoadSystem.LoadFromAsset<LevelData>(levelDataPath);
 
         //生成barriers
-        foreach (PrefabSpawnData barriers in levelData.Barriers)
+        foreach (PrefabSpawnData barrier in levelData.Barriers)
         {
-            barriers.Spawn();
+            barrier.Spawn();
         }
         //生成Doors
         foreach (DoorData doorData in levelData.Doors)
         {
             GameObject door = doorData.Psd.Spawn();
-            door.GetComponent<Door>().SetRoomName(doorData);
+            door.GetComponent<Door>().Spawns = doorData.Spawns;
         }
         //生成所有房間(正式遊戲應為到房間才生成，如果效能足夠就沒差)
         foreach (RoomData roomData in levelData.Rooms)
@@ -388,9 +391,9 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
             //玩家生成在初始房間
             if (levelData.StartRoomData == roomData)
             {
-                string playerPath = "Assets/Prefabs/Test/TestPlayer.prefab";
+                string playerPath = "Assets/Prefabs/Test/TestPlayer.prefab"; //玩家prefab路徑
                 GameObject playerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(playerPath);
-                GameObject.Instantiate(playerPrefab, roomData.Spawnpoint, Quaternion.identity);
+                GameObject.Instantiate(playerPrefab, levelData.StartSpawnpoint, Quaternion.identity);
             }
         }
     }
@@ -404,15 +407,15 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
         LevelData levelData = ScriptableObject.CreateInstance<LevelData>();
 
         //barrier資料處理
-        List<PrefabSpawnData> barriers = new List<PrefabSpawnData>();
+        List<PrefabSpawnData> barriers = new List<PrefabSpawnData>();        
         foreach (GameObject barrier in barrierList)
         {
             GameObject prefab = GetPrefab(barrier);
             if (prefab != null)
             {
-                PrefabSpawnData prefabSpawnData = PrefabSpawnData.MakeData(barrier, prefab);
+                PrefabSpawnData psd = PrefabSpawnData.MakeData(barrier, prefab);
 
-                barriers.Add(prefabSpawnData);
+                barriers.Add(psd);
             }
             else
             {
@@ -420,9 +423,36 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
                 return;
             }
         }
-        //將barriers和doors存好
-        levelData.Barriers = barriers;
-        levelData.Doors = SaveDoorData();
+        
+        //door資料處理
+        List<DoorData> doors = new List<DoorData>();
+        foreach(GameObject door in doorList)
+        {
+            GameObject prefab = GetPrefab(door);
+            if (prefab != null)
+            {
+                Door doorComponent = door.GetComponent<Door>();
+                if (doorComponent != null)
+                {
+                    PrefabSpawnData psd = PrefabSpawnData.MakeData(door, prefab);
+                    List<SpawnData> spawns = doorComponent.Spawns;
+                    DoorData doorData = new DoorData(psd, spawns);
+
+                    doors.Add(doorData);
+                }
+                else
+                {
+                    Debug.LogError("無法取得door component");
+                    return;
+                }
+            }
+            else
+            {
+                Debug.LogError("無法取得door原先的prefab");
+                return;
+            }
+        }
+        
 
         //房間部分處理
         int roomCount = 0;
@@ -475,22 +505,20 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
                 }
                 else if (go.CompareTag("Spawnpoint"))
                 {
-                    if(isSetSpawnpoint) //已經設定過重生點
+                    //去找門
+                    foreach (DoorData door in doors)
                     {
-                        Debug.LogError("單一房間擁有複數重生點");
-
-                        EditorUtility.DisplayDialog(
-                            "儲存失敗",
-                            $"房間 {roomCount} 擁有多個 Spawnpoint，請確認每個房間僅有一個重生點。",
-                            "我知道了"
-                        );
-                        return;
+                        foreach (SpawnData spawn in door.Spawns)
+                        {
+                            Debug.Log(spawn.Spawnpoint+" : "+go.transform.position);
+                            if(spawn.Spawnpoint == go.transform.position)
+                            {
+                                Debug.Log("找到spawnpoint和其對應的door");
+                                spawn.RoomData = roomData;
+                            }
+                        }
                     }
-                    else 
-                    {
-                        roomData.Spawnpoint = go.transform.position;
-                        isSetSpawnpoint = true;
-                    }
+                    isSetSpawnpoint = true;
                 }
                 else
                 {
@@ -519,8 +547,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
 
             //roomData寫成asset檔
             string roomName = $"{levelName}_room_{roomCount}";
-            roomData.RoomName = roomName;
-            string roomDataPath = $"Assets/Levels/{levelName}/RoomDatas/{roomName}.asset";
+            string roomDataPath = BASE_LEVEL_PATH + $"/{levelName}/RoomDatas/{roomName}.asset";
             SaveAndLoadSystem.SaveAsAsset<RoomData>(roomData, roomDataPath);
 
             // 使用儲存後的 asset 實例來填入 levelData
@@ -530,15 +557,17 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
             ++roomCount;
         }
 
+        //將資料存好
+        levelData.Barriers = barriers;
+        levelData.Doors = doors;
         levelData.Rooms = rooms;
 
         //levelData寫成asset檔
-        string levelDataPath = $"Assets/Levels/{levelName}/{levelName}.asset";
+        string levelDataPath = BASE_LEVEL_PATH + $"/{levelName}/{levelName}.asset";
         SaveAndLoadSystem.SaveAsAsset<LevelData>(levelData, levelDataPath);
 
     }
 
-    //取得指定空間的物件(無須碰撞箱)
     public List<GameObject> FindObjectsInAreaWithoutCollider(Vector3 pointA, Vector3 pointB)
     {
         List<GameObject> foundObjects = new List<GameObject>();
@@ -626,85 +655,6 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
         }
     }
 
-
-    //存所有門的資料
-    private List<DoorData> SaveDoorData()
-    {
-        List<DoorData> doorDatas = new List<DoorData>();
-
-        // 建立 cell 對房間的對應表
-        Dictionary<Vector3Int, int> cellToRoom = new Dictionary<Vector3Int, int>();
-        for (int i = 0; i < detectedRooms.Count; i++)
-        {
-            foreach (var cell in detectedRooms[i])
-            {
-                cellToRoom[cell] = i;
-            }
-        }
-
-        foreach (var doorPos in doorPositions)
-        {
-            HashSet<int> connectedRooms = new HashSet<int>();
-
-            foreach (var dir in GetFourDirections())
-            {
-                Vector3Int neighbor = doorPos + dir;
-                if (cellToRoom.TryGetValue(neighbor, out int roomIndex))
-                {
-                    connectedRooms.Add(roomIndex);
-                }
-            }
-
-            int[] roomArray = new int[connectedRooms.Count];
-            connectedRooms.CopyTo(roomArray);
-
-            //以下是保存 Door 資料
-            Vector3 worldPos = buildingGrid.GetCellCenterWorld(doorPos);
-            Collider[] hits = Physics.OverlapSphere(worldPos, 0.1f);
-            GameObject doorObject = null;
-
-            foreach (var hit in hits)
-            {
-                if (hit.CompareTag("Door"))
-                {
-                    doorObject = hit.gameObject;
-                    break;
-                }
-            }
-
-            if (doorObject == null)
-                continue;
-
-            Undo.RecordObject(doorObject, "Assign Door Component");
-
-            Door door = doorObject.GetComponent<Door>();
-            if (door == null)
-            {
-                door = Undo.AddComponent<Door>(doorObject);
-            }
-            else
-            {
-                Undo.RecordObject(door, "Modify Door Links");
-            }
-
-            string roomName1 = $"{levelName}_room_{roomArray[0]}";
-            string roomName2 = $"{levelName}_room_{roomArray[1]}";
-            PrefabSpawnData psd = PrefabSpawnData.MakeData(doorObject, GetPrefab(doorObject));
-            DoorData doorData = new DoorData(psd, roomName1, roomName2);
-
-            doorDatas.Add(doorData);
-
-            door.SetRoomName(doorData);
-
-            EditorUtility.SetDirty(doorObject);
-            EditorUtility.SetDirty(door);
-            UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(doorObject.scene);
-        }
-
-        //Debug.Log("Door Data Saved");
-
-        return doorDatas;
-    }
 
     //取得房間中心
     private Vector3 GetRoomCenter(HashSet<Vector3Int> room)

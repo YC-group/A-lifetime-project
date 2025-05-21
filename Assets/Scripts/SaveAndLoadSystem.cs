@@ -21,7 +21,6 @@ public class SaveAndLoadSystem
 
         Directory.CreateDirectory(Path.GetDirectoryName(path));
 
-        //string json = JsonUtility.ToJson(t, true); // 第二個參數 true = 格式化排版
         string json = JsonConvert.SerializeObject(t, Formatting.Indented);
         File.WriteAllText(path, json);
     }
@@ -36,7 +35,6 @@ public class SaveAndLoadSystem
             {
                 string json = File.ReadAllText(path);
                 return JsonConvert.DeserializeObject<T>(json);
-                //return JsonUtility.FromJson<T>(json);
             }
             catch (System.Exception ex)
             {
@@ -52,6 +50,7 @@ public class SaveAndLoadSystem
     }
 
 #if UNITY_EDITOR
+
     public static void SaveAsAsset<T>(T t, string path) where T : ScriptableObject
     {
         if(t == null)

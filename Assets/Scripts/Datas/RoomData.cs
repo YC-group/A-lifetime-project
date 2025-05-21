@@ -9,8 +9,6 @@ public class RoomData : ScriptableObject
     [SerializeField] private List<PrefabSpawnData> enemies;
     [SerializeField] private List<PrefabSpawnData> items;
     [SerializeField] private List<PrefabSpawnData> buildings;
-    [SerializeField] private Vector3 spawnpoint;
-    [SerializeField] private string roomName;
 
     public List<PrefabSpawnData> Enemies
     {
@@ -26,15 +24,5 @@ public class RoomData : ScriptableObject
     {
         get => buildings;
         set => buildings = value;
-    }
-    public Vector3 Spawnpoint
-    {
-        get => spawnpoint;
-        set => spawnpoint = value;
-    }
-    public string RoomName
-    {
-        get => roomName;
-        set => roomName = value;
     }
 }

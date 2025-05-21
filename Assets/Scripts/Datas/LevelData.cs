@@ -10,6 +10,7 @@ public class LevelData : ScriptableObject
     [SerializeField] private List<RoomData> rooms;
     [SerializeField] private List<DoorData> doors;
     [SerializeField] private RoomData startRoomData;
+    [SerializeField] private Vector3 startSpawnpoint;
 
     public List<PrefabSpawnData> Barriers
     {
@@ -30,5 +31,10 @@ public class LevelData : ScriptableObject
     {
         get => startRoomData;
         set => startRoomData = value;
+    }
+    public Vector3 StartSpawnpoint
+    {
+        get => startSpawnpoint;
+        set => startSpawnpoint = value;
     }
 }

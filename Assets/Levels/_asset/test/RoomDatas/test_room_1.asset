@@ -19,5 +19,3 @@ MonoBehaviour:
     scale: {x: 1, y: 1, z: 1}
   items: []
   buildings: []
-  spawnpoint: {x: 4.5, y: 1.5, z: 4.5}
-  roomName: test_room_1

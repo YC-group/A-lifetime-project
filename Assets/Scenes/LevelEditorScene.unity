@@ -2822,6 +2822,50 @@ PrefabInstance:
       propertyPath: roomName2
       value: test_room_0
       objectReference: {fileID: 0}
+    - target: {fileID: -8991461876798310189, guid: a78c58d2ca5fdcd43927c9671f20201d, type: 3}
+      propertyPath: spawns.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8991461876798310189, guid: a78c58d2ca5fdcd43927c9671f20201d, type: 3}
+      propertyPath: spawns.Array.data[0].spawnpoint.x
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: -8991461876798310189, guid: a78c58d2ca5fdcd43927c9671f20201d, type: 3}
+      propertyPath: spawns.Array.data[0].spawnpoint.y
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: -8991461876798310189, guid: a78c58d2ca5fdcd43927c9671f20201d, type: 3}
+      propertyPath: spawns.Array.data[0].spawnpoint.z
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: -8991461876798310189, guid: a78c58d2ca5fdcd43927c9671f20201d, type: 3}
+      propertyPath: spawns.Array.data[0].spawnpointGO
+      value: 
+      objectReference: {fileID: 3722372713297517744}
+    - target: {fileID: -8991461876798310189, guid: a78c58d2ca5fdcd43927c9671f20201d, type: 3}
+      propertyPath: spawns.Array.data[1].spawnpoint.x
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: -8991461876798310189, guid: a78c58d2ca5fdcd43927c9671f20201d, type: 3}
+      propertyPath: spawns.Array.data[1].spawnpoint.y
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: -8991461876798310189, guid: a78c58d2ca5fdcd43927c9671f20201d, type: 3}
+      propertyPath: spawns.Array.data[1].spawnpointGO
+      value: 
+      objectReference: {fileID: 710626639}
+    - target: {fileID: -8991461876798310189, guid: a78c58d2ca5fdcd43927c9671f20201d, type: 3}
+      propertyPath: spawns.Array.data[2].spawnpoint.x
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: -8991461876798310189, guid: a78c58d2ca5fdcd43927c9671f20201d, type: 3}
+      propertyPath: spawns.Array.data[2].spawnpoint.y
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: -8991461876798310189, guid: a78c58d2ca5fdcd43927c9671f20201d, type: 3}
+      propertyPath: spawns.Array.data[2].spawnpointGO
+      value: 
+      objectReference: {fileID: 710626639}
     - target: {fileID: 467075791498425554, guid: a78c58d2ca5fdcd43927c9671f20201d, type: 3}
       propertyPath: m_Name
       value: TestDoor
@@ -4987,6 +5031,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 033ff483bd7e12743a0e73627129aa01, type: 3}
+--- !u!1 &710626639 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1985327218549452277, guid: 033ff483bd7e12743a0e73627129aa01, type: 3}
+  m_PrefabInstance: {fileID: 710626638}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &716998233
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11896,6 +11945,7 @@ GameObject:
   - component: {fileID: 1834181968}
   - component: {fileID: 1834181967}
   - component: {fileID: 1834181970}
+  - component: {fileID: 1834181971}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -12021,6 +12071,19 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!114 &1834181971
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1834181966}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 580fa597d87dc4c44a8c4197dadc65ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spawns: []
 --- !u!1001 &1839809970
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14244,6 +14307,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 033ff483bd7e12743a0e73627129aa01, type: 3}
+--- !u!1 &3722372713297517744 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1985327218549452277, guid: 033ff483bd7e12743a0e73627129aa01, type: 3}
+  m_PrefabInstance: {fileID: 3722372713297517743}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

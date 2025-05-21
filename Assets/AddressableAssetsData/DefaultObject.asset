@@ -9,11 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cab701b2893da884a85d7ba4f60d4acf, type: 3}
-  m_Name: test_room_0
+  m_Script: {fileID: 11500000, guid: 3a189bb168d8d90478a09ea08c2f3d72, type: 3}
+  m_Name: DefaultObject
   m_EditorClassIdentifier: 
-  enemies: []
-  items: []
-  buildings: []
-  spawnpoint: {x: 1.5, y: 1.5, z: 1.5}
-  roomName: test_room_0
+  m_AddressableAssetSettingsGuid: 3cfbf3a4dbcae8c43a557859734e9ce4

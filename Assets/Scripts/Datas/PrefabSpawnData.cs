@@ -1,9 +1,10 @@
-﻿using System.Threading;
+﻿using System;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 /// <summary>
 /// Prefab生成模板 - js5515
 /// </summary>
-[System.Serializable]
+[Serializable]
 public class PrefabSpawnData
 {
     [SerializeField] private GameObject prefab;
@@ -34,12 +35,31 @@ public class PrefabSpawnData
         return new PrefabSpawnData(prefab, position, rotation, scale);
     }
 
-    public GameObject Spawn()
+    public GameObject Spawn(Transform parent = null)
     {
-        GameObject instance = GameObject.Instantiate(prefab, position, rotation);
-        instance.transform.localScale = scale;
+        // 檢查 prefab 是否為 null
+        if (prefab == null)
+        {
+            Debug.LogError("Spawn 失敗：Prefab 為 null！");
+            return null;
+        }
+
+        GameObject instance = null;
+
+        try
+        {
+            // 實例化
+            instance = GameObject.Instantiate(prefab, position, rotation, parent);
+            instance.transform.localScale = scale;
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"Spawn 失敗：{ex.Message}");
+            return null;
+        }
 
         return instance;
     }
+
 }
 

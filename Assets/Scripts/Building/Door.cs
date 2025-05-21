@@ -5,12 +5,11 @@ using UnityEngine;
 /// </summary>
 public class Door : MonoBehaviour
 {
-    [SerializeField] private string roomName1;
-    [SerializeField] private string roomName2;
+    [SerializeField] private List<SpawnData> spawns;
 
-    public void SetRoomName(DoorData doorData)
+    public List<SpawnData> Spawns
     {
-        this.roomName1 = doorData.RoomName1;
-        this.roomName2 = doorData.RoomName2;
+        get => spawns;
+        set => spawns = value;
     }
 }
