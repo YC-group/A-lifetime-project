@@ -50,8 +50,10 @@ public class PlayerScript : MonoBehaviour
             if (moveVector != Vector2.zero && moveVector.x % 1f == 0f && moveVector.y % 1f == 0f)
             {
                 Vector3Int direction = new Vector3Int(Mathf.RoundToInt(moveVector.x), 0, Mathf.RoundToInt(moveVector.y));
-                var buildings = DetectBuildingsInFrontTwoTilesAdvanced(); // 先偵測
-                int step = moveStepCount(buildings); //計算移動格數
+                var detection = DetectBuildingsAndEnemies();//先偵測
+                var buildDict = detection["buildDict"] as Dictionary<string, List<Building>>; //取出牆值
+                var enemyDict = detection["enemyDict"] as Dictionary<string, List<EnemyScript>>; //取出敵人
+                int step = moveStepCount(buildDict, enemyDict); //計算移動格數
                 if (step > 0) 
                 {
                     currentCell += direction * playerSO.moveDistance * step;
@@ -98,17 +100,27 @@ public class PlayerScript : MonoBehaviour
 
     [Range(0f, 3f)]
     [SerializeField] float overlapDetectionBoxYOffset = 0.5f;
-    private Dictionary<string, List<Building>> DetectBuildingsInFrontTwoTilesAdvanced() //道具偵測可由此修改
+    private Dictionary<string, object> DetectBuildingsAndEnemies() //道具偵測可由此修改
     {
-        Dictionary<string, List<Building>> result = new Dictionary<string, List<Building>>
-    {
-        { "build1", new List<Building>() },
-        { "build2", new List<Building>() },
-        { "move1", new List<Building>() },
-        { "move2", new List<Building>() }
-    };
+        Dictionary<string, List<Building>> buildDict = new Dictionary<string, List<Building>>
+            {
+                { "build1", new List<Building>() },
+                { "build2", new List<Building>() },
+                { "move1", new List<Building>() },
+                { "move2", new List<Building>() }
+            };
 
-        
+        Dictionary<string, List<EnemyScript>> enemyDict = new Dictionary<string, List<EnemyScript>>
+            {
+                { "enemy1", new List<EnemyScript>() },
+                { "enemy2", new List<EnemyScript>() }
+            };
+
+        Dictionary<string, object> result = new()
+            {
+                { "buildDict", buildDict },
+                { "enemyDict", enemyDict }
+            };
 
         // ✅ 取得方向（用 moveVector）與 normalized 方向（偏移用）
         Vector3Int forwardGridDir = new Vector3Int(Mathf.RoundToInt(moveVector.x), 0, Mathf.RoundToInt(moveVector.y));
@@ -129,7 +141,13 @@ public class PlayerScript : MonoBehaviour
                 Building b = hit.GetComponent<Building>();
                 if (b != null)
                 {
-                    result[$"move{i}"].Add(b);
+                    buildDict[$"move{i}"].Add(b);
+                }
+
+                EnemyScript enemy = hit.GetComponent<EnemyScript>();
+                if (enemy != null)
+                {
+                    enemyDict[$"enemy{i}"].Add(enemy);
                 }
             }
 
@@ -143,13 +161,13 @@ public class PlayerScript : MonoBehaviour
                 Building b = hit.GetComponent<Building>();
                 if (b != null)
                 {
-                    result[$"build{i}"].Add(b);
+                    buildDict[$"build{i}"].Add(b);
                 }
             }
-        }
+        }   
 
-        return result;
-    }
+    return result;
+}
 
 
     //繪製偵測格子 - mobias
@@ -206,7 +224,7 @@ public class PlayerScript : MonoBehaviour
     /// 根據目前建築物資訊，遞迴決定最多可以往前移動幾格（最多 2 格）- mobias
     /// </summary>
 
-    private int moveStepCount(Dictionary<string, List<Building>> buildings, int step = 0)
+    private int moveStepCount(Dictionary<string, List<Building>> buildings, Dictionary<string, List<EnemyScript>> enemys , int step = 0)
     {
         // 若已經超過 1 步（即將進入第 3 步），不允許，回傳 0（代表失敗）
         if (step > 1)
@@ -223,7 +241,7 @@ public class PlayerScript : MonoBehaviour
         }
         else if (isCrossBuild && hasWallMove && isCrossMove) // ✅ 第二種情況：該格有牆但可以穿越，繼續往下一格判斷（遞迴）
         {
-            step = moveStepCount(buildings, step + 1);
+            step = moveStepCount(buildings, enemys, step + 1);
         }
         else  // ❌ 無法穿越（either build or move fail）
         {
