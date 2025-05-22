@@ -1,6 +1,6 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 /// <summary>
-/// ¼Ä¤Hª«¥ó - mobias
+/// æ•µäººç‰©ä»¶ - mobias
 /// </summary>
 
 [CreateAssetMenu(fileName = "enemyObject", menuName = "CreateEnemy")]

@@ -13,12 +13,13 @@ public class EnemyScript : MonoBehaviour
     public Grid grid;
     private Vector2 moveVector;
     private Vector3Int currentCell;
+    private bool alert = false;
 
     [Header("視野設定")]
     public float viewRadius = 6f;                // 偵測半徑
     [Range(0f, 360f)]
     public float viewAngle = 90f;                // 偵測角度
-    public int rayCount = 45;                    // 射線數量（影響偵測精度）
+    public int rayCount = 45;                    // 射線數量（繪圖而已）
     public float eyeHeight = 1.5f;               // 射線發射高度
 
     private Transform player;
@@ -38,6 +39,7 @@ public class EnemyScript : MonoBehaviour
     {
         if (DetectPlayer())
         {
+            DetectAlert();
             print("偵測到玩家");
         }
     }
@@ -122,6 +124,13 @@ public class EnemyScript : MonoBehaviour
             Vector3 dir = Quaternion.Euler(0, angle, 0) * transform.forward;
             Gizmos.DrawLine(origin, origin + dir * viewRadius);
         }
+    }
+
+    private void DetectAlert()
+    {
+        viewRadius = 8f;                // 偵測半徑
+        viewAngle = 360f;                // 偵測角度
+        alert = true;
     }
 }
 
