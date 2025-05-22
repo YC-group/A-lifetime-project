@@ -19,7 +19,6 @@ public class EnemyScript : MonoBehaviour
     public float viewRadius = 6f;                // 偵測半徑
     [Range(0f, 360f)]
     public float viewAngle = 90f;                // 偵測角度
-    public int rayCount = 45;                    // 射線數量（繪圖而已）
     public float eyeHeight = 1.5f;               // 射線發射高度
 
     private Transform player;
@@ -86,13 +85,16 @@ public class EnemyScript : MonoBehaviour
                 }
             }
         }
-
+        // ✅ 畫出一條輔助線從敵人眼睛高度連到玩家位置
+        Debug.DrawLine(origin, playerPos, Color.red);
         return true;
     }
 
     //畫圖形
+    private int rayCount = 45;
     private void OnDrawGizmosSelected()
     {
+        
         Vector3 origin = transform.position + Vector3.up * eyeHeight;
 
         // 畫出偵測範圍（圓形邊界）
