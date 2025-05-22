@@ -67,4 +67,9 @@ public class GameManager : MonoBehaviour
     {
         return this.currentRound;
     }
+
+    public int GetEnemyCounts()
+    {
+        return GameObject.FindGameObjectsWithTag("Enemy").Length;
+    }
 }

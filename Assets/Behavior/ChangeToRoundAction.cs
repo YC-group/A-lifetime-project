@@ -11,8 +11,8 @@ using Random = System.Random;
 ///
 
 [Serializable, GeneratePropertyBag]
-[NodeDescription(name: "Change to next round", story: "Change to next [round] via [GameManager]", category: "Action", id: "c094b19df103e16f6023c66f190b0ec0")]
-public partial class ChangeToNextRoundAction : Action
+[NodeDescription(name: "Change to round", story: "Change to [round] via [GameManager]", category: "Action", id: "c094b19df103e16f6023c66f190b0ec0")]
+public partial class ChangeToRoundAction : Action
 {
     [SerializeReference] public BlackboardVariable<RoundState> Round;
     [SerializeReference] public BlackboardVariable<GameManager> GameManager;

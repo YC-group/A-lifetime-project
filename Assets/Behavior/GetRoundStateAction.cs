@@ -11,8 +11,8 @@ using UnityEditor.UI;
 ///
 
 [Serializable, GeneratePropertyBag]
-[NodeDescription(name: "UpdateRoundState", story: "Update [roundState] and assign [gameManager]", category: "Action", id: "6bdec673a3b78563226f4eba791ca95a")]
-public partial class UpdateRoundStateAction : Action
+[NodeDescription(name: "GetRoundState", story: "Get [RoundState] with [GameManager]", category: "Action", id: "6bdec673a3b78563226f4eba791ca95a")]
+public partial class GetRoundStateAction : Action
 {
     [SerializeReference] public BlackboardVariable<RoundState> RoundState;
     [SerializeReference] public BlackboardVariable<GameManager> GameManager;
