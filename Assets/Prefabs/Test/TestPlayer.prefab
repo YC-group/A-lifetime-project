@@ -81,8 +81,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79aff8223d38bbd42b14369bbd1d0127, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerObj: {fileID: 0}
+  playerSO: {fileID: 11400000, guid: 392ebe829a483cf4187e06ec49953088, type: 2}
   grid: {fileID: 0}
   FREEMOVE: 0
-  lineDistance: 1
-  lineHigh: 0
+  buildDetectionBox: {x: 0.9, y: 0.1, z: 0.8}
+  moveDetectionBox: {x: 0.9, y: 0.1, z: 0.9}
+  overlapDetectionBoxYOffset: 0.5

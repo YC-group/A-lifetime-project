@@ -15,7 +15,7 @@ public class NavPathVisualizer : MonoBehaviour
 
     void Awake()
     {
-        IsPathVisualize = false;
+        // IsPathVisualize = false;
         agent = GetComponent<NavMeshAgent>();
     }
 
