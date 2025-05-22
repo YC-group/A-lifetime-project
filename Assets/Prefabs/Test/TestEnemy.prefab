@@ -69,6 +69,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: d56955e8179422848af8cae4f408ce8f, type: 3}
       insertIndex: -1
       addedObject: {fileID: -291272724905843849}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: d56955e8179422848af8cae4f408ce8f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6999733597572705577}
   m_SourcePrefab: {fileID: 100100000, guid: d56955e8179422848af8cae4f408ce8f, type: 3}
 --- !u!1 &1403199536775154003 stripped
 GameObject:
@@ -138,3 +141,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsPathVisualize: 1
+--- !u!114 &6999733597572705577
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1403199536775154003}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 121a5069181aadc48bf4382325330d23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemySO: {fileID: 11400000, guid: e450abdacdb07a045b1cfbb39978c86e, type: 2}
+  grid: {fileID: 0}
+  viewRadius: 6
+  viewAngle: 90
+  rayCount: 45
+  eyeHeight: 1.5

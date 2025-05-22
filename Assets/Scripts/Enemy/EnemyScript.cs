@@ -9,8 +9,8 @@ using System.Linq;
 
 public class EnemyScript : MonoBehaviour
 {
-    [SerializeField] public EnemyData enemySO;
-    public Grid grid;
+    [SerializeField] private EnemyData enemySO;
+    [SerializeField] private Grid grid;
     private Vector2 moveVector;
     private Vector3Int currentCell;
     private bool alert = false;
@@ -26,6 +26,7 @@ public class EnemyScript : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        grid = GameObject.FindWithTag("MoveGrid").GetComponent<Grid>();
         currentCell = grid.WorldToCell(transform.position);
         transform.position = grid.GetCellCenterWorld(currentCell);
 

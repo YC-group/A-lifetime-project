@@ -11,7 +11,7 @@ using System.Linq;
 
 public class PlayerScript : MonoBehaviour
 {
-    [SerializeField] public PlayerData playerSO; // 序列化玩家物件
+    [SerializeField] private PlayerData playerSO; // 序列化玩家物件
     private bool isMoving = false; // 判斷玩家是否正在移動
     // private Rigidbody rb;
     private Vector2 moveVector;
