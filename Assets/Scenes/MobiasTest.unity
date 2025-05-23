@@ -6214,13 +6214,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 466146487}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.12717605, z: -0, w: 0.99188024}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1.5, y: 1.5, z: 4.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 14.613, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &466146491
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6235,10 +6235,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemySO: {fileID: 11400000, guid: e450abdacdb07a045b1cfbb39978c86e, type: 2}
   grid: {fileID: 54626892}
-  viewRadius: 6
-  viewAngle: 245
-  rayCount: 45
   eyeHeight: 1.5
+  viewRadiusForward: 6
+  viewAngleForward: 90
+  viewRadiusBack: 6
+  viewAngleBack: 90
+  viewRadiusAlert: 6
+  viewAngleAlert: 90
 --- !u!1 &466187227
 GameObject:
   m_ObjectHideFlags: 0
@@ -28464,6 +28467,7 @@ GameObject:
   - component: {fileID: 2034462502}
   - component: {fileID: 2034462501}
   - component: {fileID: 2034462500}
+  - component: {fileID: 2034462503}
   m_Layer: 0
   m_Name: TestEnemy(Clone)
   m_TagString: Enemy
@@ -28539,6 +28543,27 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2034462503
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2034462499}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 121a5069181aadc48bf4382325330d23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemySO: {fileID: 11400000, guid: e450abdacdb07a045b1cfbb39978c86e, type: 2}
+  grid: {fileID: 0}
+  eyeHeight: 1.5
+  viewRadiusForward: 10
+  viewAngleForward: 59
+  viewRadiusBack: 4
+  viewAngleBack: 249
+  viewRadiusAlert: 6
+  viewAngleAlert: 360
 --- !u!1 &2040955353
 GameObject:
   m_ObjectHideFlags: 0

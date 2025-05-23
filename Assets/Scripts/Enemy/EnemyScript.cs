@@ -13,17 +13,30 @@ public class EnemyScript : MonoBehaviour
     [SerializeField] private Grid grid;
     private Vector2 moveVector;
     private Vector3Int currentCell;
-    private bool alert = false;
+    private bool isAlert = false;
 
-    [Header("視野設定")]
-    public float viewRadius = 6f;                // 偵測半徑
+    [Header("視野高度")]
+    public float eyeHeight = 1.5f;                 // 射線發射高度
+
+    [Header("視野設定(前)")]
+    public float viewRadiusForward = 6f;                // 偵測半徑
     [Range(0f, 360f)]
-    public float viewAngle = 90f;                // 偵測角度
-    public float eyeHeight = 1.5f;               // 射線發射高度
+    public float viewAngleForward = 90f;                // 偵測角度
+
+    [Header("視野設定(側邊)")]
+    public float viewRadiusBack = 4f;                // 偵測半徑
+    [Range(0f, 360f)]
+    public float viewAngleBack = 270f;                // 偵測角度
+
+    [Header("視野設定(警戒)")]
+    public float viewRadiusAlert = 10f;                // 偵測半徑
+    [Range(0f, 360f)]
+    public float viewAngleAlert = 360f;                // 偵測角度
+
 
     private Transform player;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
     void Start()
     {
         grid = GameObject.FindWithTag("MoveGrid").GetComponent<Grid>();
@@ -34,7 +47,7 @@ public class EnemyScript : MonoBehaviour
         if (go != null) player = go.transform;
     }
 
-    // Update is called once per frame
+
     void Update()
     {
         if (DetectPlayer())
@@ -58,19 +71,16 @@ public class EnemyScript : MonoBehaviour
         Vector3 playerPos = new Vector3(player.position.x, origin.y, player.position.z);
         Vector3 toPlayer = playerPos - origin;
         float distanceToPlayer = toPlayer.magnitude;
-
-        // 不在半徑內
-        if (distanceToPlayer > viewRadius)
-        {
-            return false;
-        }
-
-        // 不在視角內
         float angle = Vector3.Angle(transform.forward, toPlayer);
-        if (angle > viewAngle / 2f)
-        {
-            return false;
-        }
+
+        // 角度與距離判斷
+        bool inForward = distanceToPlayer <= viewRadiusForward && angle <= viewAngleForward / 2f;
+        bool inBack = distanceToPlayer <= viewRadiusBack && angle <= viewAngleBack / 2f;
+        bool inAlert = distanceToPlayer <= viewRadiusAlert && angle <= viewAngleAlert / 2f;
+        if (!isAlert && !(inForward || inBack)) { return false; }
+        else if (isAlert && !inAlert) { return false; }
+
+
 
         Ray ray = new Ray(origin, toPlayer.normalized);
         RaycastHit[] hits = Physics.RaycastAll(ray, distanceToPlayer);
@@ -92,48 +102,53 @@ public class EnemyScript : MonoBehaviour
     }
 
     //畫圖形
-    private int rayCount = 45;
     private void OnDrawGizmosSelected()
     {
-        
         Vector3 origin = transform.position + Vector3.up * eyeHeight;
 
-        // 畫出偵測範圍（圓形邊界）
-        Gizmos.color = new Color(0f, 1f, 0f, 0.3f); // 淡綠色
-        Gizmos.DrawWireSphere(origin, viewRadius);
-
-        // 畫出扇形邊界（中心線 + 左右邊線）
-        float halfAngle = viewAngle / 2f;
-
-        // 中心線（藍色）
-        Gizmos.color = Color.blue;
-        Gizmos.DrawLine(origin, origin + transform.forward * viewRadius);
-
-        // 左邊界（黃色）
-        Gizmos.color = Color.yellow;
-        Vector3 leftDir = Quaternion.Euler(0, -halfAngle, 0) * transform.forward;
-        Gizmos.DrawLine(origin, origin + leftDir * viewRadius);
-
-        // 右邊界（黃色）
-        Vector3 rightDir = Quaternion.Euler(0, halfAngle, 0) * transform.forward;
-        Gizmos.DrawLine(origin, origin + rightDir * viewRadius);
-
-        // 額外：扇形內部的射線（模擬視野解析度）
-        Gizmos.color = new Color(1f, 1f, 0f, 0.1f); // 淡黃色
-        for (int i = 0; i <= rayCount; i++)
+        // ✅ 畫三種模式下的視野
+        if (isAlert)
         {
-            float t = (float)i / rayCount;
-            float angle = Mathf.Lerp(-halfAngle, halfAngle, t);
-            Vector3 dir = Quaternion.Euler(0, angle, 0) * transform.forward;
-            Gizmos.DrawLine(origin, origin + dir * viewRadius);
+            DrawFOV(origin, viewRadiusAlert, viewAngleAlert, Color.red);
+        }
+        else
+        {
+            DrawFOV(origin, viewRadiusForward, viewAngleForward, Color.green);
+            DrawFOV(origin, viewRadiusBack, viewAngleBack, Color.cyan);
         }
     }
 
+    // ✅ 抽出一個方法來畫扇形視野（可以多種角度）
+    private void DrawFOV(Vector3 origin, float radius, float angle, Color color)
+    {
+        int rayCount = 45;
+        float halfAngle = angle / 2f;
+        Gizmos.color = color;
+
+        Vector3 centerDir = transform.forward;
+        Gizmos.DrawLine(origin, origin + centerDir * radius);
+
+        Vector3 leftDir = Quaternion.Euler(0, -halfAngle, 0) * transform.forward;
+        Vector3 rightDir = Quaternion.Euler(0, halfAngle, 0) * transform.forward;
+
+        Gizmos.DrawLine(origin, origin + leftDir * radius);
+        Gizmos.DrawLine(origin, origin + rightDir * radius);
+
+        Gizmos.color = new Color(color.r, color.g, color.b, 0.3f);
+        for (int i = 0; i <= rayCount; i++)
+        {
+            float t = (float)i / rayCount;
+            float currentAngle = Mathf.Lerp(-halfAngle, halfAngle, t);
+            Vector3 dir = Quaternion.Euler(0, currentAngle, 0) * transform.forward;
+            Gizmos.DrawLine(origin, origin + dir * radius);
+        }
+    }
+
+
+
     private void DetectAlert()
     {
-        viewRadius = 8f;                // 偵測半徑
-        viewAngle = 360f;                // 偵測角度
-        alert = true;
+        isAlert = true;
     }
 }
 
