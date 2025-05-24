@@ -50,9 +50,23 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 遊戲開始且從玩家回合開始
+    /// </summary>
+    /// <returns>bool</returns>
     private bool GameStart() // 遊戲開始且從玩家回合開始
     {
         currentRound = RoundState.PlayerTurn; // 切換為玩家回合
+        Debug.Log(currentRound);
+        return true;
+    }
+    /// <summary>
+    /// 回合重新開始
+    /// </summary>
+    /// <returns>bool</returns>
+    private bool RoundReset() // 回合重新開始
+    {
+        currentRound = RoundState.PlayerTurn;
         Debug.Log(currentRound);
         return true;
     }

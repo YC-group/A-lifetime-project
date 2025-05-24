@@ -3184,9 +3184,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemySO: {fileID: 11400000, guid: e450abdacdb07a045b1cfbb39978c86e, type: 2}
   grid: {fileID: 0}
-  viewRadius: 6
-  viewAngle: 90
   eyeHeight: 1.5
+  viewRadiusForward: 6
+  viewAngleForward: 90
+  viewRadiusBack: 4
+  viewAngleBack: 270
+  viewRadiusAlert: 10
+  viewAngleAlert: 360
 --- !u!114 &198433994
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3210,8 +3214,8 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: -1372625422
   m_Radius: 1
-  m_Speed: 3.5
-  m_Acceleration: 8
+  m_Speed: 500
+  m_Acceleration: 1000
   avoidancePriority: 50
   m_AngularSpeed: 120
   m_StoppingDistance: 0
@@ -4782,6 +4786,37 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 344183950}
   m_Mesh: {fileID: -5495902117074765545, guid: 1074432161e7c0a45a3bbe3752b7f5a4, type: 3}
+--- !u!1 &357408568
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 357408569}
+  m_Layer: 0
+  m_Name: SceneManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &357408569
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 357408568}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.7651281, y: -2.262968, z: 7.3037534}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &371389563
 GameObject:
   m_ObjectHideFlags: 0
@@ -7632,7 +7667,7 @@ GameObject:
   - component: {fileID: 567858837}
   - component: {fileID: 567858836}
   - component: {fileID: 567858835}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: TestDoor(Clone)
   m_TagString: Door
   m_Icon: {fileID: 0}
@@ -9561,6 +9596,7 @@ GameObject:
   m_Component:
   - component: {fileID: 674499160}
   - component: {fileID: 674499161}
+  - component: {fileID: 674499162}
   m_Layer: 3
   m_Name: Level
   m_TagString: Untagged
@@ -9850,8 +9886,25 @@ MonoBehaviour:
   m_OverrideVoxelSize: 0
   m_VoxelSize: 0.16666667
   m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 23800000, guid: fbe52082a42d2c34cb02653721160ac5, type: 2}
+  m_NavMeshData: {fileID: 0}
   m_BuildHeightMesh: 0
+--- !u!114 &674499162
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 674499159}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb7149a46f154fa4eb048dc8b2da60e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  surface: {fileID: 674499161}
+  bakeOnStart: 1
+  clearOnBake: 1
+  navMeshAgentType: Player
+  navMeshLayerMask: Level
 --- !u!1 &676551209
 GameObject:
   m_ObjectHideFlags: 0
@@ -10926,9 +10979,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemySO: {fileID: 11400000, guid: e450abdacdb07a045b1cfbb39978c86e, type: 2}
   grid: {fileID: 0}
-  viewRadius: 6
-  viewAngle: 90
   eyeHeight: 1.5
+  viewRadiusForward: 6
+  viewAngleForward: 90
+  viewRadiusBack: 4
+  viewAngleBack: 270
+  viewRadiusAlert: 10
+  viewAngleAlert: 360
 --- !u!114 &758534844
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10952,8 +11009,8 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: -1372625422
   m_Radius: 1
-  m_Speed: 10
-  m_Acceleration: 15
+  m_Speed: 500
+  m_Acceleration: 1000
   avoidancePriority: 50
   m_AngularSpeed: 120
   m_StoppingDistance: 0
@@ -20696,7 +20753,7 @@ GameObject:
   - component: {fileID: 1413323655}
   - component: {fileID: 1413323654}
   - component: {fileID: 1413323653}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: TestDoor(Clone)
   m_TagString: Door
   m_Icon: {fileID: 0}
@@ -30495,3 +30552,4 @@ SceneRoots:
   - {fileID: 116445104}
   - {fileID: 758534849}
   - {fileID: 198433999}
+  - {fileID: 357408569}
