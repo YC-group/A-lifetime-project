@@ -50,6 +50,22 @@ public class SaveAndLoadSystem
     }
 
 #if UNITY_EDITOR
+    public static void SaveAsPrefab(GameObject go, string path)
+    {
+        if(go == null)
+        {
+            Debug.LogError("要轉存成prefab的GameObject為 null");
+            return;
+        }
+
+        if (!path.EndsWith(".prefab")) path += ".prefab";
+
+        Directory.CreateDirectory(Path.GetDirectoryName(path));
+
+        // 儲存為 Prefab 並連接
+        PrefabUtility.SaveAsPrefabAssetAndConnect(go, path, InteractionMode.AutomatedAction);
+        Debug.Log($"儲存 Prefab 成功：{path}");
+    }
 
     public static void SaveAsAsset<T>(T t, string path) where T : ScriptableObject
     {

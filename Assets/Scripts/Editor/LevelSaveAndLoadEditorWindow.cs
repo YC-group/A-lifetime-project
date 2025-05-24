@@ -22,6 +22,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
     private string[] tabNames = { "設定", "存讀檔" }; //選擇tab的選項
 
     private string levelName;
+    private string prefabName;
 
     private Grid buildingGrid; //建築用網格
 
@@ -152,7 +153,14 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
     private void SaveAndLoadTabGUI()
     {
         scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.ExpandHeight(true));
-        
+                        
+        prefabName = EditorGUILayout.TextField("Prefab Name", prefabName);
+
+        if (GUILayout.Button("將選取物件合併並存成prefab"))
+        {
+            CombineObjectsAndSaveAsPrefab(Selection.gameObjects, prefabName);
+        }
+
         EditorGUILayout.Space(10);
 
         if (GUILayout.Button("Clear All Detect Data"))
@@ -188,6 +196,81 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
 
 
         EditorGUILayout.EndScrollView();
+    }
+
+    public void CombineObjectsAndSaveAsPrefab(GameObject[] objects, string prefabName)
+    {
+        if(string.IsNullOrEmpty(levelName) || string.IsNullOrEmpty(prefabName))
+        {
+            Debug.LogError("合併並轉存prefab失敗，無效的levelName或是prefabName");
+            return;
+        }
+
+        string prefabPath = BASE_LEVEL_PATH + $"/{levelName}/prefabs/{prefabName}.prefab";
+        string meshAssetPath = BASE_LEVEL_PATH + $"/{levelName}/prefabs/{prefabName}_mesh.asset";
+
+        GameObject combinedObject = CombineMeshes(objects, prefabName, meshAssetPath);
+
+        AddCombinedMeshCollider(combinedObject, combinedObject.GetComponent<MeshFilter>().sharedMesh);
+
+        SaveAndLoadSystem.SaveAsPrefab(combinedObject, prefabPath);
+    }
+
+    public GameObject CombineMeshes(GameObject[] objects, string combinedName, string meshAssetPath)
+    {
+        List<MeshFilter> meshFilters = new List<MeshFilter>();
+
+        // 將所有物件的子物件中 MeshFilter 收集起來
+        foreach (var go in objects)
+        {
+            meshFilters.AddRange(go.GetComponentsInChildren<MeshFilter>());
+        }
+
+        List<CombineInstance> combine = new List<CombineInstance>();
+
+        // 準備合併資料（每個 Mesh 與其轉換矩陣）
+        foreach (var mf in meshFilters)
+        {
+            CombineInstance ci = new CombineInstance
+            {
+                mesh = mf.sharedMesh,
+                transform = mf.transform.localToWorldMatrix
+            };
+            combine.Add(ci);
+        }
+
+        // 建立合併後的 Mesh
+        Mesh combinedMesh = new Mesh
+        {
+            name = combinedName
+        };
+        combinedMesh.CombineMeshes(combine.ToArray());
+
+        // 儲存 Mesh 成為 asset
+        AssetDatabase.CreateAsset(combinedMesh, meshAssetPath);
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+
+        // 建立新的 GameObject 並掛上 MeshFilter 和 MeshRenderer
+        GameObject combinedObject = new GameObject(combinedName);
+        MeshFilter mfCombined = combinedObject.AddComponent<MeshFilter>();
+        MeshRenderer mrCombined = combinedObject.AddComponent<MeshRenderer>();
+
+        mfCombined.sharedMesh = AssetDatabase.LoadAssetAtPath<Mesh>(meshAssetPath);
+
+        // 設定 Mesh 與 Material（這邊只抓第一個的材質）
+        mfCombined.sharedMesh = combinedMesh;
+        if (meshFilters.Count > 0)
+            mrCombined.sharedMaterials = meshFilters[0].GetComponent<MeshRenderer>().sharedMaterials;
+
+        return combinedObject;
+    }
+
+    public void AddCombinedMeshCollider(GameObject combinedObject, Mesh mesh)
+    {
+        MeshCollider collider = combinedObject.AddComponent<MeshCollider>();
+        collider.sharedMesh = mesh;
+        collider.convex = false; // 不需移動的靜態物件設 false，否則需設 true
     }
 
     private void ClearAllData()
