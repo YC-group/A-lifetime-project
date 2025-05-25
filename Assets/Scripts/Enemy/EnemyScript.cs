@@ -9,7 +9,7 @@ using System.Linq;
 
 public class EnemyScript : MonoBehaviour
 {
-    [SerializeField] private EnemyData enemySO;
+    [SerializeField] public EnemyData enemySO;
     [SerializeField] private Grid grid;
     private Vector2 moveVector;
     private Vector3Int currentCell;
@@ -149,6 +149,13 @@ public class EnemyScript : MonoBehaviour
     private void DetectAlert()
     {
         isAlert = true;
+    }
+
+    //敵人死亡
+    public void DestroyEnemy()
+    {
+        Debug.Log($"{enemySO.enemyName} 被殺了！");
+        Destroy(gameObject);
     }
 }
 

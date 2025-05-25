@@ -53,11 +53,12 @@ public class PlayerScript : MonoBehaviour
                 var detection = DetectBuildingsAndEnemies();//先偵測
                 var buildDict = detection["buildDict"] as Dictionary<string, List<Building>>; //取出牆值
                 var enemyDict = detection["enemyDict"] as Dictionary<string, List<EnemyScript>>; //取出敵人
-                int step = moveStepCount(buildDict, enemyDict); //計算移動格數
+                int step = moveStepCount(buildDict); //計算移動格數
                 if (step > 0) 
                 {
                     currentCell += direction * playerSO.moveDistance * step;
                     Vector3 dest = grid.GetCellCenterWorld(currentCell);
+                    enemyCheck(enemyDict, step);
                     StartCoroutine(SmoothMove(dest));
                 }
                 return;
@@ -144,11 +145,12 @@ public class PlayerScript : MonoBehaviour
                     buildDict[$"move{i}"].Add(b);
                 }
 
-                EnemyScript enemy = hit.GetComponent<EnemyScript>();
-                if (enemy != null)
-                {
-                    enemyDict[$"enemy{i}"].Add(enemy);
-                }
+                //EnemyScript enemy = hit.GetComponent<EnemyScript>();
+                //if (enemy != null)
+                //{
+                //    enemyDict[$"enemy{i}"].Add(enemy);
+                //}
+
             }
 
             // ========= buildX: 偏移位置偵測 =========
@@ -162,6 +164,21 @@ public class PlayerScript : MonoBehaviour
                 if (b != null)
                 {
                     buildDict[$"build{i}"].Add(b);
+                }
+            }
+
+            // --------- ✅搜尋沒有 Collider 的敵人（用 Tag） ----------
+            GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+            foreach (var enemyObj in enemies)
+            {
+                float dist = Vector3.Distance(enemyObj.transform.position, worldPos);
+                if (dist < 0.9f) // 判定範圍可依格子大小調整
+                {
+                    EnemyScript e = enemyObj.GetComponent<EnemyScript>();
+                    if (e != null && !enemyDict[$"enemy{i}"].Contains(e))
+                    {
+                        enemyDict[$"enemy{i}"].Add(e);
+                    }
                 }
             }
         }   
@@ -216,6 +233,8 @@ public class PlayerScript : MonoBehaviour
             Gizmos.DrawCube(Vector3.zero, buildDetectionBox);
 
         }
+
+
     }
 #endif
 
@@ -224,7 +243,7 @@ public class PlayerScript : MonoBehaviour
     /// 根據目前建築物資訊，遞迴決定最多可以往前移動幾格（最多 2 格）- mobias
     /// </summary>
 
-    private int moveStepCount(Dictionary<string, List<Building>> buildings, Dictionary<string, List<EnemyScript>> enemys , int step = 0)
+    private int moveStepCount(Dictionary<string, List<Building>> buildings,  int step = 0)
     {
         // 若已經超過 1 步（即將進入第 3 步），不允許，回傳 0（代表失敗）
         if (step > 1)
@@ -235,13 +254,15 @@ public class PlayerScript : MonoBehaviour
         bool isCrossMove = !buildings[$"move{step + 1}"].Any(b => b.buildingSO != null && !b.buildingSO.isCrossable);
         bool hasWallMove = buildings[$"move{step + 1}"].Count > 0;
 
+        //bool hasEnemy = enemys[$"enemy{step + 1}"].Count > 0;
+        //print(hasEnemy);
         if (isCrossBuild && !hasWallMove) // ✅ 第一種情況：該格沒有牆，可以直接通過，step+1
         {
             step++;
         }
         else if (isCrossBuild && hasWallMove && isCrossMove) // ✅ 第二種情況：該格有牆但可以穿越，繼續往下一格判斷（遞迴）
         {
-            step = moveStepCount(buildings, enemys, step + 1);
+            step = moveStepCount(buildings, step + 1);
         }
         else  // ❌ 無法穿越（either build or move fail）
         {
@@ -251,5 +272,14 @@ public class PlayerScript : MonoBehaviour
         return step;
     }
 
+    void enemyCheck(Dictionary<string, List<EnemyScript>> enemys, int step)
+    {
+        if ( step == 0 ) return;
+        foreach (var enemy in enemys[$"enemy{step}"])
+        {
+            print("觸發近戰攻擊條件");
+            enemy.DestroyEnemy();
+        }
+    }
 
 }
