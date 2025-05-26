@@ -5,13 +5,15 @@ using UnityEngine;
 using Action = Unity.Behavior.Action;
 using Unity.Properties;
 using UnityEngine.AI;
+using UnityEngine.EventSystems;
 
 /// <summary>
 /// 敵人行為控制 - Jerry0401
 /// </summary>
 ///
 [Serializable, GeneratePropertyBag]
-[NodeDescription(name: "Enemy Navigation", story: "[Enemy] navigates to [Target]", category: "Action", id: "e475d918b5e278090a578e4d8d6ed420")]
+[NodeDescription(name: "Enemy Navigation", story: "[Enemy] navigates to [Target]", category: "Action",
+    id: "e475d918b5e278090a578e4d8d6ed420")]
 public partial class EnemyNavigationAction : Action
 {
     [SerializeReference] public BlackboardVariable<GameObject> Enemy;
@@ -20,52 +22,82 @@ public partial class EnemyNavigationAction : Action
     private Vector3Int currentCell;
     private Vector3Int targetCurrentCell;
     private Grid grid;
+    private bool isAlert;
+    private List<Vector3Int> moveDirections;
 
     protected override Status OnStart()
     {
-        // Debug.Log(Enemy.Value.name + "activate");
+        moveDirections = new List<Vector3Int>()
+            { Vector3Int.forward, Vector3Int.back, Vector3Int.right, Vector3Int.left, Vector3Int.zero };
+        isAlert = Enemy.Value.GetComponent<EnemyScript>().IsAlert;
         grid = GameObject.FindWithTag("MoveGrid").GetComponent<Grid>();
-        agent = Enemy.Value.GetComponent<NavMeshAgent>(); 
+        agent = Enemy.Value.GetComponent<NavMeshAgent>();
         currentCell = grid.WorldToCell(Enemy.Value.transform.position); // 定義敵人所在的網格座標
         targetCurrentCell = grid.WorldToCell(Target.Value.transform.position); // 定義玩家所在的網格座標
         
         // 計算敵人的下一步該怎麼走
-        // 繪製到玩家的最短路徑
-        NavMeshPath path = new NavMeshPath();
-        if (!NavMesh.CalculatePath(Enemy.Value.transform.position, Target.Value.transform.position, NavMesh.AllAreas, path))
+        if (!isAlert)
         {
-            return Status.Failure;
+            List<Vector3Int> moveDirectionsTmp = new List<Vector3Int>(moveDirections);
+            while (moveDirectionsTmp.Count > 0)
+            {
+                int randomIndex = UnityEngine.Random.Range(0, moveDirectionsTmp.Count);
+                Vector3Int randomDirection = moveDirections[randomIndex];
+                Vector3 moveTo = (grid.GetCellCenterWorld(currentCell + randomDirection));
+                // Debug.Log("Move to : " + moveTo);
+                NavMeshPath path = new NavMeshPath();
+                if (NavMesh.CalculatePath(Enemy.Value.transform.position, moveTo, NavMesh.AllAreas, path))
+                {
+                    if (path.status == NavMeshPathStatus.PathComplete)
+                    {
+                        agent.SetPath(path); // 移動到目的地
+                        break;
+                    }
+                }
+                moveDirectionsTmp.Remove(moveDirectionsTmp[randomIndex]);
+            }
         }
-        Vector3[] corners = path.corners; // 儲存路徑的轉折點
-        Vector3 moveTo;
-        
-        if (corners != null && corners.Length > 1)
+        else
         {
-            Vector3Int bestDir = new Vector3Int();
-            Vector3 dir = corners[1] - corners[0]; // 只看出發點與第一個轉折點的向量
-            dir.y = 0;
-
-            Vector2 flatDir = new Vector2(dir.x, dir.z).normalized;
-            // 確認移動方向 (上下左右)
-            if (Mathf.Abs(flatDir.x) > Mathf.Abs(flatDir.y))
-            {
-                bestDir = flatDir.x > 0 ? Vector3Int.right : Vector3Int.left;
-            }
-            else
-            {
-                bestDir = flatDir.y > 0 ? Vector3Int.forward : Vector3Int.back;
-            }
-            moveTo = (grid.GetCellCenterWorld(currentCell + bestDir)); // 以網格座標中心轉換為世界座標
-            // 繪製到下一格的最短路徑
-            NavMeshPath finalPath = new NavMeshPath();
-            if (!NavMesh.CalculatePath(Enemy.Value.transform.position, moveTo, NavMesh.AllAreas, finalPath))
+            // 繪製到玩家的最短路徑
+            NavMeshPath path = new NavMeshPath();
+            if (!NavMesh.CalculatePath(Enemy.Value.transform.position, Target.Value.transform.position, NavMesh.AllAreas, path))
             {
                 return Status.Failure;
             }
-            agent.SetPath(finalPath); // 移動到目的地
+            
+            Vector3[] corners = path.corners; // 儲存路徑的轉折點
+            if (corners != null && corners.Length > 1)
+            {
+                Vector3Int bestDir = new Vector3Int();
+                Vector3 dir = corners[1] - corners[0]; // 只看出發點與第一個轉折點的向量
+                dir.y = 0;
+
+                Vector2 flatDir = new Vector2(dir.x, dir.z).normalized;
+                // 確認移動方向 (上下左右)
+                if (Mathf.Abs(flatDir.x) > Mathf.Abs(flatDir.y))
+                {
+                    bestDir = flatDir.x > 0 ? Vector3Int.right : Vector3Int.left;
+                }
+                else
+                {
+                    bestDir = flatDir.y > 0 ? Vector3Int.forward : Vector3Int.back;
+                }
+
+                Vector3 moveTo = (grid.GetCellCenterWorld(currentCell + bestDir)); // 以網格座標中心轉換為世界座標
+                // 繪製到下一格的最短路徑
+                NavMeshPath finalPath = new NavMeshPath();
+                if (!NavMesh.CalculatePath(Enemy.Value.transform.position, moveTo, NavMesh.AllAreas, finalPath))
+                {
+                    return Status.Failure;
+                }
+
+                if (path.status == NavMeshPathStatus.PathComplete)
+                {
+                    agent.SetPath(finalPath); // 移動到目的地
+                }
+            }
         }
-        
         return Status.Success;
     }
-    
 }

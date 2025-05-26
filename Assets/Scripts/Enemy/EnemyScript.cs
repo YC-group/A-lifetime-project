@@ -4,7 +4,8 @@ using UnityEngine.InputSystem;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-
+using Unity.AI.Navigation;
+using UnityEngine.AI;
 
 
 public class EnemyScript : MonoBehaviour
@@ -13,7 +14,7 @@ public class EnemyScript : MonoBehaviour
     [SerializeField] private Grid grid;
     private Vector2 moveVector;
     private Vector3Int currentCell;
-    private bool isAlert = false;
+    public bool IsAlert {get; set;}
 
     [Header("視野高度")]
     public float eyeHeight = 1.5f;                 // 射線發射高度
@@ -32,32 +33,41 @@ public class EnemyScript : MonoBehaviour
     public float viewRadiusAlert = 10f;                // 偵測半徑
     [Range(0f, 360f)]
     public float viewAngleAlert = 360f;                // 偵測角度
-
-
+    
     private Transform player;
-
+    private NavMeshAgent agent;
 
     void Start()
     {
-        grid = GameObject.FindWithTag("MoveGrid").GetComponent<Grid>();
-        currentCell = grid.WorldToCell(transform.position);
-        transform.position = grid.GetCellCenterWorld(currentCell);
+        EnemyDataInitializer();
 
         GameObject go = GameObject.FindWithTag("Player"); // 假設玩家是 Player tag
         if (go != null) player = go.transform;
     }
-
-
     void Update()
     {
         if (DetectPlayer())
         {
             DetectAlert();
-            print("偵測到玩家");
+            Debug.Log("偵測到玩家");
         }
     }
 
-    bool DetectPlayer()
+    private void EnemyDataInitializer()
+    {
+        IsAlert = false;
+        // 設定移動網格
+        grid = GameObject.FindWithTag("MoveGrid").GetComponent<Grid>();
+        currentCell = grid.WorldToCell(transform.position);
+        transform.position = grid.GetCellCenterWorld(currentCell);
+        // 設定移動速度與加速度
+        agent = gameObject.GetComponent<NavMeshAgent>();
+        agent.speed = enemySO.speed;
+        agent.acceleration = enemySO.acceleration;
+        agent.angularSpeed = enemySO.angularSpeed;
+    }
+
+    public bool DetectPlayer()
     {
         if (player == null)
         {
@@ -77,8 +87,8 @@ public class EnemyScript : MonoBehaviour
         bool inForward = distanceToPlayer <= viewRadiusForward && angle <= viewAngleForward / 2f;
         bool inBack = distanceToPlayer <= viewRadiusBack && angle <= viewAngleBack / 2f;
         bool inAlert = distanceToPlayer <= viewRadiusAlert && angle <= viewAngleAlert / 2f;
-        if (!isAlert && !(inForward || inBack)) { return false; }
-        else if (isAlert && !inAlert) { return false; }
+        if (!IsAlert && !(inForward || inBack)) { return false; }
+        else if (IsAlert && !inAlert) { return false; }
 
 
 
@@ -107,7 +117,7 @@ public class EnemyScript : MonoBehaviour
         Vector3 origin = transform.position + Vector3.up * eyeHeight;
 
         // ✅ 畫三種模式下的視野
-        if (isAlert)
+        if (IsAlert)
         {
             DrawFOV(origin, viewRadiusAlert, viewAngleAlert, Color.red);
         }
@@ -148,7 +158,7 @@ public class EnemyScript : MonoBehaviour
 
     private void DetectAlert()
     {
-        isAlert = true;
+        IsAlert = true;
     }
 
     //敵人死亡
