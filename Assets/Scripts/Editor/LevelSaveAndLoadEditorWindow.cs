@@ -153,13 +153,15 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
     private void SaveAndLoadTabGUI()
     {
         scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.ExpandHeight(true));
-                        
+        
+        /*                
         prefabName = EditorGUILayout.TextField("Prefab Name", prefabName);
 
         if (GUILayout.Button("將選取物件合併並存成prefab"))
         {
             CombineObjectsAndSaveAsPrefab(Selection.gameObjects, prefabName);
         }
+        */
 
         EditorGUILayout.Space(10);
 
@@ -198,22 +200,28 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
         EditorGUILayout.EndScrollView();
     }
 
-    public void CombineObjectsAndSaveAsPrefab(GameObject[] objects, string prefabName)
+    public GameObject CombineObjectsAndSaveAsPrefab(GameObject[] objects, string prefabName)
     {
-        if(string.IsNullOrEmpty(levelName) || string.IsNullOrEmpty(prefabName))
+        if (string.IsNullOrEmpty(levelName) || string.IsNullOrEmpty(prefabName))
         {
             Debug.LogError("合併並轉存prefab失敗，無效的levelName或是prefabName");
-            return;
+            return null;
         }
 
         string prefabPath = BASE_LEVEL_PATH + $"/{levelName}/prefabs/{prefabName}.prefab";
         string meshAssetPath = BASE_LEVEL_PATH + $"/{levelName}/prefabs/{prefabName}_mesh.asset";
 
+        Directory.CreateDirectory(Path.GetDirectoryName(meshAssetPath));
         GameObject combinedObject = CombineMeshes(objects, prefabName, meshAssetPath);
 
         AddCombinedMeshCollider(combinedObject, combinedObject.GetComponent<MeshFilter>().sharedMesh);
 
+        string firstTag = objects.Length > 0 ? objects[0].tag : "Untagged";
+        combinedObject.tag = firstTag;
+
         SaveAndLoadSystem.SaveAsPrefab(combinedObject, prefabPath);
+
+        return combinedObject;
     }
 
     public GameObject CombineMeshes(GameObject[] objects, string combinedName, string meshAssetPath)
@@ -486,11 +494,20 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
     {
         if(IsLevelNameDuplicate(levelName)) return;
 
+        string levelPath = BASE_LEVEL_PATH + $"/{levelName}/";
+        Debug.Log("關卡路徑: " + levelPath);
+        Directory.CreateDirectory(levelPath);
+
         //創建LevelData
         LevelData levelData = ScriptableObject.CreateInstance<LevelData>();
 
         //barrier資料處理
-        List<PrefabSpawnData> barriers = new List<PrefabSpawnData>();        
+        List<PrefabSpawnData> barriers = new List<PrefabSpawnData>();
+        string prefabName = $"{levelName}_barrier";
+        GameObject barrierGO = CombineObjectsAndSaveAsPrefab(barrierList.ToArray(), prefabName);
+        barriers.Add(PrefabSpawnData.MakeData(barrierGO, GetPrefab(barrierGO)));
+        
+        /*
         foreach (GameObject barrier in barrierList)
         {
             GameObject prefab = GetPrefab(barrier);
@@ -506,6 +523,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
                 return;
             }
         }
+        */
         
         //door資料處理
         List<DoorData> doors = new List<DoorData>();
@@ -559,7 +577,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
 
             //找到房間內所有的物件
             List<GameObject> foundObjects = FindObjectsInAreaWithoutCollider(minPos, maxPos);
-            Debug.Log($"Room {roomCount} 有 {foundObjects.Count} 個物件");
+            //Debug.Log($"Room {roomCount} 有 {foundObjects.Count} 個物件");
 
             //找到的物件處理
             List<PrefabSpawnData> enemies = new List<PrefabSpawnData>();
@@ -593,10 +611,10 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
                     {
                         foreach (SpawnData spawn in door.Spawns)
                         {
-                            Debug.Log(spawn.Spawnpoint+" : "+go.transform.position);
+                            //Debug.Log(spawn.Spawnpoint+" : "+go.transform.position);
                             if(spawn.Spawnpoint == go.transform.position)
                             {
-                                Debug.Log("找到spawnpoint和其對應的door");
+                                //Debug.Log("找到spawnpoint和其對應的door");
                                 spawn.RoomData = roomData;
                             }
                         }

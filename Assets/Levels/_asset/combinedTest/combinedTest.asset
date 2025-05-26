@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba56fa16497b95148b4c8e6b7084d88a, type: 3}
+  m_Name: combinedTest
+  m_EditorClassIdentifier: 
+  barriers:
+  - prefab: {fileID: 8140953363488749422, guid: 6268d0009535fe24781cfa49b64ea2f0, type: 3}
+    position: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0, w: 1}
+    scale: {x: 1, y: 1, z: 1}
+  rooms:
+  - {fileID: 11400000, guid: 6455dbf07669d014286ecd369c1f0516, type: 2}
+  - {fileID: 11400000, guid: 0889a0f7434ef8d4ca480e8c9ab758ac, type: 2}
+  - {fileID: 11400000, guid: 06373dbbb1b560042b65b5dc1f474c68, type: 2}
+  doors:
+  - psd:
+      prefab: {fileID: 467075791498425554, guid: a78c58d2ca5fdcd43927c9671f20201d, type: 3}
+      position: {x: 3, y: 1.5, z: 2}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    spawns:
+    - spawnpoint: {x: 4.5, y: 1.5, z: 4.5}
+      roomData: {fileID: 11400000, guid: 0889a0f7434ef8d4ca480e8c9ab758ac, type: 2}
+    - spawnpoint: {x: 1.5, y: 1.5, z: 1.5}
+      roomData: {fileID: 11400000, guid: 6455dbf07669d014286ecd369c1f0516, type: 2}
+  - psd:
+      prefab: {fileID: 467075791498425554, guid: a78c58d2ca5fdcd43927c9671f20201d, type: 3}
+      position: {x: 6, y: 1.5, z: 2}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    spawns:
+    - spawnpoint: {x: 4.5, y: 1.5, z: 4.5}
+      roomData: {fileID: 11400000, guid: 0889a0f7434ef8d4ca480e8c9ab758ac, type: 2}
+    - spawnpoint: {x: 7.5, y: 1.5, z: 1.5}
+      roomData: {fileID: 11400000, guid: 06373dbbb1b560042b65b5dc1f474c68, type: 2}
+  startRoomData: {fileID: 0}
+  startSpawnpoint: {x: 0, y: 0, z: 0}
