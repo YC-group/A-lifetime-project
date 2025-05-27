@@ -18,3 +18,4 @@ MonoBehaviour:
   specialAct: 0
   speed: 500
   acceleration: 1000
+  angularSpeed: 3000

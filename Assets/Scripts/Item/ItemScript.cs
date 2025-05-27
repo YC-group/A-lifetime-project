@@ -1,41 +1,36 @@
 using UnityEngine;
-
 /// <summary>
-/// ¹D¨ã¸}¥» - mobias
+/// ç‰©å“å…±é€šå±¬æ€§è…³æœ¬ - Jerry0401
 /// </summary>
-
-public class ItemScript : MonoBehaviour
+public abstract class ItemScript : MonoBehaviour
 {
-    [SerializeField] private ItemData itemSO;
-    private Transform player;
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-
-        GameObject go = GameObject.FindWithTag("Player"); // °²³]ª±®a¬O Player tag
-        if (go != null) player = go.transform;
-
-    }
-
-    // Update is called once per frame
-    void Update()
+    public ItemType itemType;
+    public string itemName;
+    public string itemDescription;
+    public int damage;
+    public float range;
+    public virtual void AddItemToPocket() // å°‡ç‰©å“åŠ å…¥å£è¢‹
     {
         
     }
 
-    public void deleteItem()
+    public virtual void RemoveItemFromPocket() // å°‡ç‰©å“å¾å£è¢‹åˆªé™¤
     {
-        Destroy(gameObject); // ¾P·´¦Û¨­¹D¨ãª«¥ó
+        
     }
 
-    public void itemEffect()
+    public virtual void DropItem() // æ‰è½ç‰©å“
     {
-
+        
     }
 
-    public void addItemtoPocket(GameObject player)
+    public virtual void ItemInitailize(ItemData itemSO) // åˆå§‹åŒ–
     {
-
+        itemType = itemSO.itemType;
+        itemName = itemSO.name;
+        itemDescription = itemSO.itemDescription;
+        damage = itemSO.damage;
+        range = itemSO.range;
     }
+    public abstract void Attack(); // è®“å­ç‰©ä»¶å¯¦ä½œæ”»æ“Š
 }
