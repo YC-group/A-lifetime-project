@@ -2,7 +2,7 @@ using UnityEngine;
 /// <summary>
 /// 近戰武器腳本 - Jerry0401
 /// </summary>
-public abstract class MeleeWeapon : ItemScript
+public class MeleeWeapon : ItemScript
 {
     public ItemData weaponSO;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -16,4 +16,10 @@ public abstract class MeleeWeapon : ItemScript
     {
         
     }
+
+    public override void Attack()
+    {
+        throw new System.NotImplementedException();
+    }
+    
 }

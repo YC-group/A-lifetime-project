@@ -20,6 +20,7 @@ public class PlayerScript : MonoBehaviour
     public bool FREEMOVE = false; // 測試移動用，會讓回合維持在玩家回合
     private InputSystemActions inputActions; // InputSystem 的 Action map
     private GameManager gameManager;
+    public List<ItemScript> PocketList{get; set;}
 
     private void Start()
     {
@@ -27,6 +28,7 @@ public class PlayerScript : MonoBehaviour
         grid = GameObject.FindWithTag("MoveGrid").GetComponent<Grid>();
         currentCell = grid.WorldToCell(transform.position);
         transform.position = grid.GetCellCenterWorld(currentCell);
+        PocketList = new List<ItemScript>();
         // 註冊移動行為
         inputActions = new InputSystemActions();
         inputActions.Player.Move.performed += Move;
@@ -129,9 +131,6 @@ public class PlayerScript : MonoBehaviour
 
         for (int i = 1; i <= 2; i++)
         {
-
-            
-
             // ========= moveX: 格子中心 OverlapBox =========
             Vector3Int checkCell = currentCell + forwardGridDir * i;
             Vector3 worldPos = grid.GetCellCenterWorld(checkCell)+Vector3.up* overlapDetectionBoxYOffset;

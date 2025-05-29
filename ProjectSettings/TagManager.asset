@@ -15,6 +15,7 @@ TagManager:
   - Spawnpoint
   - FakeBarrier
   - GameManager
+  - LevelScene
   layers:
   - Default
   - TransparentFX
