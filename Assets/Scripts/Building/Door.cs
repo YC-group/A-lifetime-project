@@ -5,11 +5,38 @@ using UnityEngine;
 /// </summary>
 public class Door : MonoBehaviour
 {
-    [SerializeField] private List<SpawnData> spawns;
+    [SerializeField] private List<SpawnSave> spawns;
 
-    public List<SpawnData> Spawns
+    public void SetSpawns(List<SpawnData> spawnDatas)
     {
-        get => spawns;
-        set => spawns = value;
+        foreach (SpawnData spawnData in spawnDatas)
+        {
+            this.spawns.Add(DataConverter.ConvertToSpawnSave(spawnData));
+        }
     }
+
+    public void SetSpawns(List<SpawnSave> spawnSaves)
+    {
+        this.spawns = spawnSaves;
+    }
+
+    public void AddSpawn(SpawnSave spawnSave)
+    {
+        this.spawns.Add(spawnSave);
+    }
+
+#if UNITY_EDITOR
+        
+    public List<SpawnData> GetSpawnDatas()
+    {
+        List<SpawnData> spawnDatas = new List<SpawnData>();
+
+        foreach(SpawnSave spawnSave in this.spawns)
+        {
+            spawnDatas.Add(DataConverter.ConvertToSpawnData(spawnSave));
+        }
+
+        return spawnDatas;
+    }
+#endif
 }

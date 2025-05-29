@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using Codice.Client.BaseCommands;
 using UnityEditor;
+using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 /// <summary>
@@ -207,6 +208,11 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
             Debug.LogError("合併並轉存prefab失敗，無效的levelName或是prefabName");
             return null;
         }
+        if(objects.Length <= 0)
+        {
+            Debug.LogError("合併並轉存prefab失敗，未傳入任何物件");
+            return null;
+        }
 
         string prefabPath = BASE_LEVEL_PATH + $"/{levelName}/prefabs/{prefabName}.prefab";
         string meshAssetPath = BASE_LEVEL_PATH + $"/{levelName}/prefabs/{prefabName}_mesh.asset";
@@ -218,6 +224,14 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
 
         string firstTag = objects.Length > 0 ? objects[0].tag : "Untagged";
         combinedObject.tag = firstTag;
+
+        Building buildingComponent = objects[0].GetComponent<Building>();
+        if (buildingComponent != null)
+        {
+            Debug.Log("取得Building component");
+            ComponentUtility.CopyComponent(buildingComponent);
+            ComponentUtility.PasteComponentAsNew(combinedObject);
+        }
 
         SaveAndLoadSystem.SaveAsPrefab(combinedObject, prefabPath);
 
@@ -470,7 +484,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
         foreach (DoorData doorData in levelData.Doors)
         {
             GameObject door = doorData.Psd.Spawn();
-            door.GetComponent<Door>().Spawns = doorData.Spawns;
+            door.GetComponent<Door>().SetSpawns(doorData.Spawns);
         }
         //生成所有房間(正式遊戲應為到房間才生成，如果效能足夠就沒差)
         foreach (RoomData roomData in levelData.Rooms)
@@ -536,7 +550,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
                 if (doorComponent != null)
                 {
                     PrefabSpawnData psd = PrefabSpawnData.MakeData(door, prefab);
-                    List<SpawnData> spawns = doorComponent.Spawns;
+                    List<SpawnData> spawns = doorComponent.GetSpawnDatas();
                     DoorData doorData = new DoorData(psd, spawns);
 
                     doors.Add(doorData);
@@ -606,7 +620,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
                 }
                 else if (go.CompareTag("Spawnpoint"))
                 {
-                    //去找門
+                    //將門和重生點連結
                     foreach (DoorData door in doors)
                     {
                         foreach (SpawnData spawn in door.Spawns)
@@ -667,6 +681,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
         string levelDataPath = BASE_LEVEL_PATH + $"/{levelName}/{levelName}.asset";
         SaveAndLoadSystem.SaveAsAsset<LevelData>(levelData, levelDataPath);
 
+        ClearAllData();
     }
 
     public List<GameObject> FindObjectsInAreaWithoutCollider(Vector3 pointA, Vector3 pointB)

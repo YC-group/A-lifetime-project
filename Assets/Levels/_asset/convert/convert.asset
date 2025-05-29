@@ -10,28 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ba56fa16497b95148b4c8e6b7084d88a, type: 3}
-  m_Name: combinedTest
+  m_Name: convert
   m_EditorClassIdentifier: 
   barriers:
-  - prefab: {fileID: 8140953363488749422, guid: 6268d0009535fe24781cfa49b64ea2f0, type: 3}
+  - prefab: {fileID: 1222085046408388479, guid: 60e8480464491ab4190781d8a6610c69, type: 3}
     position: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0, w: 1}
     scale: {x: 1, y: 1, z: 1}
   rooms:
-  - {fileID: 11400000, guid: 6455dbf07669d014286ecd369c1f0516, type: 2}
-  - {fileID: 11400000, guid: 0889a0f7434ef8d4ca480e8c9ab758ac, type: 2}
-  - {fileID: 11400000, guid: 06373dbbb1b560042b65b5dc1f474c68, type: 2}
+  - {fileID: 11400000, guid: 49d16d8642b80344aa1b9464e7e87970, type: 2}
+  - {fileID: 11400000, guid: 65c1c8319c32d1b48881632dd27f44f9, type: 2}
+  - {fileID: 11400000, guid: 4231b9546b4a9764782a3a1984e61cac, type: 2}
   doors:
-  - psd:
-      prefab: {fileID: 467075791498425554, guid: a78c58d2ca5fdcd43927c9671f20201d, type: 3}
-      position: {x: 3, y: 1.5, z: 2}
-      rotation: {x: 0, y: -0, z: -0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    spawns:
-    - spawnpoint: {x: 4.5, y: 1.5, z: 4.5}
-      roomData: {fileID: 11400000, guid: 0889a0f7434ef8d4ca480e8c9ab758ac, type: 2}
-    - spawnpoint: {x: 1.5, y: 1.5, z: 1.5}
-      roomData: {fileID: 11400000, guid: 6455dbf07669d014286ecd369c1f0516, type: 2}
   - psd:
       prefab: {fileID: 467075791498425554, guid: a78c58d2ca5fdcd43927c9671f20201d, type: 3}
       position: {x: 6, y: 1.5, z: 2}
@@ -39,8 +29,18 @@ MonoBehaviour:
       scale: {x: 1, y: 1, z: 1}
     spawns:
     - spawnpoint: {x: 4.5, y: 1.5, z: 4.5}
-      roomData: {fileID: 11400000, guid: 0889a0f7434ef8d4ca480e8c9ab758ac, type: 2}
+      roomData: {fileID: 11400000, guid: 65c1c8319c32d1b48881632dd27f44f9, type: 2}
     - spawnpoint: {x: 7.5, y: 1.5, z: 1.5}
-      roomData: {fileID: 11400000, guid: 06373dbbb1b560042b65b5dc1f474c68, type: 2}
-  startRoomData: {fileID: 0}
-  startSpawnpoint: {x: 0, y: 0, z: 0}
+      roomData: {fileID: 11400000, guid: 4231b9546b4a9764782a3a1984e61cac, type: 2}
+  - psd:
+      prefab: {fileID: 467075791498425554, guid: a78c58d2ca5fdcd43927c9671f20201d, type: 3}
+      position: {x: 3, y: 1.5, z: 2}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    spawns:
+    - spawnpoint: {x: 1.5, y: 1.5, z: 1.5}
+      roomData: {fileID: 11400000, guid: 49d16d8642b80344aa1b9464e7e87970, type: 2}
+    - spawnpoint: {x: 4.5, y: 1.5, z: 4.5}
+      roomData: {fileID: 11400000, guid: 65c1c8319c32d1b48881632dd27f44f9, type: 2}
+  startRoomData: {fileID: 11400000, guid: 49d16d8642b80344aa1b9464e7e87970, type: 2}
+  startSpawnpoint: {x: 1.5, y: 1.5, z: 1.5}

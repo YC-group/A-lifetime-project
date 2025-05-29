@@ -2,12 +2,13 @@
 using System.IO;
 using UnityEditor;
 using Newtonsoft.Json;
+using Unity.VisualScripting;
 /// <summary>
 /// 存讀檔工具 - js5515
 /// 存讀JSON檔
 /// 存讀asset檔
 /// </summary>
-public class SaveAndLoadSystem
+public static class SaveAndLoadSystem
 {
     public static void SaveAsJSON<T>(T t, string path)
     {
@@ -102,6 +103,48 @@ public class SaveAndLoadSystem
             Debug.LogWarning($"找不到 asset 檔案！(路徑: {path})");
         }
         return t;
+    }
+
+    public static T LoadByName<T>(string fileNameWithoutExtension) where T : ScriptableObject
+    {
+        string[] guids = AssetDatabase.FindAssets($"t:{typeof(T).Name}");
+
+        foreach (string guid in guids)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            string assetName = Path.GetFileNameWithoutExtension(path);
+
+            if (assetName == fileNameWithoutExtension)
+            {
+                return LoadFromAsset<T>(path);
+            }
+        }
+
+        Debug.LogWarning($"找不到名稱為 {fileNameWithoutExtension} 的 {typeof(T).Name}");
+        return null;
+    }
+
+    public static string GetAssetFileName(Object asset)
+    {
+        if (asset == null)
+            return null;
+
+        // 取得資源的完整路徑，例如 "Assets/Data/Rooms/Room_01.asset"
+        string path = AssetDatabase.GetAssetPath(asset);
+        if (string.IsNullOrEmpty(path))
+            return null;
+
+        // 只取檔名部分，例如 "Room_01.asset"
+        return Path.GetFileName(path);
+    }
+
+    public static string GetAssetFileNameWithoutExtension(Object asset)
+    {
+        string filename = GetAssetFileName(asset);
+        if (filename == null) return null;
+
+        // 去掉副檔名，例如 "Room_01"
+        return Path.GetFileNameWithoutExtension(filename);
     }
 #endif
 }

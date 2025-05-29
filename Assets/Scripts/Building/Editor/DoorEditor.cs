@@ -1,4 +1,6 @@
-﻿using UnityEditor;
+﻿using Unity.VisualScripting;
+using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 [CustomEditor(typeof(Door))]
 public class DoorEditor : Editor
@@ -18,10 +20,12 @@ public class DoorEditor : Editor
         spawnpointObject = (GameObject)EditorGUILayout.ObjectField("新增重生點物件在這裡", spawnpointObject, typeof(GameObject), true);
         if (spawnpointObject != null)
         {
-            SpawnData spawnData = new SpawnData();
-            spawnData.Spawnpoint = spawnpointObject.transform.position;
-            door.Spawns.Add(spawnData);
+            SpawnSave spawnSave = new SpawnSave();
+            spawnSave.Spawnpoint = spawnpointObject.transform.position;
+            door.AddSpawn(spawnSave);
             spawnpointObject = null;
+            EditorUtility.SetDirty(door);
+            EditorSceneManager.MarkSceneDirty(door.gameObject.scene);
         }
 
         serializedObject.ApplyModifiedProperties();
