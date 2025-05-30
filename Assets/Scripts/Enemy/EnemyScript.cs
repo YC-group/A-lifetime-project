@@ -49,7 +49,7 @@ public class EnemyScript : MonoBehaviour
         if (DetectPlayer())
         {
             DetectAlert();
-            Debug.Log("偵測到玩家");
+            //Debug.Log("偵測到玩家");
         }
     }
 

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
@@ -119,10 +119,19 @@ public class PlayerScript : MonoBehaviour
                 { "enemy2", new List<EnemyScript>() }
             };
 
+        Dictionary<string, List<ItemScript>> itemDict = new Dictionary<string, List<ItemScript>>
+            {
+                { "itemMove1", new List<ItemScript>() },
+                { "itemMove2", new List<ItemScript>() },
+                { "itemBuild1", new List<ItemScript>() },
+                { "itemBuild2", new List<ItemScript>() },
+            };
+
         Dictionary<string, object> result = new()
             {
                 { "buildDict", buildDict },
-                { "enemyDict", enemyDict }
+                { "enemyDict", enemyDict },
+                { "itemDict", itemDict }
             };
 
         // ✅ 取得方向（用 moveVector）與 normalized 方向（偏移用）
@@ -144,16 +153,22 @@ public class PlayerScript : MonoBehaviour
                     buildDict[$"move{i}"].Add(b);
                 }
 
-                //EnemyScript enemy = hit.GetComponent<EnemyScript>();
-                //if (enemy != null)
-                //{
-                //    enemyDict[$"enemy{i}"].Add(enemy);
-                //}
+                EnemyScript enemy = hit.GetComponent<EnemyScript>();
+                if (enemy != null)
+                {
+                    enemyDict[$"enemy{i}"].Add(enemy);
+                }
+
+                ItemScript item = hit.GetComponent<ItemScript>();
+                if (item != null)
+                {
+                    itemDict[$"itemMove{i}"].Add(item);
+                }
 
             }
 
             // ========= buildX: 偏移位置偵測 =========
-            Vector3 detectCenter = worldPos - forwardDir * 1.5f + Vector3.up* overlapDetectionBoxYOffset;
+            Vector3 detectCenter = worldPos - forwardDir * 1.5f + Vector3.up * overlapDetectionBoxYOffset;
             Quaternion rotation = Quaternion.LookRotation(forwardDir);
 
             Collider[] hitsB = Physics.OverlapBox(detectCenter, buildDetectionBox, rotation);
@@ -164,22 +179,15 @@ public class PlayerScript : MonoBehaviour
                 {
                     buildDict[$"build{i}"].Add(b);
                 }
+
+                ItemScript item = hit.GetComponent<ItemScript>();
+                if (item != null)
+                {
+                    itemDict[$"itemBuild{i}"].Add(item);
+                }
+
             }
 
-            // --------- ✅搜尋沒有 Collider 的敵人（用 Tag） ----------
-            GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
-            foreach (var enemyObj in enemies)
-            {
-                float dist = Vector3.Distance(enemyObj.transform.position, worldPos);
-                if (dist < 0.9f) // 判定範圍可依格子大小調整
-                {
-                    EnemyScript e = enemyObj.GetComponent<EnemyScript>();
-                    if (e != null && !enemyDict[$"enemy{i}"].Contains(e))
-                    {
-                        enemyDict[$"enemy{i}"].Add(e);
-                    }
-                }
-            }
         }   
 
     return result;
@@ -200,7 +208,7 @@ public class PlayerScript : MonoBehaviour
         Vector3 forwardDir = new Vector3(forwardGridDir.x, 0, forwardGridDir.z).normalized;
 
         // --------- 🔴 原本前方兩格的紅色格子 ----------
-        Gizmos.color = Color.red;
+        Gizmos.color = new Color(1f, 0f, 0f, 0.5f);
 
         for (int i = 1; i <= 2; i++)
         {
@@ -227,7 +235,7 @@ public class PlayerScript : MonoBehaviour
             Quaternion rotation = Quaternion.LookRotation(forwardDir);
 
             // 畫出藍色框
-            Gizmos.color = Color.blue;
+            Gizmos.color = new Color(0f, 0f, 1f, 0.5f);
             Gizmos.matrix = Matrix4x4.TRS(detectCenter, rotation, Vector3.one);
             Gizmos.DrawCube(Vector3.zero, buildDetectionBox);
 
