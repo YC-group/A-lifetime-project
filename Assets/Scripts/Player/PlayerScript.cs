@@ -98,11 +98,11 @@ public class PlayerScript : MonoBehaviour
     /// <summary>
     /// 偵測角色前方兩格內的 Building 物件（每格一組）- mobias
     /// </summary>
-    [SerializeField] public Vector3 buildDetectionBox = new Vector3(0.9f, 0.1f, 0.8f) ;
-    [SerializeField] public Vector3 moveDetectionBox = new Vector3(0.9f, 0.1f, 0.9f) ;
+    [SerializeField] public Vector3 buildDetectionBox = new Vector3(0.9f, 1.5f, 0.8f) ;
+    [SerializeField] public Vector3 moveDetectionBox = new Vector3(0.9f, 1.5f, 0.9f) ;
 
     [Range(0f, 3f)]
-    [SerializeField] float overlapDetectionBoxYOffset = 0.5f;
+    [SerializeField] float overlapDetectionBoxYOffset = 2f;
     private Dictionary<string, object> DetectBuildingsAndEnemies() //道具偵測可由此修改
     {
         Dictionary<string, List<Building>> buildDict = new Dictionary<string, List<Building>>
