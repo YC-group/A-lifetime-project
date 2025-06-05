@@ -5857,6 +5857,7 @@ GameObject:
   - component: {fileID: 444704358}
   - component: {fileID: 444704357}
   - component: {fileID: 444704356}
+  - component: {fileID: 444704363}
   m_Layer: 0
   m_Name: TestEnemy(Clone) (1)
   m_TagString: Enemy
@@ -6016,6 +6017,27 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &444704363
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 444704355}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.5, y: 2.5, z: 1.5}
+  m_Center: {x: 0, y: 1.25, z: 0}
 --- !u!1 &445836115
 GameObject:
   m_ObjectHideFlags: 0
@@ -6519,6 +6541,7 @@ GameObject:
   - component: {fileID: 466146492}
   - component: {fileID: 466146493}
   - component: {fileID: 466146494}
+  - component: {fileID: 466146495}
   m_Layer: 0
   m_Name: TestEnemy(Clone)
   m_TagString: Enemy
@@ -6678,6 +6701,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsPathVisualize: 1
+--- !u!65 &466146495
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 466146487}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.5, y: 2.5, z: 1.5}
+  m_Center: {x: 0, y: 1.25, z: 0}
 --- !u!1 &466187227
 GameObject:
   m_ObjectHideFlags: 0
@@ -28453,9 +28497,9 @@ MonoBehaviour:
   playerSO: {fileID: 11400000, guid: 392ebe829a483cf4187e06ec49953088, type: 2}
   grid: {fileID: 54626892}
   FREEMOVE: 1
-  buildDetectionBox: {x: 0.9, y: 0.1, z: 0.8}
-  moveDetectionBox: {x: 0.9, y: 0.1, z: 0.9}
-  overlapDetectionBoxYOffset: 0.5
+  buildDetectionBox: {x: 0.9, y: 1.5, z: 0.8}
+  moveDetectionBox: {x: 0.9, y: 1.5, z: 0.9}
+  overlapDetectionBoxYOffset: 2
 --- !u!1 &1973275019
 GameObject:
   m_ObjectHideFlags: 0
@@ -29080,6 +29124,7 @@ GameObject:
   - component: {fileID: 2034462503}
   - component: {fileID: 2034462504}
   - component: {fileID: 2034462505}
+  - component: {fileID: 2034462506}
   m_Layer: 0
   m_Name: TestEnemy(Clone)
   m_TagString: Enemy
@@ -29226,6 +29271,27 @@ NavMeshAgent:
   m_BaseOffset: 2.5
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!65 &2034462506
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2034462499}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.5, y: 2.5, z: 1.5}
+  m_Center: {x: 0, y: 1.25, z: 0}
 --- !u!1 &2040955353
 GameObject:
   m_ObjectHideFlags: 0
