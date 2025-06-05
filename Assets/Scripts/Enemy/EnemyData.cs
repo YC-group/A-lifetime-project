@@ -18,5 +18,6 @@ public class EnemyData : ScriptableObject
     public float acceleration; // unit^2 / second
     [Tooltip("Angular speed in NavMeshAgent , deg / sec")]
     public float angularSpeed; // deg / sec
+    public int movePriority;
 }
 

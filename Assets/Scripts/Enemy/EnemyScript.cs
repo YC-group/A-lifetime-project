@@ -7,13 +7,21 @@ using System.Linq;
 using Unity.AI.Navigation;
 using UnityEngine.AI;
 
-
+public enum MoveMode
+{
+    UpLeftDownRight,
+    DownRightUpLeft
+}
 public class EnemyScript : MonoBehaviour
 {
     [SerializeField] public EnemyData enemySO;
     [SerializeField] private Grid grid;
+    [SerializeField] public int movePriority;
+    [SerializeField] public MoveMode moveMode;
+    private GameObject gameManager;
     private Vector2 moveVector;
     private Vector3Int currentCell;
+    private NavMeshPath path;
     public bool IsAlert {get; set;}
 
     [Header("視野高度")]
@@ -56,6 +64,8 @@ public class EnemyScript : MonoBehaviour
     private void EnemyDataInitializer()
     {
         IsAlert = false;
+        gameManager = GameObject.FindWithTag("GameManager");
+        movePriority = enemySO.movePriority;
         // 設定移動網格
         grid = GameObject.FindWithTag("MoveGrid").GetComponent<Grid>();
         currentCell = grid.WorldToCell(transform.position);
@@ -166,6 +176,16 @@ public class EnemyScript : MonoBehaviour
     {
         Debug.Log($"{enemySO.enemyName} 被殺了！");
         Destroy(gameObject);
+    }
+
+    public void SetPath(NavMeshPath path)
+    {
+        this.path = path;
+    }
+
+    public NavMeshPath GetPath()
+    {
+        return this.path;
     }
 }
 

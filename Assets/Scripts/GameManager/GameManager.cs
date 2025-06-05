@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Unity.Behavior;
@@ -64,7 +65,7 @@ public class GameManager : MonoBehaviour
     /// 回合重新開始
     /// </summary>
     /// <returns>bool</returns>
-    private bool RoundReset() // 回合重新開始
+    public bool RoundReset() // 回合重新開始
     {
         currentRound = RoundState.PlayerTurn;
         Debug.Log(currentRound);
@@ -86,4 +87,5 @@ public class GameManager : MonoBehaviour
     {
         return GameObject.FindGameObjectsWithTag("Enemy").Length;
     }
+    
 }

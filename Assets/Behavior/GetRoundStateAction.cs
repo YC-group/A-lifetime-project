@@ -15,7 +15,7 @@ using UnityEditor.UI;
 public partial class GetRoundStateAction : Action
 {
     [SerializeReference] public BlackboardVariable<RoundState> RoundState;
-    [SerializeReference] public BlackboardVariable<GameManager> GameManager;
+    [SerializeReference] public BlackboardVariable<GameObject> GameManager;
     protected override Status OnStart()
     {
         return Status.Running;
@@ -23,7 +23,7 @@ public partial class GetRoundStateAction : Action
 
     protected override Status OnUpdate()
     {
-        RoundState.Value = GameManager.Value.GetCurrentRound();
+        RoundState.Value = GameManager.Value.GetComponent<GameManager>().GetCurrentRound();
         return RoundState == null ? Status.Failure : Status.Success;
     }
 

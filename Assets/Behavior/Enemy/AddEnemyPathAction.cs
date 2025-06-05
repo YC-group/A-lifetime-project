@@ -12,9 +12,8 @@ using UnityEngine.EventSystems;
 /// </summary>
 ///
 [Serializable, GeneratePropertyBag]
-[NodeDescription(name: "Enemy Navigation", story: "[Enemy] navigates to [Target]", category: "Action",
-    id: "e475d918b5e278090a578e4d8d6ed420")]
-public partial class EnemyNavigationAction : Action
+[NodeDescription(name: "Add Enemy Path", story: "[Enemy] navigates to [Target] or move", category: "Action", id: "e475d918b5e278090a578e4d8d6ed420")]
+public partial class AddEnemyPathAction : Action
 {
     [SerializeReference] public BlackboardVariable<GameObject> Enemy;
     [SerializeReference] public BlackboardVariable<GameObject> Target;
@@ -24,37 +23,44 @@ public partial class EnemyNavigationAction : Action
     private Grid grid;
     private bool isAlert;
     private List<Vector3Int> moveDirections;
+    private GameManager gameManager;
+    private EnemyActionScheduler enemyActionScheduler;
 
     protected override Status OnStart()
     {
-        moveDirections = new List<Vector3Int>()
-            { Vector3Int.forward, Vector3Int.back, Vector3Int.right, Vector3Int.left, Vector3Int.zero };
+        moveDirections = getMoveModeDirection(Enemy.Value.GetComponent<EnemyScript>().moveMode);
         isAlert = Enemy.Value.GetComponent<EnemyScript>().IsAlert;
         grid = GameObject.FindWithTag("MoveGrid").GetComponent<Grid>();
         agent = Enemy.Value.GetComponent<NavMeshAgent>();
         currentCell = grid.WorldToCell(Enemy.Value.transform.position); // 定義敵人所在的網格座標
         targetCurrentCell = grid.WorldToCell(Target.Value.transform.position); // 定義玩家所在的網格座標
+        gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
+        enemyActionScheduler = GameObject.FindWithTag("GameManager").GetComponent<EnemyActionScheduler>();
         
         // 計算敵人的下一步該怎麼走
-        if (!isAlert)
+        if (!isAlert) // 非警戒狀態
         {
             List<Vector3Int> moveDirectionsTmp = new List<Vector3Int>(moveDirections);
-            while (moveDirectionsTmp.Count > 0)
+            int moveIndex = 0;
+            while (moveIndex < 5)
             {
-                int randomIndex = UnityEngine.Random.Range(0, moveDirectionsTmp.Count);
-                Vector3Int randomDirection = moveDirections[randomIndex];
-                Vector3 moveTo = (grid.GetCellCenterWorld(currentCell + randomDirection));
+                Vector3Int direction = moveDirections[moveIndex];
+                Vector3 moveTo = (grid.GetCellCenterWorld(currentCell + direction)); // 目的地
                 // Debug.Log("Move to : " + moveTo);
                 NavMeshPath path = new NavMeshPath();
-                if (NavMesh.CalculatePath(Enemy.Value.transform.position, moveTo, NavMesh.AllAreas, path))
+                if (NavMesh.CalculatePath(Enemy.Value.transform.position, moveTo, NavMesh.AllAreas, path)) // 計算路徑
                 {
-                    if (path.status == NavMeshPathStatus.PathComplete)
-                    {
-                        agent.SetPath(path); // 移動到目的地
+                    if (path.status == NavMeshPathStatus.PathComplete && !enemyActionScheduler.EnemyNextPositions.ContainsKey(Enemy.Value))
+                    {       
+                        enemyActionScheduler.EnemyNextPositions.Add(Enemy.Value, moveTo);// 加入到移動陣列
+                        Enemy.Value.GetComponent<EnemyScript>().SetPath(path); // 暫存路徑
                         break;
+                        // else 做其他行為
+                        // agent.SetPath(path); // 移動到目的地
+                        // break;
                     }
                 }
-                moveDirectionsTmp.Remove(moveDirectionsTmp[randomIndex]);
+                moveIndex++;
             }
         }
         else
@@ -91,13 +97,28 @@ public partial class EnemyNavigationAction : Action
                 {
                     return Status.Failure;
                 }
-
                 if (path.status == NavMeshPathStatus.PathComplete)
                 {
-                    agent.SetPath(finalPath); // 移動到目的地
+                    enemyActionScheduler.EnemyNextPositions.Add(Enemy.Value, moveTo);// 加入到移動陣列
+                    Enemy.Value.GetComponent<EnemyScript>().SetPath(path); // 暫存路徑
+                    // else 做其他行為
+                    // agent.SetPath(finalPath); // 移動到目的地
                 }
             }
         }
         return Status.Success;
+    }
+
+    private List<Vector3Int> getMoveModeDirection(MoveMode mode)
+    {
+        switch (mode)
+        {
+            case MoveMode.DownRightUpLeft:
+                return new List<Vector3Int>(){ Vector3Int.back, Vector3Int.right, Vector3Int.forward, Vector3Int.left, Vector3Int.zero };
+            case MoveMode.UpLeftDownRight:
+                return new List<Vector3Int>(){ Vector3Int.forward, Vector3Int.left, Vector3Int.back, Vector3Int.right, Vector3Int.zero };
+            default:
+                return new List<Vector3Int>(){ Vector3Int.back, Vector3Int.right, Vector3Int.forward, Vector3Int.left, Vector3Int.zero };
+        }
     }
 }

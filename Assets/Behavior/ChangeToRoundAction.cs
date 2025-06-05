@@ -15,14 +15,14 @@ using Random = System.Random;
 public partial class ChangeToRoundAction : Action
 {
     [SerializeReference] public BlackboardVariable<RoundState> Round;
-    [SerializeReference] public BlackboardVariable<GameManager> GameManager;
+    [SerializeReference] public BlackboardVariable<GameObject> GameManager;
     protected override Status OnStart()
     {
         if (Round == null)
         {
             return Status.Failure;
         }
-        GameManager.Value.SetCurrentRound(Round);
+        GameManager.Value.GetComponent<GameManager>().SetCurrentRound(Round);
         return Status.Success;
     }
     

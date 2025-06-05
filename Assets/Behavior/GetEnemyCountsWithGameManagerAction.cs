@@ -9,11 +9,10 @@ using Unity.Properties;
 public partial class GetEnemyCountsWithGameManagerAction : Action
 {
     [SerializeReference] public BlackboardVariable<int> EnemyCounts;
-    [SerializeReference] public BlackboardVariable<GameManager> GameManager;
-
+    [SerializeReference] public BlackboardVariable<GameObject> GameManager;
     protected override Status OnStart()
     {
-        EnemyCounts.Value = GameManager.Value.GetEnemyCounts();
+        EnemyCounts.Value = GameManager.Value.GetComponent<GameManager>().GetEnemyCounts();
         return Status.Success;
     }
     
