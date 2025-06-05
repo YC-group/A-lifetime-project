@@ -147,6 +147,7 @@ public class PlayerScript : MonoBehaviour
             Collider[] hitsA = Physics.OverlapBox(worldPos, moveDetectionBox); // 格子中心偵測
             foreach (var hit in hitsA)
             {
+                print(hit);
                 Building b = hit.GetComponent<Building>();
                 if (b != null)
                 {
@@ -281,7 +282,7 @@ public class PlayerScript : MonoBehaviour
 
     void enemyCheck(Dictionary<string, List<EnemyScript>> enemys, int step)
     {
-        if ( step == 0 ) return;
+
         foreach (var enemy in enemys[$"enemy{step}"])
         {
             print("觸發近戰攻擊條件");
