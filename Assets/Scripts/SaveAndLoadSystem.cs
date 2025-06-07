@@ -3,6 +3,7 @@ using System.IO;
 using UnityEditor;
 using Newtonsoft.Json;
 using Unity.VisualScripting;
+using UnityEditor.AddressableAssets;
 /// <summary>
 /// 存讀檔工具 - js5515
 /// 存讀JSON檔
@@ -145,6 +146,32 @@ public static class SaveAndLoadSystem
 
         // 去掉副檔名，例如 "Room_01"
         return Path.GetFileNameWithoutExtension(filename);
+    }
+
+    public static string GetPrefabAddress(GameObject prefab)
+    {
+        if (prefab == null)
+            return null;
+
+        string assetPath = AssetDatabase.GetAssetPath(prefab);
+        if (string.IsNullOrEmpty(assetPath))
+            return null;
+
+        var settings = AddressableAssetSettingsDefaultObject.Settings;
+        if (settings == null)
+        {
+            Debug.LogError("無法取得 Addressable 設定，請確認已啟用 Addressables。");
+            return null;
+        }
+
+        string guid = AssetDatabase.AssetPathToGUID(assetPath);
+        var entry = settings.FindAssetEntry(guid);
+        if (entry != null)
+        {
+            return entry.address;
+        }
+
+        return null;
     }
 #endif
 }

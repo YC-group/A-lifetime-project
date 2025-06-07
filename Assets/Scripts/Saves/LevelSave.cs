@@ -10,7 +10,7 @@ public class LevelSave
     [SerializeField] private List<PrefabSpawnSave> barriers;
     [SerializeField] private List<RoomSave> rooms;
     [SerializeField] private List<DoorSave> doors;
-    [SerializeField] private RoomSave startRoomSave;
+    [SerializeField] private string startRoomId;
     [SerializeField] private Vector3 startSpawnpoint;
 
     public List<PrefabSpawnSave> Barriers
@@ -28,10 +28,10 @@ public class LevelSave
         get => doors;
         set => doors = value;
     }
-    public RoomSave StartRoomSave
+    public string StartRoomId
     {
-        get => startRoomSave;
-        set => startRoomSave = value;
+        get => startRoomId;
+        set => startRoomId = value;
     }
     public Vector3 StartSpawnpoint
     {

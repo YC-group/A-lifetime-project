@@ -11,7 +11,28 @@ public class PrefabSpawnSave
     [SerializeField] private Vector3 position = Vector3.zero;
     [SerializeField] private Quaternion rotation = Quaternion.identity;
     [SerializeField] private Vector3 scale = Vector3.one;
+    public string PrefabAddress
+    {
+        get => prefabAddress;
+        set => prefabAddress = value;
+    }
+    public Vector3 Position
+    {
+        get => position;
+        set => position = value;
+    }
+    public Quaternion Rotation
+    {
+        get => rotation;
+        set => rotation = value;
+    }
+    public Vector3 Scale
+    {
+        get => scale;
+        set => scale = value;
+    }
 
+    public PrefabSpawnSave() { }
     public PrefabSpawnSave(string prefabAddress, Vector3 position, Quaternion rotation, Vector3 scale)
     {
         this.prefabAddress = prefabAddress;

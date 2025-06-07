@@ -21,6 +21,7 @@ public class DoorSave
         set => spawns = value;
     }
 
+    public DoorSave() { }
     public DoorSave(PrefabSpawnSave pss, List<SpawnSave> spawns)
     {
         this.pss = pss;

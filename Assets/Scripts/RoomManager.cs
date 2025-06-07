@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
+using UnityEngine;
 /// <summary>
 /// 關卡生成以及房間管理 - js5515
 /// </summary>
@@ -6,7 +8,8 @@ public class RoomManager : MonoBehaviour
 {
     public static RoomManager Instance { get; private set; }
 
-    private string currentRoomName;
+    [SerializeField] private string currentRoomId;
+    [SerializeField] private Dictionary<string, RoomSave> allRooms = new Dictionary<string, RoomSave>();
 
     private void Awake()
     {
@@ -27,8 +30,21 @@ public class RoomManager : MonoBehaviour
         }
     }
 
-    private void ChangeRoom()
+    private void ChangeRoom(string targetRoomId)
     {
 
     }
+       
+
+    private void LoadLevel(LevelSave levelSave)
+    {
+
+    }
+
+#if UNITY_EDITOR
+    private void LoadLevel(LevelData levelData)
+    {
+        LoadLevel(DataConverter.ConvertToLevelSave(levelData));
+    }
+#endif
 }

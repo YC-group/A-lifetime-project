@@ -11,6 +11,26 @@ public class PrefabSpawnData
     [SerializeField] private Vector3 position = Vector3.zero;
     [SerializeField] private Quaternion rotation = Quaternion.identity;
     [SerializeField] private Vector3 scale = Vector3.one;
+    public GameObject Prefab
+    {
+        get => prefab;
+        set => prefab = value;
+    }
+    public Vector3 Position
+    {
+        get => position;
+        set => position = value;
+    }
+    public Quaternion Rotation
+    {
+        get => rotation;
+        set => rotation = value;
+    }
+    public Vector3 Scale
+    {
+        get => scale;
+        set => scale = value;
+    }
 
     public PrefabSpawnData(GameObject prefab, Vector3 position, Quaternion rotation, Vector3 scale)
     {

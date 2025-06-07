@@ -5,9 +5,11 @@ using System.Linq;
 using System.Threading;
 using Codice.Client.BaseCommands;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.SceneManagement;
 /// <summary>
 /// 關卡存讀檔流程 - js5515
 /// </summary>
@@ -501,6 +503,8 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
                 GameObject.Instantiate(playerPrefab, levelData.StartSpawnpoint, Quaternion.identity);
             }
         }
+
+        EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
     }
 
     //關卡保存
