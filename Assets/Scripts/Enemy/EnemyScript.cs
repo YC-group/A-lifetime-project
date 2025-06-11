@@ -7,7 +7,11 @@ using System.Linq;
 using Unity.AI.Navigation;
 using UnityEngine.AI;
 
-public enum MoveMode
+/// <summary>
+/// 敵人腳本 - Jerry0401 / Mobias0315
+/// </summary>
+///
+public enum MoveMode // 行為模式列舉
 {
     UpLeftDownRight,
     DownRightUpLeft
@@ -16,14 +20,16 @@ public class EnemyScript : MonoBehaviour
 {
     [SerializeField] public EnemyData enemySO;
     [SerializeField] private Grid grid;
-    [SerializeField] public int movePriority;
-    [SerializeField] public MoveMode moveMode;
     private GameObject gameManager;
     private Vector2 moveVector;
     private Vector3Int currentCell;
     private NavMeshPath path;
-    public bool IsAlert {get; set;}
-
+    public bool isAlert;
+    
+    [Header("移動模式")]
+    public MoveMode moveMode;
+    public int movePriority;
+    
     [Header("視野高度")]
     public float eyeHeight = 1.5f;                 // 射線發射高度
 
@@ -60,10 +66,10 @@ public class EnemyScript : MonoBehaviour
             //Debug.Log("偵測到玩家");
         }
     }
-
-    private void EnemyDataInitializer()
+    
+    private void EnemyDataInitializer() // 初始化
     {
-        IsAlert = false;
+        isAlert = false;
         gameManager = GameObject.FindWithTag("GameManager");
         movePriority = enemySO.movePriority;
         // 設定移動網格
@@ -75,6 +81,19 @@ public class EnemyScript : MonoBehaviour
         agent.speed = enemySO.speed;
         agent.acceleration = enemySO.acceleration;
         agent.angularSpeed = enemySO.angularSpeed;
+    }
+    
+    public List<Vector3Int> SetMoveModeDirection(MoveMode mode) // 設定行為模式
+    {
+        switch (mode)
+        {
+            case MoveMode.DownRightUpLeft:
+                return new List<Vector3Int>(){ Vector3Int.back, Vector3Int.right, Vector3Int.forward, Vector3Int.left, Vector3Int.zero };
+            case MoveMode.UpLeftDownRight:
+                return new List<Vector3Int>(){ Vector3Int.forward, Vector3Int.left, Vector3Int.back, Vector3Int.right, Vector3Int.zero };
+            default:
+                return new List<Vector3Int>(){ Vector3Int.back, Vector3Int.right, Vector3Int.forward, Vector3Int.left, Vector3Int.zero };
+        }
     }
 
     public bool DetectPlayer()
@@ -97,8 +116,8 @@ public class EnemyScript : MonoBehaviour
         bool inForward = distanceToPlayer <= viewRadiusForward && angle <= viewAngleForward / 2f;
         bool inBack = distanceToPlayer <= viewRadiusBack && angle <= viewAngleBack / 2f;
         bool inAlert = distanceToPlayer <= viewRadiusAlert && angle <= viewAngleAlert / 2f;
-        if (!IsAlert && !(inForward || inBack)) { return false; }
-        else if (IsAlert && !inAlert) { return false; }
+        if (!isAlert && !(inForward || inBack)) { return false; }
+        else if (isAlert && !inAlert) { return false; }
 
 
 
@@ -127,7 +146,7 @@ public class EnemyScript : MonoBehaviour
         Vector3 origin = transform.position + Vector3.up * eyeHeight;
 
         // ✅ 畫三種模式下的視野
-        if (IsAlert)
+        if (isAlert)
         {
             DrawFOV(origin, viewRadiusAlert, viewAngleAlert, Color.red);
         }
@@ -168,7 +187,7 @@ public class EnemyScript : MonoBehaviour
 
     private void DetectAlert()
     {
-        IsAlert = true;
+        isAlert = true;
     }
 
     //敵人死亡
@@ -177,16 +196,7 @@ public class EnemyScript : MonoBehaviour
         Debug.Log($"{enemySO.enemyName} 被殺了！");
         Destroy(gameObject);
     }
-
-    public void SetPath(NavMeshPath path)
-    {
-        this.path = path;
-    }
-
-    public NavMeshPath GetPath()
-    {
-        return this.path;
-    }
+    
 }
 
 

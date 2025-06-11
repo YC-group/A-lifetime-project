@@ -62,9 +62,6 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: d56955e8179422848af8cae4f408ce8f, type: 3}
       insertIndex: -1
-      addedObject: {fileID: -5702114541437820837}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: d56955e8179422848af8cae4f408ce8f, type: 3}
-      insertIndex: -1
       addedObject: {fileID: -8475085820073644183}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: d56955e8179422848af8cae4f408ce8f, type: 3}
       insertIndex: -1
@@ -81,34 +78,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: d56955e8179422848af8cae4f408ce8f, type: 3}
   m_PrefabInstance: {fileID: 2285650867777762306}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &-5702114541437820837
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1403199536775154003}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f0038c16c34866b4f9e25c9c0dc0f7e6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Graph: {fileID: 5890053598683605018, guid: 79f9877970ebdaa4cb92121ee9863925, type: 2}
-  m_BlackboardVariableOverridesList:
-  - rid: 5922460476495626304
-  m_IsInitialised: 0
-  m_IsStarted: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: 5922460476495626304
-      type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        GUID:
-          m_Value0: 1
-          m_Value1: 0
-        Name: Enemy
-        m_Value: {fileID: 1403199536775154003}
 --- !u!195 &-8475085820073644183
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -158,6 +127,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemySO: {fileID: 11400000, guid: e450abdacdb07a045b1cfbb39978c86e, type: 2}
   grid: {fileID: 0}
+  movePriority: 0
+  moveMode: 0
+  isAlert: 0
   eyeHeight: 1.5
   viewRadiusForward: 6
   viewAngleForward: 90

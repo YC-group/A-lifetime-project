@@ -16,6 +16,7 @@ MonoBehaviour:
   hp: 10
   attack: 1
   specialAct: 0
-  speed: 500
-  acceleration: 1000
-  angularSpeed: 3000
+  speed: 100
+  acceleration: 200
+  angularSpeed: 300
+  movePriority: 0

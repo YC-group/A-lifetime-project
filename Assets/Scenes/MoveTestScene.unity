@@ -175,13 +175,17 @@ PrefabInstance:
       propertyPath: m_TagString
       value: GameManager
       objectReference: {fileID: 0}
+    - target: {fileID: 8825587853773391057, guid: f390d2617ad1a8f459c0b0acaeed5fba, type: 3}
+      propertyPath: SHOWROUNDSTATE
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 6508207981371737692, guid: f390d2617ad1a8f459c0b0acaeed5fba, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1393273799}
+      addedObject: {fileID: 1393273802}
   m_SourcePrefab: {fileID: 100100000, guid: f390d2617ad1a8f459c0b0acaeed5fba, type: 3}
 --- !u!1 &77025252
 GameObject:
@@ -225,7 +229,6 @@ GameObject:
   - component: {fileID: 124703970}
   - component: {fileID: 124703969}
   - component: {fileID: 124703968}
-  - component: {fileID: 124703967}
   - component: {fileID: 124703966}
   - component: {fileID: 124703965}
   - component: {fileID: 124703964}
@@ -273,7 +276,8 @@ MonoBehaviour:
   enemySO: {fileID: 11400000, guid: e450abdacdb07a045b1cfbb39978c86e, type: 2}
   grid: {fileID: 0}
   movePriority: 0
-  moveMode: 1
+  moveMode: 0
+  isAlert: 0
   eyeHeight: 1.5
   viewRadiusForward: 6
   viewAngleForward: 90
@@ -316,34 +320,6 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &124703967
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 124703962}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f0038c16c34866b4f9e25c9c0dc0f7e6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Graph: {fileID: 5890053598683605018, guid: 79f9877970ebdaa4cb92121ee9863925, type: 2}
-  m_BlackboardVariableOverridesList:
-  - rid: 6036643298304590030
-  m_IsInitialised: 0
-  m_IsStarted: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: 6036643298304590030
-      type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        GUID:
-          m_Value0: 1
-          m_Value1: 0
-        Name: Enemy
-        m_Value: {fileID: 124703962}
 --- !u!23 &124703968
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -406,7 +382,7 @@ Transform:
   m_GameObject: {fileID: 124703962}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 4.5, y: 1.5, z: 1.5}
+  m_LocalPosition: {x: 4.5, y: 1.5, z: 4.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -420,6 +396,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3738753850829245114, guid: f1733c798e44b9b469dc5cb795fd6580, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3738753850829245114, guid: f1733c798e44b9b469dc5cb795fd6580, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3738753850829245114, guid: f1733c798e44b9b469dc5cb795fd6580, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3738753850829245114, guid: f1733c798e44b9b469dc5cb795fd6580, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -460,6 +448,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3800241560682189564, guid: f1733c798e44b9b469dc5cb795fd6580, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4492877457616828392, guid: f1733c798e44b9b469dc5cb795fd6580, type: 3}
       propertyPath: m_Name
       value: Level
@@ -471,7 +463,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4492877457616828392, guid: f1733c798e44b9b469dc5cb795fd6580, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1650110931}
   m_SourcePrefab: {fileID: 100100000, guid: f1733c798e44b9b469dc5cb795fd6580, type: 3}
 --- !u!1 &597202765
 GameObject:
@@ -546,7 +541,6 @@ GameObject:
   - component: {fileID: 808336720}
   - component: {fileID: 808336719}
   - component: {fileID: 808336718}
-  - component: {fileID: 808336717}
   - component: {fileID: 808336716}
   - component: {fileID: 808336715}
   - component: {fileID: 808336714}
@@ -595,6 +589,7 @@ MonoBehaviour:
   grid: {fileID: 0}
   movePriority: 0
   moveMode: 1
+  isAlert: 0
   eyeHeight: 1.5
   viewRadiusForward: 6
   viewAngleForward: 90
@@ -637,34 +632,6 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &808336717
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 808336712}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f0038c16c34866b4f9e25c9c0dc0f7e6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Graph: {fileID: 5890053598683605018, guid: 79f9877970ebdaa4cb92121ee9863925, type: 2}
-  m_BlackboardVariableOverridesList:
-  - rid: 6036643298304590031
-  m_IsInitialised: 0
-  m_IsStarted: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: 6036643298304590031
-      type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        GUID:
-          m_Value0: 1
-          m_Value1: 0
-        Name: Enemy
-        m_Value: {fileID: 808336712}
 --- !u!23 &808336718
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -727,7 +694,7 @@ Transform:
   m_GameObject: {fileID: 808336712}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.5, y: 1.5, z: 7.5}
+  m_LocalPosition: {x: 1.5, y: 1.5, z: 4.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1278,7 +1245,7 @@ Transform:
   m_GameObject: {fileID: 1322696814}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.5, y: 1.5, z: 1.5}
+  m_LocalPosition: {x: 7.5, y: 1.5, z: 7.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1320,7 +1287,7 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 6508207981371737692, guid: f390d2617ad1a8f459c0b0acaeed5fba, type: 3}
   m_PrefabInstance: {fileID: 43313944}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1393273799
+--- !u!114 &1393273802
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1332,6 +1299,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbf068fe26e94924197edadf95f26509, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  EnemyGameObjects: []
 --- !u!1 &1538648549
 GameObject:
   m_ObjectHideFlags: 0
@@ -1394,6 +1362,23 @@ Transform:
   m_Children: []
   m_Father: {fileID: 995951159}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1650110929 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4492877457616828392, guid: f1733c798e44b9b469dc5cb795fd6580, type: 3}
+  m_PrefabInstance: {fileID: 160859293}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1650110931
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1650110929}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b26bf7f0544c4424ca730b6ef79bdc1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1657685235
 GameObject:
   m_ObjectHideFlags: 0
