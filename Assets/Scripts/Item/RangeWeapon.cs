@@ -4,16 +4,19 @@ using UnityEngine;
 /// <summary>
 /// 射程武器腳本 - mobias
 /// </summary>
-public abstract class RangeWeapon : ItemScript
+public class RangeWeapon : ItemScript
 {
+
     public ItemData weaponSO;
     public int bulletCount;
+    public ItemData[] weaponItems;
 
     // ✅ 儲存所有選到的敵人（允許重複）
     protected List<Transform> selectedTargets = new List<Transform>();
 
     void Start()
     {
+        print("123");
         ItemInitailize(weaponSO); // ✅ 修正拼字
     }
 
@@ -22,7 +25,7 @@ public abstract class RangeWeapon : ItemScript
         aimTarget(); // ✅ 呼叫瞄準與發射控制
     }
 
-    void attack()
+    public override void Attack()  // ✅ 正確寫法
     {
         // 預留攻擊邏輯
     }
@@ -40,7 +43,7 @@ public abstract class RangeWeapon : ItemScript
         // ✅ 左鍵選擇敵人
         if (Input.GetMouseButtonDown(0))
         {
-            if (selectedTargets.Count < bulletCount)
+            if (selectedTargets.Count < weaponSO.bulletCount)
             {
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 if (Physics.Raycast(ray, out RaycastHit hit))

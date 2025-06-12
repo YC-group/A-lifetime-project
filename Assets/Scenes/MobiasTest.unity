@@ -1928,6 +1928,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardPrefab: {fileID: 4838384550741636742, guid: 4c97aa95b983b7241bd7a8cde8ce547a, type: 3}
   cardPanel: {fileID: 733797189}
+  weaponItems:
+  - {fileID: 11400000, guid: 9a0471b173231c94e8e14d71bb71918e, type: 2}
 --- !u!114 &144464037
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1957,12 +1959,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0
+  m_MatchWidthOrHeight: 0.5
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
@@ -1977,9 +1979,9 @@ Canvas:
   m_GameObject: {fileID: 144464035}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 0
-  m_Camera: {fileID: 0}
-  m_PlaneDistance: 100
+  m_RenderMode: 1
+  m_Camera: {fileID: 941651008}
+  m_PlaneDistance: 10
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
@@ -2004,7 +2006,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 733797189}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 941651009}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -5892,6 +5894,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemySO: {fileID: 11400000, guid: e450abdacdb07a045b1cfbb39978c86e, type: 2}
   grid: {fileID: 0}
+  isAlert: 0
+  moveMode: 0
+  movePriority: 0
   eyeHeight: 1.5
   viewRadiusForward: 6
   viewAngleForward: 90
@@ -6631,6 +6636,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemySO: {fileID: 11400000, guid: e450abdacdb07a045b1cfbb39978c86e, type: 2}
   grid: {fileID: 0}
+  isAlert: 0
+  moveMode: 0
+  movePriority: 0
   eyeHeight: 1.5
   viewRadiusForward: 6
   viewAngleForward: 27
@@ -9830,8 +9838,8 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 733797188}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0.00003862382}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -9839,7 +9847,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -32, y: -4}
+  m_AnchoredPosition: {x: -32.00003, y: -3.999939}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &733797190
@@ -13640,6 +13648,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51f450f1686508145893fe4c69baa02c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SHOWROUNDSTATE: 1
 --- !u!4 &920858245
 Transform:
   m_ObjectHideFlags: 0
@@ -13911,7 +13920,8 @@ Transform:
   m_LocalPosition: {x: 4.58, y: 15, z: 4.6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 144464040}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!1 &945423526
@@ -29214,6 +29224,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemySO: {fileID: 11400000, guid: e450abdacdb07a045b1cfbb39978c86e, type: 2}
   grid: {fileID: 0}
+  isAlert: 0
+  moveMode: 0
+  movePriority: 0
   eyeHeight: 1.5
   viewRadiusForward: 10
   viewAngleForward: 59
@@ -30770,5 +30783,4 @@ SceneRoots:
   - {fileID: 2034462502}
   - {fileID: 444704362}
   - {fileID: 1933678377}
-  - {fileID: 144464040}
   - {fileID: 377832116}

@@ -18,18 +18,34 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     public GameObject player;            // 角色物件（預留給後續功能使用）
     public UiManager uiManager;          // UI 管理器，用來通知卡片被使用
 
+
     // 初始化元件
     void Awake()
     {
-        rectTransform = GetComponent<RectTransform>(); // 取得自身 RectTransform
-        canvas = GetComponentInParent<Canvas>();       // 取得最近的 Canvas
+        rectTransform = GetComponent<RectTransform>();
+        canvas = GetComponentInParent<Canvas>();
 
-        // 如果沒有 CanvasGroup，就新增一個（避免拖曳時不能擋住 Raycast）
+        // 自動抓 player
+        if (player == null)
+        {
+            GameObject foundPlayer = GameObject.FindWithTag("Player");
+            if (foundPlayer != null) player = foundPlayer;
+            else Debug.LogWarning("⚠ 無法自動找到 Player！");
+        }
+
+        // 自動抓 uiManager
+        if (uiManager == null)
+        {
+            uiManager = FindObjectOfType<UiManager>();
+            if (uiManager == null) Debug.LogWarning("⚠ 無法自動找到 UiManager！");
+        }
+
         if (!TryGetComponent<CanvasGroup>(out canvasGroup))
         {
             canvasGroup = gameObject.AddComponent<CanvasGroup>();
         }
     }
+
 
     // 開始拖曳時呼叫
     public void OnBeginDrag(PointerEventData eventData)
