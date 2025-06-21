@@ -127,16 +127,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemySO: {fileID: 11400000, guid: e450abdacdb07a045b1cfbb39978c86e, type: 2}
   grid: {fileID: 0}
-  movePriority: 0
-  moveMode: 0
   isAlert: 0
+  moveMode: 0
+  movePriority: 0
   eyeHeight: 1.5
   viewRadiusForward: 6
   viewAngleForward: 90
-  viewRadiusBack: 6
-  viewAngleBack: 90
-  viewRadiusAlert: 6
-  viewAngleAlert: 90
+  viewRadiusBack: 4
+  viewAngleBack: 270
+  viewRadiusAlert: 10
+  viewAngleAlert: 360
 --- !u!65 &7729188884869182066
 BoxCollider:
   m_ObjectHideFlags: 0

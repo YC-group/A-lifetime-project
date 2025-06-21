@@ -9,18 +9,16 @@ public class RangeWeapon : ItemScript
 
     public ItemData weaponSO;
     public int bulletCount;
-    public ItemData[] weaponItems;
 
     // ✅ 儲存所有選到的敵人（允許重複）
     protected List<Transform> selectedTargets = new List<Transform>();
 
-    void Start()
+    protected virtual void Start()
     {
-        print("123");
-        ItemInitailize(weaponSO); // ✅ 修正拼字
+        ItemInitialize(weaponSO); // ✅ 修正拼字
     }
 
-    void Update()
+    protected virtual void Update()
     {
         aimTarget(); // ✅ 呼叫瞄準與發射控制
     }
@@ -43,7 +41,7 @@ public class RangeWeapon : ItemScript
         // ✅ 左鍵選擇敵人
         if (Input.GetMouseButtonDown(0))
         {
-            if (selectedTargets.Count < weaponSO.bulletCount)
+            if (selectedTargets.Count < bulletCount)
             {
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 if (Physics.Raycast(ray, out RaycastHit hit))

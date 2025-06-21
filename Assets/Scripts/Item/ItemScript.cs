@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 /// <summary>
@@ -30,11 +30,11 @@ public abstract class ItemScript : MonoBehaviour
         
     }
 
-    public virtual void ItemInitailize(ItemData itemSO) // 初始化
+    public virtual void ItemInitialize(ItemData itemSO) // 初始化
     {
         player = GameObject.FindGameObjectWithTag("Player");
         itemType = itemSO.itemType;
-        itemName = itemSO.name;
+        itemName = itemSO.itemName;
         itemDescription = itemSO.itemDescription;
         damage = itemSO.damage;
         range = itemSO.range;

@@ -16,7 +16,7 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     private bool used = false;           // 是否已使用，避免重複觸發
 
     public GameObject player;            // 角色物件（預留給後續功能使用）
-    public UiManager uiManager;          // UI 管理器，用來通知卡片被使用
+    public UIManager UiManager;          // UI 管理器，用來通知卡片被使用
 
 
     // 初始化元件
@@ -33,11 +33,11 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             else Debug.LogWarning("⚠ 無法自動找到 Player！");
         }
 
-        // 自動抓 uiManager
-        if (uiManager == null)
+        // 自動抓 UiManager
+        if (UiManager == null)
         {
-            uiManager = FindObjectOfType<UiManager>();
-            if (uiManager == null) Debug.LogWarning("⚠ 無法自動找到 UiManager！");
+            UiManager = FindObjectOfType<UIManager>();
+            if (UiManager == null) Debug.LogWarning("⚠ 無法自動找到 UiManager！");
         }
 
         if (!TryGetComponent<CanvasGroup>(out canvasGroup))
@@ -72,7 +72,7 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         {
             used = true; // 標記為已使用
             Debug.Log("🟢 使用卡片：「" + cardName + "」");
-            uiManager.useItem(cardName); // 通知 UI Manager 使用該卡片
+            UiManager.useItem(cardName); // 通知 UI Manager 使用該卡片
             Destroy(gameObject);         // 移除卡片物件（卡片消失）
         }
     }

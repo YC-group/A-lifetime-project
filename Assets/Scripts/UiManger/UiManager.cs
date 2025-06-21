@@ -6,7 +6,7 @@ using TMPro;
 /// 顯示道具腳本 - mobias
 /// </summary>
 
-public class UiManager : MonoBehaviour
+public class UIManager : MonoBehaviour
 {
 
     private GameObject player;
@@ -47,7 +47,7 @@ public class UiManager : MonoBehaviour
 
     //        var dragScript = card.GetComponent<CardDragHandler>();
     //        dragScript.player = player;
-    //        dragScript.uiManager = this;
+    //        dragScript.UiManager = this;
     //        dragScript.cardName = cardNames[i]; // ✅ 設定卡片名稱
     //    }
     //}
@@ -86,7 +86,7 @@ public class UiManager : MonoBehaviour
         if (drag != null)
         {
             drag.cardName = itemData.itemName;
-            drag.uiManager = this;
+            drag.UiManager = this;
         }
     }
 
@@ -100,6 +100,7 @@ public class UiManager : MonoBehaviour
     public void useItem(string cardName)
     {
         Debug.Log("🃏 玩家 " + player.name + " 使用了卡片：「" + cardName + "」");
+        
     }
     //void attackRecord()
     //{

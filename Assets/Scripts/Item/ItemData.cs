@@ -17,5 +17,4 @@ public class ItemData : ScriptableObject
     public string itemDescription;
     public int damage;
     public float range;
-    public int bulletCount;
 }
