@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8603977ad2d11ba40b088c0e783cba59, type: 3}
-  m_Name: Range_gun
+  m_Name: rifle
   m_EditorClassIdentifier: 
   itemType: 1
-  itemName: pistol
-  itemDescription: 3
+  itemName: Rifle
+  itemDescription: 5
   damage: 1
   range: 6

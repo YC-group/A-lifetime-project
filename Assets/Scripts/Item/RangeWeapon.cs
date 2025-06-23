@@ -1,92 +1,118 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using System.Collections;
 
 /// <summary>
 /// 射程武器腳本 - mobias
 /// </summary>
 public class RangeWeapon : ItemScript
 {
-
-    public ItemData weaponSO;
     public int bulletCount;
 
-    // ✅ 儲存所有選到的敵人（允許重複）
     protected List<Transform> selectedTargets = new List<Transform>();
 
     protected virtual void Start()
     {
-        ItemInitialize(weaponSO); // ✅ 修正拼字
+        // ❗ 不建議在 Start() 呼叫 ItemInitialize()
     }
 
     protected virtual void Update()
     {
-        aimTarget(); // ✅ 呼叫瞄準與發射控制
     }
 
-    public override void Attack()  // ✅ 正確寫法
+    public override void Attack()
     {
-        // 預留攻擊邏輯
+        Debug.Log("🔫 預設攻擊邏輯（可被子類覆寫）");
     }
 
-    void changToThrowWeapon()
+    protected virtual void changeToThrowWeapon()
     {
         // 預留轉換為投擲武器邏輯
     }
 
     /// <summary>
-    /// 根據剩餘子彈進行選取與攻擊控制
+    /// 對外公開的瞄準流程（由 UIManager 呼叫）
     /// </summary>
-    void aimTarget()
+    public virtual IEnumerator AimTarget()
     {
-        // ✅ 左鍵選擇敵人
-        if (Input.GetMouseButtonDown(0))
-        {
-            if (selectedTargets.Count < bulletCount)
-            {
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                if (Physics.Raycast(ray, out RaycastHit hit))
-                {
-                    if (hit.collider.CompareTag("Enemy"))
-                    {
-                        selectedTargets.Add(hit.collider.transform);
-                        Debug.Log("已選取敵人：" + hit.collider.name);
-                    }
-                }
-            }
-            else
-            {
-                Debug.Log("子彈數量已滿，無法再選！");
-            }
-        }
+        Debug.Log("⌛ 進入選擇模式，請選擇目標，按【空白鍵】發射，或按【右鍵】取消");
 
-        // ✅ 右鍵取消所有選取
-        if (Input.GetMouseButtonDown(1))
-        {
-            selectedTargets.Clear();
-            Debug.Log("選取已清除！");
-        }
+        ClearSelection();
 
-        // ✅ 空白鍵發射
-        if (Input.GetKeyDown(KeyCode.Space))
+        while (true)
         {
-            Debug.Log("🔫 發射！總共發射 " + selectedTargets.Count + " 發");
+            HandleSelectEnemy();
 
-            foreach (Transform enemy in selectedTargets)
+            if (Input.GetKeyDown(KeyCode.Space))
             {
-                Debug.Log("➡ 攻擊敵人：" + enemy.name);
-                // 可執行敵人傷害函式，例如 enemy.GetComponent<Enemy>().TakeDamage()
+                Debug.Log("✅ 確認發射！");
+                Fire();
+                break;
             }
 
-            bulletCount -= selectedTargets.Count;
-            selectedTargets.Clear();
+            if (Input.GetMouseButtonDown(1))
+            {
+                Debug.Log("❌ 攻擊取消");
+                ClearSelection();
+                break;
+            }
+
+            yield return null;
         }
     }
 
     /// <summary>
-    /// 初始化武器設定（此方法可在子類覆寫）
+    /// 清空所有選擇的敵人
     /// </summary>
-    protected virtual void ItemInitialize(ItemData data)
+    public virtual void ClearSelection()
     {
-        Debug.Log("初始化武器：" + data.itemName);
+        selectedTargets.Clear();
+        Debug.Log("🧹 選取已清除！");
+    }
+
+    /// <summary>
+    /// 發射攻擊
+    /// </summary>
+    public virtual void Fire()
+    {
+        Debug.Log($"🔫 發射！共攻擊 {selectedTargets.Count} 個目標");
+
+        foreach (Transform enemy in selectedTargets)
+        {
+            Debug.Log($"➡ 攻擊敵人：{enemy.name}");
+            // enemy.GetComponent<Enemy>()?.TakeDamage(damage);
+        }
+
+        bulletCount -= selectedTargets.Count;
+        selectedTargets.Clear();
+    }
+
+    protected virtual void HandleSelectEnemy()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (selectedTargets.Count >= bulletCount)
+            {
+                Debug.Log("⚠ 子彈數量已滿，無法再選！");
+                return;
+            }
+
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out RaycastHit hit))
+            {
+                if (hit.collider.CompareTag("Enemy"))
+                {
+                    selectedTargets.Add(hit.collider.transform);
+                    Debug.Log("🎯 已選取敵人：" + hit.collider.name);
+                }
+            }
+        }
+    }
+
+    public override void ItemInitialize(ItemData data)
+    {
+        base.ItemInitialize(data);
+        bulletCount = data.damage;
+        Debug.Log($"✅ RangeWeapon 初始化完成，彈藥數：{bulletCount}");
     }
 }
