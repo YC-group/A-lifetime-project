@@ -55,9 +55,31 @@ public class PlayerScript : MonoBehaviour
                 var detection = DetectBuildingsAndEnemies();//先偵測
                 var buildDict = detection["buildDict"] as Dictionary<string, List<Building>>; //取出牆值
                 var enemyDict = detection["enemyDict"] as Dictionary<string, List<EnemyScript>>; //取出敵人
+                var doorDict = detection["doorDict"] as Dictionary<string, List<Door>>;
                 int step = moveStepCount(buildDict); //計算移動格數
                 if (step > 0) 
                 {
+                    Door door = null;
+                    foreach (KeyValuePair<string, List<Door>> kvp in doorDict)
+                    {
+                        foreach(var v in kvp.Value)
+                        {
+                            //Debug.Log($"Door value: {v}");
+                            if(door != null)
+                            {
+                                if(door.gameObject != v.gameObject)
+                                {
+                                    Debug.LogError("非重複的門");
+                                }
+                            }
+                            else
+                            {
+                                door = v;
+                            }
+                        }
+                    }
+                    door.OpenDoor();
+
                     currentCell += direction * playerSO.moveDistance * step;
                     Vector3 dest = grid.GetCellCenterWorld(currentCell);
                     enemyCheck(enemyDict, step);
@@ -127,11 +149,18 @@ public class PlayerScript : MonoBehaviour
                 { "itemBuild2", new List<ItemScript>() },
             };
 
+        Dictionary<string, List<Door>> doorDict = new Dictionary<string, List<Door>>
+        {
+            {"door1", new List<Door>()},
+            {"door2", new List<Door>()}
+        };
+
         Dictionary<string, object> result = new()
             {
                 { "buildDict", buildDict },
                 { "enemyDict", enemyDict },
-                { "itemDict", itemDict }
+                { "itemDict", itemDict },
+                { "doorDict", doorDict}
             };
 
         // ✅ 取得方向（用 moveVector）與 normalized 方向（偏移用）
@@ -147,7 +176,6 @@ public class PlayerScript : MonoBehaviour
             Collider[] hitsA = Physics.OverlapBox(worldPos, moveDetectionBox); // 格子中心偵測
             foreach (var hit in hitsA)
             {
-                print(hit);
                 Building b = hit.GetComponent<Building>();
                 if (b != null)
                 {
@@ -187,12 +215,21 @@ public class PlayerScript : MonoBehaviour
                     itemDict[$"itemBuild{i}"].Add(item);
                 }
 
+                if(i == 1)
+                {
+                    Door door = hit.GetComponent<Door>();
+                    if (door != null)
+                    {
+                        doorDict[$"door{i}"].Add(door);
+                    }
+                }
+                
             }
 
         }   
 
-    return result;
-}
+        return result;
+    }
 
 
     //繪製偵測格子 - mobias

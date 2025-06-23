@@ -189,16 +189,26 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
 
         levelName = EditorGUILayout.TextField("Level Name", levelName);
 
-        if (GUILayout.Button("Save Level"))
+        if (GUILayout.Button("Save Level As Asset"))
         {
-            SaveLevel();
+            SaveLevelAsAsset();
         }
 
-        if (GUILayout.Button("Load Level"))
+        if (GUILayout.Button("Load Level From Asset"))
         {
-            LoadLevel();
+            LoadLevelFromAsset();
+        }
+        GUI.enabled = false;
+        if (GUILayout.Button("Convert Level Asset To JSON"))
+        {
+
         }
 
+        if (GUILayout.Button("Load Level From JSON"))
+        {
+
+        }
+        GUI.enabled = true;
 
         EditorGUILayout.EndScrollView();
     }
@@ -472,7 +482,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
     }
 
     //關卡載入
-    private void LoadLevel()
+    private void LoadLevelFromAsset()
     {
         string levelDataPath = BASE_LEVEL_PATH + $"/{levelName}/{levelName}.asset";
         LevelData levelData = SaveAndLoadSystem.LoadFromAsset<LevelData>(levelDataPath);
@@ -508,7 +518,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
     }
 
     //關卡保存
-    private void SaveLevel()
+    private void SaveLevelAsAsset()
     {
         if(IsLevelNameDuplicate(levelName)) return;
 

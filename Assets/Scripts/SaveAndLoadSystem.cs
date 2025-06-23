@@ -4,6 +4,8 @@ using UnityEditor;
 using Newtonsoft.Json;
 using Unity.VisualScripting;
 using UnityEditor.AddressableAssets;
+using UnityEditor.AddressableAssets.Settings.GroupSchemas;
+using UnityEditor.AddressableAssets.Settings;
 /// <summary>
 /// 存讀檔工具 - js5515
 /// 存讀JSON檔
@@ -172,6 +174,41 @@ public static class SaveAndLoadSystem
         }
 
         return null;
+    }
+
+    public static void AddPrefabToAddressables(string prefabPath, string address, string groupName = "Default Local Group")
+    {
+        // 加載 prefab
+        GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+        if (prefab == null)
+        {
+            Debug.LogError("找不到 prefab: " + prefabPath);
+            return;
+        }
+
+        // 取得 Addressables 設定
+        AddressableAssetSettings settings = AddressableAssetSettingsDefaultObject.Settings;
+        if (settings == null)
+        {
+            Debug.LogError("找不到 AddressableAssetSettings");
+            return;
+        }
+
+        // 尋找或建立 group
+        AddressableAssetGroup group = settings.FindGroup(groupName);
+        if (group == null)
+        {
+            group = settings.CreateGroup(groupName, false, false, false, null, typeof(BundledAssetGroupSchema));
+        }
+
+        // 加入 prefab
+        string assetGUID = AssetDatabase.AssetPathToGUID(prefabPath);
+        AddressableAssetEntry entry = settings.CreateOrMoveEntry(assetGUID, group);
+        entry.address = address;
+
+        // 儲存變更
+        AssetDatabase.SaveAssets();
+        Debug.Log($"成功將 {prefab.name} 加入 Addressables，Address 為 {address}，Group 為 {groupName}");
     }
 #endif
 }

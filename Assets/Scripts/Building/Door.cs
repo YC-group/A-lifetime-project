@@ -6,14 +6,7 @@ using UnityEngine;
 public class Door : MonoBehaviour
 {
     [SerializeField] private List<SpawnSave> spawns;
-
-    public void SetSpawns(List<SpawnData> spawnDatas)
-    {
-        foreach (SpawnData spawnData in spawnDatas)
-        {
-            this.spawns.Add(DataConverter.ConvertToSpawnSave(spawnData));
-        }
-    }
+       
 
     public void SetSpawns(List<SpawnSave> spawnSaves)
     {
@@ -25,8 +18,35 @@ public class Door : MonoBehaviour
         this.spawns.Add(spawnSave);
     }
 
+    public void OpenDoor()
+    {
+        string currentRoomId = RoomManager.Instance.GetCurrentRoomId();
+        if (string.IsNullOrEmpty(currentRoomId))
+        {
+            Debug.LogError("開門失敗，未能取得目前房間id");
+            return;
+        }
+        string targetRoomId;
+        if (currentRoomId.Equals(spawns[0].RoomId))
+        {
+            targetRoomId = spawns[1].RoomId;
+        }
+        else
+        {
+            targetRoomId = spawns[0].RoomId;
+        }
+
+        RoomManager.Instance.ChangeRoom(targetRoomId);
+    }
+
 #if UNITY_EDITOR
-        
+    public void SetSpawns(List<SpawnData> spawnDatas)
+    {
+        foreach (SpawnData spawnData in spawnDatas)
+        {
+            this.spawns.Add(DataConverter.ConvertToSpawnSave(spawnData));
+        }
+    }    
     public List<SpawnData> GetSpawnDatas()
     {
         List<SpawnData> spawnDatas = new List<SpawnData>();
