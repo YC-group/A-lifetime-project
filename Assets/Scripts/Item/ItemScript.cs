@@ -8,11 +8,13 @@ public abstract class ItemScript : MonoBehaviour
 {
     private GameObject player;
     [SerializeField] protected ItemType itemType;
-    [SerializeField] protected string itemName;
+    [SerializeField] public string itemName;
+
     [SerializeField] protected string itemDescription;
     [SerializeField] protected int damage;
     [SerializeField] protected float range;
-    
+    public ItemData itemSO;
+
     public virtual void AddItemToPocket() // 將物品加入口袋
     {
         player.GetComponent<PlayerScript>().PocketList.Add(this);
@@ -29,16 +31,27 @@ public abstract class ItemScript : MonoBehaviour
     {
         
     }
-
-    public virtual void ItemInitialize(ItemData itemSO) // 初始化
+    public virtual void ItemInitialize(ItemData itemSO)
     {
+        this.itemSO = itemSO;
+
         player = GameObject.FindGameObjectWithTag("Player");
+        if (player == null)
+        {
+            Debug.LogError("❌ 無法找到 Player！");
+            return;
+        }
+
         itemType = itemSO.itemType;
         itemName = itemSO.itemName;
         itemDescription = itemSO.itemDescription;
         damage = itemSO.damage;
         range = itemSO.range;
+
+        Debug.Log("✅ 初始化完成：" + itemName);
     }
+
+
     public abstract void Attack(); // 讓子物件實作攻擊
     
     private void OnTriggerEnter(Collider other)
@@ -48,5 +61,10 @@ public abstract class ItemScript : MonoBehaviour
             // Debug.Log("OnTriggerEnter");
             AddItemToPocket();
         }
+    }
+
+    public virtual void Use()
+    {
+        Debug.Log($"🧪 使用了通用道具：{itemName}（可被子類覆寫）");
     }
 }

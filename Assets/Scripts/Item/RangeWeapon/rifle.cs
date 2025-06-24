@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
-
 /// <summary>
-/// 小槍 - mobias
+/// 步槍 - mobias
 /// </summary>
-public class Pistol : RangeWeapon
+public class Rifle : RangeWeapon
 {
 
     public override void ItemInitialize(ItemData data)
@@ -29,7 +27,7 @@ public class Pistol : RangeWeapon
 
     public override void Attack()
     {
-        Debug.Log("🔫 Pistol 的攻擊實作");
+        Debug.Log("🔫 Rifle 的攻擊實作");
     }
 
     public override IEnumerator AimTarget()
@@ -40,7 +38,8 @@ public class Pistol : RangeWeapon
     }
     public override void Use()
     {
-        Debug.Log("🟢 Pistol.Use() 被呼叫！");
+        Debug.Log("🟢 Rifle.Use() 被呼叫！");
         StartCoroutine(AimTarget()); // ✅ 呼叫自己的攻擊邏輯
     }
 }
+
