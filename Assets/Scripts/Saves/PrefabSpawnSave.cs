@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Net;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 /// <summary>
 /// Prefab生成模板(JSON) - js5515
 /// </summary>
@@ -40,31 +42,29 @@ public class PrefabSpawnSave
         this.rotation = rotation;
         this.scale = scale;
     }
-    /*
-    public GameObject Spawn(Transform parent = null)
+    public void Spawn(Action<GameObject> onComplete = null, Transform parent = null)
     {
         if (string.IsNullOrEmpty(prefabAddress))
         {
             Debug.LogError("Spawn 失敗: Prefab Address 為空！");
-            return null;
+            onComplete?.Invoke(null);
+            return;
         }
 
-        GameObject instance = null;
-
-        try
+        Addressables.InstantiateAsync(prefabAddress, position, rotation, parent).Completed += handle =>
         {
-            // 實例化
-            instance = GameObject.Instantiate(prefab, position, rotation, parent);
-            instance.transform.localScale = scale;
-        }
-        catch (System.Exception ex)
-        {
-            Debug.LogError($"Spawn 失敗：{ex.Message}");
-            return null;
-        }
-
-        return instance;
+            if (handle.Status == AsyncOperationStatus.Succeeded)
+            {
+                GameObject instance = handle.Result;
+                instance.transform.localScale = scale;
+                onComplete?.Invoke(instance);
+            }
+            else
+            {
+                Debug.LogError($"Spawn 失敗，無法載入 Address: {prefabAddress}");
+                onComplete?.Invoke(null);
+            }
+        };
     }
-    */
 }
 

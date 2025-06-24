@@ -495,8 +495,15 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
         //生成Doors
         foreach (DoorData doorData in levelData.Doors)
         {
-            GameObject door = doorData.Psd.Spawn();
-            door.GetComponent<Door>().SetSpawns(doorData.Spawns);
+            GameObject instance = doorData.Psd.Spawn();
+            
+            Door door = instance.GetComponent<Door>();
+            if (door == null)
+            {
+                Debug.LogError("載入關卡失敗: 未能取得 Door component");
+                return;
+            }
+            instance.GetComponent<Door>().SetSpawns(doorData.Spawns);
         }
         //生成所有房間(正式遊戲應為到房間才生成，如果效能足夠就沒差)
         foreach (RoomData roomData in levelData.Rooms)

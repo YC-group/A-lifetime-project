@@ -12,6 +12,7 @@ public class RoomManager : MonoBehaviour
     private string currentRoomId;
     private Vector3 currentSpawnpoint;
     private Dictionary<string, RoomSave> allRooms = new();
+    private Dictionary<string, bool> isAlert = new();
     private Dictionary<string, List<string>> roomLinks = new();
 
     public static RoomManager GetInstance()
@@ -69,17 +70,20 @@ public class RoomManager : MonoBehaviour
         currentRoomId = levelSave.StartRoomId;
         currentSpawnpoint = levelSave.StartSpawnpoint;
 
+        //設定所有房間
         List<RoomSave> roomSaves = levelSave.Rooms;
         foreach (RoomSave roomSave in roomSaves)
         {
             allRooms.Add(roomSave.RoomId, roomSave);
+            isAlert.Add(roomSave.RoomId, false);
         }
 
+        //建立房間之間的連結
         List<DoorSave> doorSaves = levelSave.Doors;
-        foreach (DoorSave door in doorSaves)
+        foreach (DoorSave doorSave in doorSaves)
         {
-            string roomA = door.Spawns[0].RoomId;
-            string roomB = door.Spawns[1].RoomId;
+            string roomA = doorSave.Spawns[0].RoomId;
+            string roomB = doorSave.Spawns[1].RoomId;
 
             if (!roomLinks.ContainsKey(roomA)) roomLinks[roomA] = new();
             if (!roomLinks.ContainsKey(roomB)) roomLinks[roomB] = new();
@@ -87,10 +91,35 @@ public class RoomManager : MonoBehaviour
             // 雙向連接
             if (!roomLinks[roomA].Contains(roomB)) roomLinks[roomA].Add(roomB);
             if (!roomLinks[roomB].Contains(roomA)) roomLinks[roomB].Add(roomA);
+
+            //door生成
+            doorSave.Pss.Spawn(instance =>
+            {
+                if(instance == null)
+                {
+                    Debug.Log("載入關卡失敗: door生成失敗");
+                    return;
+                }
+
+                //設定door重生點
+                Door door = instance.GetComponent<Door>();
+                if (door == null)
+                {
+                    Debug.LogError("載入關卡失敗: 未能取得 Door component");
+                    return;
+                }
+                instance.GetComponent<Door>().SetSpawns(doorSave.Spawns);
+            });
         }
 
+        //barrier生成
+        List<PrefabSpawnSave> barriers = levelSave.Barriers;
+        foreach(PrefabSpawnSave barrier in barriers)
+        {
+            barrier.Spawn();
+        }
 
-        // TODO: 生成barrier和door，玩家出生
+        //玩家生成
     }
 
 #if UNITY_EDITOR
