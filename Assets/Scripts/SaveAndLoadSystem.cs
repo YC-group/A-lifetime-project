@@ -25,7 +25,12 @@ public static class SaveAndLoadSystem
 
         Directory.CreateDirectory(Path.GetDirectoryName(path));
 
-        string json = JsonConvert.SerializeObject(t, Formatting.Indented);
+        var settings = new JsonSerializerSettings
+        {
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+        };
+
+        string json = JsonConvert.SerializeObject(t, Formatting.Indented, settings);
         File.WriteAllText(path, json);
     }
 

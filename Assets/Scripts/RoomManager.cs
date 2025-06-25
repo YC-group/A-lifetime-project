@@ -7,7 +7,7 @@ using UnityEngine;
 /// </summary>
 public class RoomManager : MonoBehaviour
 {
-    public static RoomManager Instance { get; private set; }
+    private static RoomManager Instance;
 
     private string currentRoomId;
     private Vector3 currentSpawnpoint;
@@ -20,6 +20,11 @@ public class RoomManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = GameObject.FindAnyObjectByType<RoomManager>();
+            if (Instance == null)
+            {
+                Debug.LogError("找不到 RoomManager，請確認場景中是否有啟用的 RoomManager 物件");
+                return null;
+            }
         }
         return Instance;
     }
@@ -28,6 +33,7 @@ public class RoomManager : MonoBehaviour
     {
         if (Instance != null && Instance != this)
         {
+            Debug.LogWarning("已存在其他 RoomManager 實例，將刪除此物件。");
             Destroy(gameObject);
             return;
         }
@@ -63,6 +69,15 @@ public class RoomManager : MonoBehaviour
         }
     }
 
+    public void LoadRoom(string targetRoomId)
+    {
+
+    }
+
+    public void PlayerSpawn()
+    {
+        
+    }
 
     public void LoadLevel(LevelSave levelSave)
     {

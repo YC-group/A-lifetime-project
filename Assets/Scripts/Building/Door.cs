@@ -20,7 +20,7 @@ public class Door : MonoBehaviour
 
     public void OpenDoor()
     {
-        string currentRoomId = RoomManager.Instance.GetCurrentRoomId();
+        string currentRoomId = RoomManager.GetInstance().GetCurrentRoomId();
         if (string.IsNullOrEmpty(currentRoomId))
         {
             Debug.LogError("開門失敗，未能取得目前房間id");
@@ -36,7 +36,7 @@ public class Door : MonoBehaviour
             targetRoomId = spawns[0].RoomId;
         }
 
-        RoomManager.Instance.ChangeRoom(targetRoomId);
+        RoomManager.GetInstance().ChangeRoom(targetRoomId);
     }
 
 #if UNITY_EDITOR

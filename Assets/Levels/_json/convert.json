@@ -1,0 +1,374 @@
+{
+  "Barriers": [
+    {
+      "PrefabAddress": "convert_barrier",
+      "Position": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "magnitude": 0.0,
+        "sqrMagnitude": 0.0
+      },
+      "Rotation": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "w": 1.0,
+        "eulerAngles": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        }
+      },
+      "Scale": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0,
+        "normalized": {
+          "x": 0.577350259,
+          "y": 0.577350259,
+          "z": 0.577350259,
+          "magnitude": 1.0,
+          "sqrMagnitude": 0.99999994
+        },
+        "magnitude": 1.73205078,
+        "sqrMagnitude": 3.0
+      }
+    }
+  ],
+  "Rooms": [
+    {
+      "Enemies": [],
+      "Items": [],
+      "Buildings": [],
+      "RoomId": "convert_room_0"
+    },
+    {
+      "Enemies": [
+        {
+          "PrefabAddress": "TestEnemy",
+          "Position": {
+            "x": 1.5,
+            "y": 1.5,
+            "z": 4.5,
+            "normalized": {
+              "x": 0.301511347,
+              "y": 0.301511347,
+              "z": 0.9045341,
+              "normalized": {
+                "x": 0.301511317,
+                "y": 0.301511317,
+                "z": 0.904534,
+                "normalized": {
+                  "x": 0.301511347,
+                  "y": 0.301511347,
+                  "z": 0.904534042,
+                  "magnitude": 1.0,
+                  "sqrMagnitude": 1.0
+                },
+                "magnitude": 0.99999994,
+                "sqrMagnitude": 0.9999999
+              },
+              "magnitude": 1.00000012,
+              "sqrMagnitude": 1.00000012
+            },
+            "magnitude": 4.974937,
+            "sqrMagnitude": 24.75
+          },
+          "Rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "w": 1.0,
+            "eulerAngles": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.0,
+              "magnitude": 0.0,
+              "sqrMagnitude": 0.0
+            }
+          },
+          "Scale": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0,
+            "normalized": {
+              "x": 0.577350259,
+              "y": 0.577350259,
+              "z": 0.577350259,
+              "magnitude": 1.0,
+              "sqrMagnitude": 0.99999994
+            },
+            "magnitude": 1.73205078,
+            "sqrMagnitude": 3.0
+          }
+        }
+      ],
+      "Items": [],
+      "Buildings": [],
+      "RoomId": "convert_room_1"
+    },
+    {
+      "Enemies": [
+        {
+          "PrefabAddress": "TestEnemy",
+          "Position": {
+            "x": 7.5,
+            "y": 1.5,
+            "z": 7.5,
+            "normalized": {
+              "x": 0.70014,
+              "y": 0.140028,
+              "z": 0.70014,
+              "normalized": {
+                "x": 0.700140059,
+                "y": 0.140028015,
+                "z": 0.700140059,
+                "magnitude": 1.0,
+                "sqrMagnitude": 1.0
+              },
+              "magnitude": 0.99999994,
+              "sqrMagnitude": 0.9999999
+            },
+            "magnitude": 10.7121429,
+            "sqrMagnitude": 114.75
+          },
+          "Rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "w": 1.0,
+            "eulerAngles": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.0,
+              "magnitude": 0.0,
+              "sqrMagnitude": 0.0
+            }
+          },
+          "Scale": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0,
+            "normalized": {
+              "x": 0.577350259,
+              "y": 0.577350259,
+              "z": 0.577350259,
+              "magnitude": 1.0,
+              "sqrMagnitude": 0.99999994
+            },
+            "magnitude": 1.73205078,
+            "sqrMagnitude": 3.0
+          }
+        }
+      ],
+      "Items": [],
+      "Buildings": [],
+      "RoomId": "convert_room_2"
+    }
+  ],
+  "Doors": [
+    {
+      "Pss": {
+        "PrefabAddress": "TestDoor",
+        "Position": {
+          "x": 6.0,
+          "y": 1.5,
+          "z": 2.0,
+          "normalized": {
+            "x": 0.9230769,
+            "y": 0.230769232,
+            "z": 0.307692319,
+            "magnitude": 1.0,
+            "sqrMagnitude": 1.0
+          },
+          "magnitude": 6.5,
+          "sqrMagnitude": 42.25
+        },
+        "Rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 1.0,
+          "eulerAngles": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "magnitude": 0.0,
+            "sqrMagnitude": 0.0
+          }
+        },
+        "Scale": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0,
+          "normalized": {
+            "x": 0.577350259,
+            "y": 0.577350259,
+            "z": 0.577350259,
+            "magnitude": 1.0,
+            "sqrMagnitude": 0.99999994
+          },
+          "magnitude": 1.73205078,
+          "sqrMagnitude": 3.0
+        }
+      },
+      "Spawns": [
+        {
+          "Spawnpoint": {
+            "x": 4.5,
+            "y": 1.5,
+            "z": 4.5,
+            "normalized": {
+              "x": 0.6882472,
+              "y": 0.229415745,
+              "z": 0.6882472,
+              "magnitude": 1.0,
+              "sqrMagnitude": 1.0
+            },
+            "magnitude": 6.538348,
+            "sqrMagnitude": 42.75
+          },
+          "RoomId": "convert_room_1"
+        },
+        {
+          "Spawnpoint": {
+            "x": 7.5,
+            "y": 1.5,
+            "z": 1.5,
+            "normalized": {
+              "x": 0.9622505,
+              "y": 0.192450091,
+              "z": 0.192450091,
+              "magnitude": 1.0,
+              "sqrMagnitude": 1.0
+            },
+            "magnitude": 7.79422855,
+            "sqrMagnitude": 60.75
+          },
+          "RoomId": "convert_room_2"
+        }
+      ]
+    },
+    {
+      "Pss": {
+        "PrefabAddress": "TestDoor",
+        "Position": {
+          "x": 3.0,
+          "y": 1.5,
+          "z": 2.0,
+          "normalized": {
+            "x": 0.768221259,
+            "y": 0.38411063,
+            "z": 0.5121475,
+            "normalized": {
+              "x": 0.7682213,
+              "y": 0.384110659,
+              "z": 0.512147546,
+              "magnitude": 1.0,
+              "sqrMagnitude": 1.00000012
+            },
+            "magnitude": 0.99999994,
+            "sqrMagnitude": 0.99999994
+          },
+          "magnitude": 3.905125,
+          "sqrMagnitude": 15.25
+        },
+        "Rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 1.0,
+          "eulerAngles": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "magnitude": 0.0,
+            "sqrMagnitude": 0.0
+          }
+        },
+        "Scale": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0,
+          "normalized": {
+            "x": 0.577350259,
+            "y": 0.577350259,
+            "z": 0.577350259,
+            "magnitude": 1.0,
+            "sqrMagnitude": 0.99999994
+          },
+          "magnitude": 1.73205078,
+          "sqrMagnitude": 3.0
+        }
+      },
+      "Spawns": [
+        {
+          "Spawnpoint": {
+            "x": 1.5,
+            "y": 1.5,
+            "z": 1.5,
+            "normalized": {
+              "x": 0.5773503,
+              "y": 0.5773503,
+              "z": 0.5773503,
+              "normalized": {
+                "x": 0.577350259,
+                "y": 0.577350259,
+                "z": 0.577350259,
+                "magnitude": 1.0,
+                "sqrMagnitude": 0.99999994
+              },
+              "magnitude": 1.00000012,
+              "sqrMagnitude": 1.00000012
+            },
+            "magnitude": 2.598076,
+            "sqrMagnitude": 6.75
+          },
+          "RoomId": "convert_room_0"
+        },
+        {
+          "Spawnpoint": {
+            "x": 4.5,
+            "y": 1.5,
+            "z": 4.5,
+            "normalized": {
+              "x": 0.6882472,
+              "y": 0.229415745,
+              "z": 0.6882472,
+              "magnitude": 1.0,
+              "sqrMagnitude": 1.0
+            },
+            "magnitude": 6.538348,
+            "sqrMagnitude": 42.75
+          },
+          "RoomId": "convert_room_1"
+        }
+      ]
+    }
+  ],
+  "StartRoomId": "convert_room_0",
+  "StartSpawnpoint": {
+    "x": 1.5,
+    "y": 1.5,
+    "z": 1.5,
+    "normalized": {
+      "x": 0.5773503,
+      "y": 0.5773503,
+      "z": 0.5773503,
+      "normalized": {
+        "x": 0.577350259,
+        "y": 0.577350259,
+        "z": 0.577350259,
+        "magnitude": 1.0,
+        "sqrMagnitude": 0.99999994
+      },
+      "magnitude": 1.00000012,
+      "sqrMagnitude": 1.00000012
+    },
+    "magnitude": 2.598076,
+    "sqrMagnitude": 6.75
+  }
+}

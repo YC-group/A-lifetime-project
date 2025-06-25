@@ -16,7 +16,8 @@ using UnityEngine.SceneManagement;
 
 public class LevelSaveAndLoadEditorWindow : EditorWindow
 {
-    private const string BASE_LEVEL_PATH = "Assets/Levels/_asset";
+    private const string BASE_LEVEL_ASSET_PATH = "Assets/Levels/_asset";
+    private const string BASE_LEVEL_JSON_PATH = "Assets/Levels/_json";
 
     #region 變數
     private Vector2 scrollPos; //滾動視窗參數
@@ -198,17 +199,18 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
         {
             LoadLevelFromAsset();
         }
-        GUI.enabled = false;
+
         if (GUILayout.Button("Convert Level Asset To JSON"))
         {
-
+            ConvertLevelAssetToJSON();
         }
 
         if (GUILayout.Button("Load Level From JSON"))
         {
-
+            string path = BASE_LEVEL_JSON_PATH + $"/{levelName}.json";
+            LevelSave levelSave = SaveAndLoadSystem.LoadFromJSON<LevelSave>(path);
+            RoomManager.GetInstance().LoadLevel(levelSave);
         }
-        GUI.enabled = true;
 
         EditorGUILayout.EndScrollView();
     }
@@ -226,8 +228,8 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
             return null;
         }
 
-        string prefabPath = BASE_LEVEL_PATH + $"/{levelName}/prefabs/{prefabName}.prefab";
-        string meshAssetPath = BASE_LEVEL_PATH + $"/{levelName}/prefabs/{prefabName}_mesh.asset";
+        string prefabPath = BASE_LEVEL_ASSET_PATH + $"/{levelName}/prefabs/{prefabName}.prefab";
+        string meshAssetPath = BASE_LEVEL_ASSET_PATH + $"/{levelName}/prefabs/{prefabName}_mesh.asset";
 
         Directory.CreateDirectory(Path.GetDirectoryName(meshAssetPath));
         GameObject combinedObject = CombineMeshes(objects, prefabName, meshAssetPath);
@@ -455,13 +457,13 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
             return true;
         }
 
-        if (!Directory.Exists(BASE_LEVEL_PATH))
+        if (!Directory.Exists(BASE_LEVEL_ASSET_PATH))
         {
-            Debug.LogError("資料夾不存在，路徑:" + BASE_LEVEL_PATH);
+            Debug.LogError("資料夾不存在，路徑:" + BASE_LEVEL_ASSET_PATH);
             return true;
         }
 
-        string[] subFolders = Directory.GetDirectories(BASE_LEVEL_PATH, "*", SearchOption.TopDirectoryOnly);
+        string[] subFolders = Directory.GetDirectories(BASE_LEVEL_ASSET_PATH, "*", SearchOption.TopDirectoryOnly);
         foreach (string subFolder in subFolders)
         {
             string folderName = Path.GetFileName(subFolder);
@@ -481,10 +483,20 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
         return PrefabUtility.GetCorrespondingObjectFromSource(go);
     }
 
+    private void ConvertLevelAssetToJSON()
+    {
+        string levelDataPath = BASE_LEVEL_ASSET_PATH + $"/{levelName}/{levelName}.asset";
+        LevelData levelData = SaveAndLoadSystem.LoadFromAsset<LevelData>(levelDataPath);
+
+        string levelSavePath = BASE_LEVEL_JSON_PATH + $"/{levelName}.json";
+        LevelSave levelSave = DataConverter.ConvertToLevelSave(levelData);
+        SaveAndLoadSystem.SaveAsJSON<LevelSave>(levelSave, levelSavePath);
+    }
+
     //關卡載入
     private void LoadLevelFromAsset()
     {
-        string levelDataPath = BASE_LEVEL_PATH + $"/{levelName}/{levelName}.asset";
+        string levelDataPath = BASE_LEVEL_ASSET_PATH + $"/{levelName}/{levelName}.asset";
         LevelData levelData = SaveAndLoadSystem.LoadFromAsset<LevelData>(levelDataPath);
 
         //生成barriers
@@ -529,7 +541,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
     {
         if(IsLevelNameDuplicate(levelName)) return;
 
-        string levelPath = BASE_LEVEL_PATH + $"/{levelName}/";
+        string levelPath = BASE_LEVEL_ASSET_PATH + $"/{levelName}/";
         Debug.Log("關卡路徑: " + levelPath);
         Directory.CreateDirectory(levelPath);
 
@@ -683,7 +695,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
 
             //roomData寫成asset檔
             string roomName = $"{levelName}_room_{roomCount}";
-            string roomDataPath = BASE_LEVEL_PATH + $"/{levelName}/RoomDatas/{roomName}.asset";
+            string roomDataPath = BASE_LEVEL_ASSET_PATH + $"/{levelName}/RoomDatas/{roomName}.asset";
             SaveAndLoadSystem.SaveAsAsset<RoomData>(roomData, roomDataPath);
 
             // 使用儲存後的 asset 實例來填入 levelData
@@ -699,7 +711,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
         levelData.Rooms = rooms;
 
         //levelData寫成asset檔
-        string levelDataPath = BASE_LEVEL_PATH + $"/{levelName}/{levelName}.asset";
+        string levelDataPath = BASE_LEVEL_ASSET_PATH + $"/{levelName}/{levelName}.asset";
         SaveAndLoadSystem.SaveAsAsset<LevelData>(levelData, levelDataPath);
 
         ClearAllData();
