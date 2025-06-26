@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
+using System.Threading.Tasks;
 using Unity.VisualScripting;
 using UnityEngine;
 /// <summary>
@@ -69,17 +72,51 @@ public class RoomManager : MonoBehaviour
         }
     }
 
-    public void LoadRoom(string targetRoomId)
+    public void LoadRoom()
     {
+        LoadRoom(currentRoomId);
+    }
 
+    public async void LoadRoom(string targetRoomId)
+    {
+        if (!allRooms.TryGetValue(targetRoomId, out RoomSave targetRoom) || targetRoom == null)
+        {
+            Debug.LogError("房間無法載入: 無法取得目標房間");
+            return;
+        }
+
+        try
+        {
+            var enemyTasks = targetRoom.Enemies?.Select(enemy => enemy.Spawn()) ?? Enumerable.Empty<Task<GameObject>>();
+            var itemTasks = targetRoom.Items?.Select(item => item.Spawn()) ?? Enumerable.Empty<Task<GameObject>>();
+            var buildingTasks = targetRoom.Buildings?.Select(building => building.Spawn()) ?? Enumerable.Empty<Task<GameObject>>();
+
+            await Task.WhenAll(enemyTasks.Concat(itemTasks).Concat(buildingTasks));
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"載入房間時發生錯誤: {ex.Message}");
+        }
     }
 
     public void PlayerSpawn()
     {
-        
+
     }
 
-    public void LoadLevel(LevelSave levelSave)
+    public void PlayerRespawn()
+    {
+        GameObject player = PlayerScript.GetInstance().gameObject;
+        if (player == null)
+        {
+            Debug.LogError("玩家無法重生: 無法取得玩家物件");
+            return;
+        }
+
+        player.transform.position = currentSpawnpoint;
+    }
+
+    public async void LoadLevel(LevelSave levelSave)
     {
         //設定初始房間和重生點
         currentRoomId = levelSave.StartRoomId;
@@ -108,33 +145,35 @@ public class RoomManager : MonoBehaviour
             if (!roomLinks[roomB].Contains(roomA)) roomLinks[roomB].Add(roomA);
 
             //door生成
-            doorSave.Pss.Spawn(instance =>
-            {
-                if(instance == null)
-                {
-                    Debug.Log("載入關卡失敗: door生成失敗");
-                    return;
-                }
+            GameObject instance = await doorSave.Pss.Spawn();
 
-                //設定door重生點
-                Door door = instance.GetComponent<Door>();
-                if (door == null)
-                {
-                    Debug.LogError("載入關卡失敗: 未能取得 Door component");
-                    return;
-                }
-                instance.GetComponent<Door>().SetSpawns(doorSave.Spawns);
-            });
+            if (instance == null)
+            {
+                Debug.Log("載入關卡失敗: door生成失敗");
+                return;
+            }
+
+            //設定door重生點
+            if (!instance.TryGetComponent<Door>(out Door door))
+            {
+                Debug.LogError("載入關卡失敗：未能取得 Door component");
+                return;
+            }
+            door.SetSpawns(doorSave.Spawns);
         }
 
         //barrier生成
         List<PrefabSpawnSave> barriers = levelSave.Barriers;
         foreach(PrefabSpawnSave barrier in barriers)
         {
-            barrier.Spawn();
+            await barrier.Spawn();
         }
 
         //玩家生成
+        PlayerSpawn();
+
+        //開始房間生成
+        LoadRoom();
     }
 
 #if UNITY_EDITOR

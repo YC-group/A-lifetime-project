@@ -6,6 +6,9 @@ using Unity.VisualScripting;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings.GroupSchemas;
 using UnityEditor.AddressableAssets.Settings;
+using System.Threading.Tasks;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 /// <summary>
 /// 存讀檔工具 - js5515
 /// 存讀JSON檔
@@ -55,6 +58,28 @@ public static class SaveAndLoadSystem
         {
             Debug.LogWarning($"找不到 JSON 檔案！(路徑: {path})");
             return default(T);
+        }
+    }
+
+    public static async Task<T> LoadFromAddressable<T>(string address) where T : UnityEngine.Object
+    {
+        if (string.IsNullOrEmpty(address))
+        {
+            Debug.LogError("從 Addressable 載入失敗: address 為空");
+            return null;
+        }
+
+        AsyncOperationHandle<T> handle = Addressables.LoadAssetAsync<T>(address);
+        await handle.Task;
+
+        if (handle.Status == AsyncOperationStatus.Succeeded)
+        {
+            return handle.Result;
+        }
+        else
+        {
+            Debug.LogError($"從 Addressable 載入失敗: {address}");
+            return null;
         }
     }
 
@@ -214,6 +239,12 @@ public static class SaveAndLoadSystem
         // 儲存變更
         AssetDatabase.SaveAssets();
         Debug.Log($"成功將 {prefab.name} 加入 Addressables，Address 為 {address}，Group 為 {groupName}");
+    }
+
+    public static void AddPrefabToAddressables(GameObject prefab, string address, string groupName = "Default Local Group")
+    {
+        string prefabPath = AssetDatabase.GetAssetPath(prefab);
+        AddPrefabToAddressables(prefabPath, address, groupName);
     }
 #endif
 }

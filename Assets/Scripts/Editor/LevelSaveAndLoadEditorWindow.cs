@@ -552,6 +552,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
         List<PrefabSpawnData> barriers = new List<PrefabSpawnData>();
         string prefabName = $"{levelName}_barrier";
         GameObject barrierGO = CombineObjectsAndSaveAsPrefab(barrierList.ToArray(), prefabName);
+        SaveAndLoadSystem.AddPrefabToAddressables(barrierGO, prefabName, levelName);
         barriers.Add(PrefabSpawnData.MakeData(barrierGO, GetPrefab(barrierGO)));
         
         /*
