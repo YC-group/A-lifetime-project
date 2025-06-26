@@ -14,8 +14,8 @@ public class GridManager : MonoBehaviour
     private float cellSize = 3f;
     private int gridWidth = 10;
     private int gridHeight = 10;
-
-    public static GridManager GetInstance()
+    
+    public static GridManager GetInstance() // Singleton
     {
         if (Instance == null)
         {
@@ -31,6 +31,7 @@ public class GridManager : MonoBehaviour
 
     void Awake()
     {
+        // Singleton
         if (Instance != null && Instance != this)
         {
             Debug.LogWarning("Multiple GridManagers found");
@@ -40,9 +41,10 @@ public class GridManager : MonoBehaviour
         Instance = this;
         InitializedGrid();
     }
-
-    private void OnDestroy()
+    
+    private void OnDisable()
     {
+        // Singleton
         if (Instance == this)
         {
             Instance = null;

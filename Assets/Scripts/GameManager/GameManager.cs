@@ -21,8 +21,8 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
     private RoundState currentRound;
     public bool SHOWROUNDSTATE = true;
-
-    private static GameManager GetInstance()
+    
+    private static GameManager GetInstance() // Singleton
     {
         if (Instance == null)
         {
@@ -38,6 +38,7 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
+        // Singleton
         if (Instance != null && Instance != this)
         {
             Debug.LogWarning("Multiple GameManagers found");
@@ -46,7 +47,16 @@ public class GameManager : MonoBehaviour
         }
         Instance = this;
     }
-    
+
+    private void OnDisable()
+    {
+        // Singleton
+        if (Instance == this)
+        {
+            Instance = null;
+        }
+    }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {

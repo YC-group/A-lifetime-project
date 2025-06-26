@@ -192,8 +192,6 @@ public class EnemyScript : MonoBehaviour
         }
     }
 
-
-
     private void DetectAlert()
     {
         isAlert = true;

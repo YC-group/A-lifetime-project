@@ -17,14 +17,14 @@ public abstract class ItemScript : MonoBehaviour
 
     public virtual void AddItemToPocket() // 將物品加入口袋
     {
-        player.GetComponent<PlayerScript>().pocketList.Add(this);
-        Debug.Log("Pocket Counts: " + player.GetComponent<PlayerScript>().pocketList.Count);
+        PlayerScript.Instance.pocketList.Add(this);
+        Debug.Log("Pocket Counts: " + PlayerScript.Instance.pocketList.Count);
         Destroy(this.gameObject);
     }
 
     public virtual void RemoveItemFromPocket() // 將物品從口袋刪除
     {
-        player.GetComponent<PlayerScript>().pocketList.Remove(this);
+        PlayerScript.Instance.pocketList.Remove(this);
     }
 
     public virtual void DropItem() // 掉落物品
@@ -34,13 +34,6 @@ public abstract class ItemScript : MonoBehaviour
     public virtual void ItemInitialize(ItemData itemSO)
     {
         this.itemSO = itemSO;
-
-        player = GameObject.FindGameObjectWithTag("Player");
-        if (player == null)
-        {
-            Debug.LogError("❌ 無法找到 Player！");
-            return;
-        }
 
         itemType = itemSO.itemType;
         itemName = itemSO.itemName;

@@ -13,6 +13,7 @@ using Unity.VisualScripting;
 [RequireComponent(typeof(CharacterController))]
 public class PlayerScript : MonoBehaviour
 {
+    public static PlayerScript Instance;
     [SerializeField] private PlayerData playerSO; // 序列化玩家物件
     private bool isMoving = false; // 判斷玩家是否正在移動
     // private Rigidbody rb;
@@ -24,6 +25,43 @@ public class PlayerScript : MonoBehaviour
     public List<ItemScript> pocketList;
 
     private bool checkCollider = false;
+
+    
+    public static PlayerScript GetInstance()  // Singleton
+    {
+        if (Instance == null)
+        {
+            Instance = GameObject.FindAnyObjectByType<PlayerScript>();
+            if (Instance == null)
+            {
+                Debug.LogError("No PlayerScript found");
+                return null;
+            }
+        }
+        return Instance;
+    }
+
+    private void Awake()
+    {
+        // Singleton
+        if (Instance != null && Instance != this)
+        {
+            Debug.LogWarning("已存在其他 Player 實例，將刪除此物件。");
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+    }
+    
+    private void OnDisable()
+    {
+        // Singleton
+        if (Instance == this)
+        {
+            Instance = null;
+        }
+    }
 
     private void Start()
     {
