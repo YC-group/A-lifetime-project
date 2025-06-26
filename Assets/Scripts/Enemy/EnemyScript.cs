@@ -14,7 +14,8 @@ using UnityEngine.AI;
 public enum MoveMode // 行為模式列舉
 {
     UpLeftDownRight,
-    DownRightUpLeft
+    DownRightUpLeft,
+    Stay
 }
 public class EnemyScript : MonoBehaviour
 {
@@ -24,11 +25,15 @@ public class EnemyScript : MonoBehaviour
     private Vector2 moveVector;
     private Vector3Int currentCell;
     private NavMeshPath path;
-    public bool isAlert;
+    
+    [Header("狀態")]
+    public bool isAlert; // 警戒狀態
+    public bool isStun; // 擊暈狀態
     
     [Header("移動模式")]
     public MoveMode moveMode;
     public int movePriority;
+    public Vector3 targetPosition; // 移動到下個位置
     
     [Header("視野高度")]
     public float eyeHeight = 1.5f;                 // 射線發射高度
@@ -70,6 +75,8 @@ public class EnemyScript : MonoBehaviour
     private void EnemyDataInitializer() // 初始化
     {
         isAlert = false;
+        isStun = false;
+        targetPosition = transform.position;
         gameManager = GameObject.FindWithTag("GameManager");
         movePriority = enemySO.movePriority;
         // 設定移動網格
@@ -91,6 +98,8 @@ public class EnemyScript : MonoBehaviour
                 return new List<Vector3Int>(){ Vector3Int.back, Vector3Int.right, Vector3Int.forward, Vector3Int.left, Vector3Int.zero };
             case MoveMode.UpLeftDownRight:
                 return new List<Vector3Int>(){ Vector3Int.forward, Vector3Int.left, Vector3Int.back, Vector3Int.right, Vector3Int.zero };
+            case MoveMode.Stay:
+                return new List<Vector3Int>(){ Vector3Int.zero };
             default:
                 return new List<Vector3Int>(){ Vector3Int.back, Vector3Int.right, Vector3Int.forward, Vector3Int.left, Vector3Int.zero };
         }

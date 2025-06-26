@@ -17,14 +17,14 @@ public abstract class ItemScript : MonoBehaviour
 
     public virtual void AddItemToPocket() // 將物品加入口袋
     {
-        player.GetComponent<PlayerScript>().PocketList.Add(this);
-        Debug.Log("Pocket Counts: " + player.GetComponent<PlayerScript>().PocketList.Count);
+        player.GetComponent<PlayerScript>().pocketList.Add(this);
+        Debug.Log("Pocket Counts: " + player.GetComponent<PlayerScript>().pocketList.Count);
         Destroy(this.gameObject);
     }
 
     public virtual void RemoveItemFromPocket() // 將物品從口袋刪除
     {
-        player.GetComponent<PlayerScript>().PocketList.Remove(this);
+        player.GetComponent<PlayerScript>().pocketList.Remove(this);
     }
 
     public virtual void DropItem() // 掉落物品

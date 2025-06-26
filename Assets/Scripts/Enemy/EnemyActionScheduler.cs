@@ -11,10 +11,12 @@ public class EnemyActionScheduler : MonoBehaviour
 {
     public GameObject[] EnemyGameObjects;
     private RoundState currentRound;
+    private bool isMoving;
 
     void Start()
     {
         EnemyGameObjects = GameObject.FindGameObjectsWithTag("Enemy"); // 獲取所有敵人物件
+        isMoving = false;
         foreach (var enemy in EnemyGameObjects)
         {
             GridManager.Instance.AddGameObjectToMoveGrid(enemy); // 將敵人物件存入網格陣列
@@ -23,20 +25,49 @@ public class EnemyActionScheduler : MonoBehaviour
 
     void Update()
     {
-        currentRound = GameObject.FindWithTag("GameManager").GetComponent<GameManager>().GetCurrentRound(); // 確定現在回合
+        currentRound = GameManager.Instance.GetCurrentRound(); // 確定現在回合
     }
 
     void FixedUpdate()
     {
         if (RoundState.EnemyTurn == currentRound)
         {
-            GameObject.FindWithTag("GameManager").GetComponent<GameManager>().SetToNextRound();
-            EnemyMoveSchedule(); // 廣播敵人行動
+            // GameObject.FindWithTag("GameManager").GetComponent<GameManager>().SetToNextRound();
+            if (!isMoving) // 是否正在移動
+            {
+                EnemyMoveSchedule(); // 廣播敵人行動
+            }
+            if (CheckEnemyArrived()) // 確定敵人動作結束
+            {
+                GameManager.Instance.SetToNextRound();
+            }
         }
     }
 
+    // 確定敵人動作結束
+    private bool CheckEnemyArrived()
+    {
+        int actionComplete = 0; // 計算場景中動作結束的敵人數量
+        foreach (var enemy in EnemyGameObjects)
+        {
+            if (enemy.GetComponent<EnemyScript>().targetPosition == enemy.transform.position)
+            { 
+                actionComplete++;
+            }
+        }
+        if (actionComplete == EnemyGameObjects.Length)
+        {
+            // Debug.Log("Action Complete");
+            isMoving = false;
+            return true;
+        }
+        return false;
+    }
+
+    // 敵人移動規劃
     public void EnemyMoveSchedule()
     {
+        isMoving = true;
         EnemyGameObjects = GameObject.FindGameObjectsWithTag("Enemy");
         if (EnemyGameObjects == null)
         {
@@ -48,11 +79,15 @@ public class EnemyActionScheduler : MonoBehaviour
             EnemyGameObjects.OrderByDescending(go => go.GetComponent<EnemyScript>().movePriority).ToArray(); // 將敵人按照 MovePriority 降冪排序
         foreach (var enemy in sortGameObjects)
         {
-            EnemyMovePathFinding(enemy); // 規劃移動路線
+            if (enemy.GetComponent<EnemyScript>().isStun == false) // 在沒有被擊暈的狀態下
+            {
+                EnemyMovePathFinding(enemy); // 規劃移動路線
+            }
         }
     }
-
-    public void EnemyMovePathFinding(GameObject enemy) // 規劃移動路線
+    
+    // 規劃移動路線
+    public void EnemyMovePathFinding(GameObject enemy) 
     {
         bool isAlert = enemy.GetComponent<EnemyScript>().isAlert; // 警戒狀態
         Grid grid = GameObject.FindWithTag("MoveGrid").GetComponent<Grid>(); // 移動網格
@@ -71,13 +106,17 @@ public class EnemyActionScheduler : MonoBehaviour
                 Vector3Int direction = moveDirections[moveIndex];
                 Vector3 moveTo = (grid.GetCellCenterWorld(currentCell + direction)); // 目的地
                 NavMeshPath path = new NavMeshPath();
+                // Debug.Log(NavMesh.CalculatePath(enemy.transform.position, moveTo, NavMesh.AllAreas, path));
                 if (NavMesh.CalculatePath(enemy.transform.position, moveTo, NavMesh.AllAreas, path)) // 計算路徑
                 {
                     // Debug.Log(GridManager.Instance.IsOccupied(currentCell + direction));
                     if (path.status == NavMeshPathStatus.PathComplete &&
-                        !GridManager.Instance.IsOccupied(currentCell + direction))
+                        !GridManager.Instance.IsOccupied(currentCell + direction) || direction == Vector3Int.zero)
                     {
                         GridManager.Instance.UpdateGameObjectFromMoveGrid(enemy, currentCell + direction);
+                        enemy.GetComponent<EnemyScript>().targetPosition = moveTo;
+                        Quaternion targetRotation = Quaternion.LookRotation(direction);
+                        enemy.transform.rotation = Quaternion.Slerp(enemy.transform.rotation, targetRotation, 1f);
                         agent.SetPath(path); // 移動到目的地
                         break;
                         // else 做其他行為
@@ -119,6 +158,7 @@ public class EnemyActionScheduler : MonoBehaviour
                         if (path.status == NavMeshPathStatus.PathComplete)
                         {
                             GridManager.Instance.UpdateGameObjectFromMoveGrid(enemy, grid.WorldToCell(moveTo));
+                            enemy.GetComponent<EnemyScript>().targetPosition = moveTo;
                             agent.SetPath(finalPath); // 移動到目的地
                         }
                     }

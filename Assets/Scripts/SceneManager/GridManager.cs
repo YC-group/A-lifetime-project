@@ -15,16 +15,37 @@ public class GridManager : MonoBehaviour
     private int gridWidth = 10;
     private int gridHeight = 10;
 
-    void Awake()
+    public static GridManager GetInstance()
     {
         if (Instance == null)
         {
-            Instance = this;
-            InitializedGrid();
+            Instance = GameObject.FindAnyObjectByType<GridManager>();
+            if (Instance == null)
+            {
+                Debug.LogError("No GridManager found");
+                return null;
+            }
         }
-        else
+        return Instance;
+    }
+
+    void Awake()
+    {
+        if (Instance != null && Instance != this)
         {
-            Destroy(gameObject);
+            Debug.LogWarning("Multiple GridManagers found");
+            Destroy(this.gameObject);
+            return;
+        }
+        Instance = this;
+        InitializedGrid();
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            Instance = null;
         }
     }
 
@@ -44,6 +65,11 @@ public class GridManager : MonoBehaviour
     {
         Vector3Int currentCell = moveGrid.WorldToCell(gameObject.transform.position);
         moveGridArray[currentCell.x, currentCell.z] = null;
+    }
+
+    public GameObject GetGameObjectFromMoveGrid(Vector3Int position)
+    {
+        return moveGridArray[position.x, position.z];
     }
     /// <summary>
     /// 更新移動網格

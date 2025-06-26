@@ -4,11 +4,13 @@ using UnityEngine.InputSystem;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 
 /// <summary>
 /// 角色移動腳本 - Jerry0401
 /// </summary>
 
+[RequireComponent(typeof(CharacterController))]
 public class PlayerScript : MonoBehaviour
 {
     [SerializeField] private PlayerData playerSO; // 序列化玩家物件
@@ -19,32 +21,72 @@ public class PlayerScript : MonoBehaviour
     private Vector3Int currentCell;
     public bool FREEMOVE = false; // 測試移動用，會讓回合維持在玩家回合
     private InputSystemActions inputActions; // InputSystem 的 Action map
-    private GameManager gameManager;
-    public List<ItemScript> PocketList{get; set;}
+    public List<ItemScript> pocketList;
+
+    private bool checkCollider = false;
 
     private void Start()
     {
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         grid = GameObject.FindWithTag("MoveGrid").GetComponent<Grid>();
         currentCell = grid.WorldToCell(transform.position);
         transform.position = grid.GetCellCenterWorld(currentCell);
-        PocketList = new List<ItemScript>();
+        pocketList = new List<ItemScript>();
         // 註冊移動行為
         inputActions = new InputSystemActions();
         inputActions.Player.Move.performed += Move;
         inputActions.Player.Move.canceled += Move;
+        inputActions.Player.Skip.performed += Skip;
+        inputActions.Player.Skip.canceled += Skip;
         inputActions.Enable();
     }
 
     void Update()
     {
+        
+    }
 
+    // // 利用 Collider 判斷同一格的物件
+    // private void OnControllerColliderHit(ControllerColliderHit hit)
+    // {
+    //     Debug.Log(hit.collider.name); 
+    //     if (hit.gameObject.CompareTag("Enemy"))
+    //     {
+    //         Debug.Log("Hit");
+    //         GameObject enemy = hit.gameObject;
+    //         if (enemy.GetComponent<EnemyScript>().isStun)
+    //         {
+    //             enemy.GetComponent<EnemyScript>().DestroyEnemy();
+    //             checkCollider = false;
+    //         }
+    //     }
+    // }
+
+    // Space 跳過行為
+    public void Skip(InputAction.CallbackContext ctx)
+    {
+        if (ctx.performed && GameManager.Instance.GetCurrentRound().Equals(RoundState.PlayerTurn))
+        {
+            if (GridManager.Instance.IsOccupied(grid.WorldToCell(transform.position)))
+            {
+                GameObject enemy = GridManager.Instance.GetGameObjectFromMoveGrid(grid.WorldToCell(transform.position));
+                if (enemy.GetComponent<EnemyScript>().isStun == true)
+                {
+                    enemy.GetComponent<EnemyScript>().DestroyEnemy();
+                }
+                else
+                {
+                    Debug.Log("GameOver");
+                }
+            }
+            GameManager.Instance.SetToNextRound();
+        }
     }
 
 
+    // WASD 移動行為
     public void Move(InputAction.CallbackContext ctx)
     {
-        if (ctx.performed && !isMoving && gameManager.GetCurrentRound().Equals(RoundState.PlayerTurn))
+        if (ctx.performed && !isMoving && GameManager.Instance.GetCurrentRound().Equals(RoundState.PlayerTurn))
         {
             moveVector = ctx.ReadValue<Vector2>();
             //Debug.Log("輸入向量：" + moveVector);
@@ -78,12 +120,16 @@ public class PlayerScript : MonoBehaviour
                             }
                         }
                     }
-                    door.OpenDoor();
+                    // door.OpenDoor();
 
                     currentCell += direction * playerSO.moveDistance * step;
                     Vector3 dest = grid.GetCellCenterWorld(currentCell);
                     enemyCheck(enemyDict, step);
                     StartCoroutine(SmoothMove(dest));
+                    if (!FREEMOVE)
+                    {
+                        GameManager.Instance.SetCurrentRound(RoundState.EnemyTurn); // 敵人回合開始
+                    }
                 }
                 return;
                 
@@ -108,12 +154,20 @@ public class PlayerScript : MonoBehaviour
 
         transform.position = destination; // 確保精準落格
         isMoving = false;
+    }
 
-        if (!FREEMOVE)
+    // 近戰攻擊行為
+    public void MeleeAttack(EnemyScript enemy)
+    {
+        if (enemy.isStun)
         {
-            gameManager.SetCurrentRound(RoundState.EnemyTurn); // 敵人回合開始
+            enemy.DestroyEnemy();
         }
-
+        else
+        {
+            enemy.isStun = true;
+            Debug.Log("擊暈敵人");
+        }
     }
 
 
@@ -319,11 +373,11 @@ public class PlayerScript : MonoBehaviour
 
     void enemyCheck(Dictionary<string, List<EnemyScript>> enemys, int step)
     {
-
         foreach (var enemy in enemys[$"enemy{step}"])
         {
             print("觸發近戰攻擊條件");
-            enemy.DestroyEnemy();
+            MeleeAttack(enemy);
+            // enemy.DestroyEnemy();
         }
     }
 

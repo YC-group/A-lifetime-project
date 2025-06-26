@@ -18,8 +18,34 @@ public enum RoundState
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager Instance;
     private RoundState currentRound;
     public bool SHOWROUNDSTATE = true;
+
+    private static GameManager GetInstance()
+    {
+        if (Instance == null)
+        {
+            Instance = GameObject.FindAnyObjectByType<GameManager>();
+            if (Instance == null)
+            {
+                Debug.LogError("GameManager not found");
+                return null;
+            }
+        }
+        return Instance;
+    }
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Debug.LogWarning("Multiple GameManagers found");
+            Destroy(this.gameObject);
+            return;
+        }
+        Instance = this;
+    }
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
