@@ -10,15 +10,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 0c9f2f03af5808048ac67e0fbd9f1202, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 0c9f2f03af5808048ac67e0fbd9f1202, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 0c9f2f03af5808048ac67e0fbd9f1202, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 0c9f2f03af5808048ac67e0fbd9f1202, type: 3}
       propertyPath: m_LocalRotation.w
@@ -87,6 +87,7 @@ MonoBehaviour:
   playerSO: {fileID: 11400000, guid: 392ebe829a483cf4187e06ec49953088, type: 2}
   grid: {fileID: 0}
   FREEMOVE: 0
+  pocketList: []
   buildDetectionBox: {x: 0.9, y: 1.5, z: 0.8}
   moveDetectionBox: {x: 0.9, y: 1.5, z: 0.9}
   overlapDetectionBoxYOffset: 2

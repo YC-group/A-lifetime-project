@@ -209,6 +209,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
         {
             string path = BASE_LEVEL_JSON_PATH + $"/{levelName}.json";
             LevelSave levelSave = SaveAndLoadSystem.LoadFromJSON<LevelSave>(path);
+            RoomManager.GetInstance().ClearAll();
             RoomManager.GetInstance().LoadLevel(levelSave);
         }
 

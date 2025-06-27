@@ -8,7 +8,13 @@ public class RoomManagerEditor : Editor
     {
         GUI.enabled = false;
         EditorGUILayout.TextField("Current Room ID", RoomManager.GetInstance().GetCurrentRoomId());
+        EditorGUILayout.Vector3Field("Current Spanwpoint", RoomManager.GetInstance().GetCurrentSpawnpoint());
         GUI.enabled = true;
+
+        if(GUILayout.Button("Clear All"))
+        {
+            RoomManager.GetInstance().ClearAll();
+        }
 
         base.OnInspectorGUI();
     }

@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 /// <summary>
 /// 關卡生成以及房間管理 - js5515
 /// </summary>
@@ -12,11 +14,23 @@ public class RoomManager : MonoBehaviour
 {
     private static RoomManager Instance;
 
+    private const string PLAYER_ADDRESS = "TestPlayer";
+
     private string currentRoomId;
     private Vector3 currentSpawnpoint;
     private Dictionary<string, RoomSave> allRooms = new();
-    private Dictionary<string, bool> isAlert = new();
+    private Dictionary<string, bool> roomIsAlert = new();
     private Dictionary<string, List<string>> roomLinks = new();
+
+    public string GetCurrentRoomId()
+    {
+        return currentRoomId;
+    }
+
+    public Vector3 GetCurrentSpawnpoint()
+    {
+        return currentSpawnpoint;
+    }
 
     public static RoomManager GetInstance()
     {
@@ -52,9 +66,13 @@ public class RoomManager : MonoBehaviour
         }
     }
 
-    public string GetCurrentRoomId()
+    public void ClearAll()
     {
-        return currentRoomId;
+        currentRoomId = null;
+        currentSpawnpoint = Vector3.zero;
+        allRooms.Clear();
+        roomIsAlert.Clear();
+        roomLinks.Clear();
     }
 
     public void ChangeRoom(string targetRoomId)
@@ -72,12 +90,7 @@ public class RoomManager : MonoBehaviour
         }
     }
 
-    public void LoadRoom()
-    {
-        LoadRoom(currentRoomId);
-    }
-
-    public async void LoadRoom(string targetRoomId)
+    public async Task LoadRoom(string targetRoomId)
     {
         if (!allRooms.TryGetValue(targetRoomId, out RoomSave targetRoom) || targetRoom == null)
         {
@@ -99,10 +112,18 @@ public class RoomManager : MonoBehaviour
         }
     }
 
-    public void PlayerSpawn()
+    public async Task PlayerSpawn()
     {
+        if (string.IsNullOrEmpty(PLAYER_ADDRESS))
+        {
+            Debug.LogError("玩家生成失敗: PLAYER_ADDRESS 為空");
+            return;
+        }
 
+        GameObject player = await SaveAndLoadSystem.LoadFromAddressableAndInstantiate<GameObject>(PLAYER_ADDRESS);
+        player.transform.position = currentSpawnpoint;
     }
+
 
     public void PlayerRespawn()
     {
@@ -116,7 +137,7 @@ public class RoomManager : MonoBehaviour
         player.transform.position = currentSpawnpoint;
     }
 
-    public async void LoadLevel(LevelSave levelSave)
+    public async Task LoadLevel(LevelSave levelSave)
     {
         //設定初始房間和重生點
         currentRoomId = levelSave.StartRoomId;
@@ -127,7 +148,7 @@ public class RoomManager : MonoBehaviour
         foreach (RoomSave roomSave in roomSaves)
         {
             allRooms.Add(roomSave.RoomId, roomSave);
-            isAlert.Add(roomSave.RoomId, false);
+            roomIsAlert.Add(roomSave.RoomId, false);
         }
 
         //建立房間之間的連結
@@ -164,22 +185,19 @@ public class RoomManager : MonoBehaviour
 
         //barrier生成
         List<PrefabSpawnSave> barriers = levelSave.Barriers;
-        foreach(PrefabSpawnSave barrier in barriers)
-        {
-            await barrier.Spawn();
-        }
+        await Task.WhenAll(barriers.Select(barrier => barrier.Spawn()));
 
         //玩家生成
-        PlayerSpawn();
+        await PlayerSpawn();
 
         //開始房間生成
-        LoadRoom();
+        await LoadRoom(currentRoomId);
     }
 
 #if UNITY_EDITOR
-    public void LoadLevel(LevelData levelData)
+    public async void LoadLevel(LevelData levelData)
     {
-        LoadLevel(DataConverter.ConvertToLevelSave(levelData));
+        await LoadLevel(DataConverter.ConvertToLevelSave(levelData));
     }
 #endif
 }

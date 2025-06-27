@@ -83,6 +83,33 @@ public static class SaveAndLoadSystem
         }
     }
 
+    public static async Task<T> LoadFromAddressableAndInstantiate<T>(string address) where T : UnityEngine.Object
+    {
+        if (string.IsNullOrEmpty(address))
+        {
+            Debug.LogError("載入失敗：Address 為空");
+            return null;
+        }
+
+        // 只能對 GameObject 使用 InstantiateAsync
+        if (typeof(T) != typeof(GameObject))
+        {
+            Debug.LogError("InstantiateAsync 只支援 GameObject 類型");
+            return null;
+        }
+
+        var handle = Addressables.InstantiateAsync(address);
+        await handle.Task;
+
+        if (handle.Status != AsyncOperationStatus.Succeeded)
+        {
+            Debug.LogError($"實例化失敗：{address}");
+            return null;
+        }
+
+        return handle.Result as T;
+    }
+
 #if UNITY_EDITOR
     public static void SaveAsPrefab(GameObject go, string path)
     {
