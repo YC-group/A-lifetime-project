@@ -20,6 +20,7 @@ public class RoomManager : MonoBehaviour
     private Vector3 currentSpawnpoint;
     private Dictionary<string, RoomSave> allRooms = new();
     private Dictionary<string, bool> roomIsAlert = new();
+    private Dictionary<string, bool> roomIsVisited = new();
     private Dictionary<string, List<string>> roomLinks = new();
 
     public string GetCurrentRoomId()
@@ -72,6 +73,7 @@ public class RoomManager : MonoBehaviour
         currentSpawnpoint = Vector3.zero;
         allRooms.Clear();
         roomIsAlert.Clear();
+        roomIsVisited.Clear();
         roomLinks.Clear();
     }
 
@@ -112,6 +114,16 @@ public class RoomManager : MonoBehaviour
         }
     }
 
+    public void CheckNearRoom()
+    {
+        List<string> neighbors = roomLinks[currentRoomId];
+
+        foreach(string neighbor in neighbors)
+        {
+
+        }
+    }
+
     public async Task PlayerSpawn()
     {
         if (string.IsNullOrEmpty(PLAYER_ADDRESS))
@@ -139,6 +151,8 @@ public class RoomManager : MonoBehaviour
 
     public async Task LoadLevel(LevelSave levelSave)
     {
+        ClearAll();
+
         //設定初始房間和重生點
         currentRoomId = levelSave.StartRoomId;
         currentSpawnpoint = levelSave.StartSpawnpoint;
@@ -149,7 +163,9 @@ public class RoomManager : MonoBehaviour
         {
             allRooms.Add(roomSave.RoomId, roomSave);
             roomIsAlert.Add(roomSave.RoomId, false);
+            roomIsVisited.Add(roomSave.RoomId, false);
         }
+        roomIsVisited[currentRoomId] = true;
 
         //建立房間之間的連結
         List<DoorSave> doorSaves = levelSave.Doors;

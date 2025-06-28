@@ -6,12 +6,21 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "LevelData", menuName = "Game/Level Data")]
 public class LevelData : ScriptableObject
 {
+    [SerializeField] private Vector3 startSpawnpoint;
+    [SerializeField] private RoomData startRoomData;
     [SerializeField] private List<PrefabSpawnData> barriers;
     [SerializeField] private List<RoomData> rooms;
     [SerializeField] private List<DoorData> doors;
-    [SerializeField] private RoomData startRoomData;
-    [SerializeField] private Vector3 startSpawnpoint;
-
+    public Vector3 StartSpawnpoint
+    {
+        get => startSpawnpoint;
+        set => startSpawnpoint = value;
+    }
+    public RoomData StartRoomData
+    {
+        get => startRoomData;
+        set => startRoomData = value;
+    }
     public List<PrefabSpawnData> Barriers
     {
         get => barriers;
@@ -27,14 +36,5 @@ public class LevelData : ScriptableObject
         get => doors;
         set => doors = value;
     }
-    public RoomData StartRoomData
-    {
-        get => startRoomData;
-        set => startRoomData = value;
-    }
-    public Vector3 StartSpawnpoint
-    {
-        get => startSpawnpoint;
-        set => startSpawnpoint = value;
-    }
+    
 }
