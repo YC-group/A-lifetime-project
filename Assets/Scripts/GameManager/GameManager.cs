@@ -20,7 +20,9 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
     private RoundState currentRound;
+    [SerializeField] private int roundCounts;
     public bool SHOWROUNDSTATE = true;
+    public bool SHOWENEMYSTUNSTATE = true;
     
     private static GameManager GetInstance() // Singleton
     {
@@ -80,6 +82,7 @@ public class GameManager : MonoBehaviour
     private bool GameStart() // 遊戲開始且從玩家回合開始
     {
         currentRound = RoundState.PlayerTurn; // 切換為玩家回合
+        roundCounts = 0;
         ShowRoundState(currentRound);
         return true;
     }
@@ -90,6 +93,7 @@ public class GameManager : MonoBehaviour
     public bool RoundReset()
     {
         currentRound = RoundState.PlayerTurn;
+        roundCounts = 0;
         ShowRoundState(currentRound);
         return true;
     }
@@ -101,6 +105,7 @@ public class GameManager : MonoBehaviour
     {
         this.currentRound = roundState;
         ShowRoundState(currentRound);
+        roundCounts ++;
     }
 
     /// <summary>
@@ -133,7 +138,18 @@ public class GameManager : MonoBehaviour
             currentRound = RoundState.PlayerTurn;
             ShowRoundState(currentRound);
         }
+        roundCounts++;
     }
+
+    /// <summary>
+    /// 回傳經過幾個回合
+    /// </summary>
+    /// <returns>int</returns>
+    public int GetAfterRoundsCounts()
+    {
+        return roundCounts;
+    }
+    
     /// <summary>
     /// 顯示回合在除錯介面上
     /// </summary>

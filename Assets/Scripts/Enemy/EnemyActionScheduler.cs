@@ -109,9 +109,10 @@ public class EnemyActionScheduler : MonoBehaviour
                 // Debug.Log(NavMesh.CalculatePath(enemy.transform.position, moveTo, NavMesh.AllAreas, path));
                 if (NavMesh.CalculatePath(enemy.transform.position, moveTo, NavMesh.AllAreas, path)) // 計算路徑
                 {
+                    // Debug.Log("corners : " + path.corners.Length);
                     // Debug.Log(GridManager.Instance.IsOccupied(currentCell + direction));
                     if (path.status == NavMeshPathStatus.PathComplete &&
-                        !GridManager.Instance.IsOccupied(currentCell + direction) || direction == Vector3Int.zero)
+                        !GridManager.Instance.IsOccupied(currentCell + direction) && path.corners.Length < 3|| direction == Vector3Int.zero)
                     {
                         GridManager.Instance.UpdateGameObjectFromMoveGrid(enemy, currentCell + direction);
                         enemy.GetComponent<EnemyScript>().targetPosition = moveTo;
@@ -152,8 +153,8 @@ public class EnemyActionScheduler : MonoBehaviour
                     Vector3 moveTo = (grid.GetCellCenterWorld(currentCell + bestDir)); // 以網格座標中心轉換為世界座標
                     // 繪製到下一格的最短路徑
                     NavMeshPath finalPath = new NavMeshPath();
-                    if (NavMesh.CalculatePath(enemy.transform.position, moveTo, NavMesh.AllAreas, finalPath) ||
-                        GridManager.Instance.IsOccupied(grid.WorldToCell(moveTo)))
+                    if (NavMesh.CalculatePath(enemy.transform.position, moveTo, NavMesh.AllAreas, finalPath) &&
+                        !GridManager.Instance.IsOccupied(grid.WorldToCell(moveTo)))
                     {
                         if (path.status == NavMeshPathStatus.PathComplete)
                         {

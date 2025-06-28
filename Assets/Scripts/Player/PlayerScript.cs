@@ -78,27 +78,6 @@ public class PlayerScript : MonoBehaviour
         inputActions.Enable();
     }
 
-    void Update()
-    {
-        
-    }
-
-    // // 利用 Collider 判斷同一格的物件
-    // private void OnControllerColliderHit(ControllerColliderHit hit)
-    // {
-    //     Debug.Log(hit.collider.name); 
-    //     if (hit.gameObject.CompareTag("Enemy"))
-    //     {
-    //         Debug.Log("Hit");
-    //         GameObject enemy = hit.gameObject;
-    //         if (enemy.GetComponent<EnemyScript>().isStun)
-    //         {
-    //             enemy.GetComponent<EnemyScript>().DestroyEnemy();
-    //             checkCollider = false;
-    //         }
-    //     }
-    // }
-
     // Space 跳過行為
     public void Skip(InputAction.CallbackContext ctx)
     {
@@ -166,7 +145,7 @@ public class PlayerScript : MonoBehaviour
                     StartCoroutine(SmoothMove(dest));
                     if (!FREEMOVE)
                     {
-                        GameManager.Instance.SetCurrentRound(RoundState.EnemyTurn); // 敵人回合開始
+                        GameManager.Instance.SetToNextRound(); // 敵人回合開始
                     }
                 }
                 return;
@@ -204,6 +183,7 @@ public class PlayerScript : MonoBehaviour
         else
         {
             enemy.isStun = true;
+            enemy.stunRound = GameManager.Instance.GetAfterRoundsCounts();
             Debug.Log("擊暈敵人");
         }
     }

@@ -277,6 +277,7 @@ MonoBehaviour:
   grid: {fileID: 0}
   isAlert: 0
   isStun: 0
+  stunRound: 1
   moveMode: 0
   movePriority: 0
   targetPosition: {x: 0, y: 0, z: 0}
@@ -591,6 +592,7 @@ MonoBehaviour:
   grid: {fileID: 0}
   isAlert: 0
   isStun: 0
+  stunRound: 1
   moveMode: 1
   movePriority: 0
   targetPosition: {x: 0, y: 0, z: 0}
@@ -1250,7 +1252,7 @@ Transform:
   m_GameObject: {fileID: 1322696814}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7.5, y: 1.5, z: 1.5}
+  m_LocalPosition: {x: 7.5, y: 1.5, z: 7.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
