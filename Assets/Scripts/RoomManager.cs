@@ -167,6 +167,8 @@ public class RoomManager : MonoBehaviour
         }
         roomIsVisited[currentRoomId] = true;
 
+        
+
         //建立房間之間的連結
         List<DoorSave> doorSaves = levelSave.Doors;
         foreach (DoorSave doorSave in doorSaves)
@@ -180,8 +182,17 @@ public class RoomManager : MonoBehaviour
             // 雙向連接
             if (!roomLinks[roomA].Contains(roomB)) roomLinks[roomA].Add(roomB);
             if (!roomLinks[roomB].Contains(roomA)) roomLinks[roomB].Add(roomA);
+        }
 
-            //door生成
+        //barrier生成
+        List<PrefabSpawnSave> barriers = levelSave.Barriers;
+        await Task.WhenAll(barriers.Select(barrier => barrier.Spawn()));
+        Debug.Log("barrier生成完畢!");
+        
+        //door生成
+        foreach(DoorSave doorSave in doorSaves)
+        {
+            
             GameObject instance = await doorSave.Pss.Spawn();
 
             if (instance == null)
@@ -198,16 +209,17 @@ public class RoomManager : MonoBehaviour
             }
             door.SetSpawns(doorSave.Spawns);
         }
+        Debug.Log("door生成完畢!");
 
-        //barrier生成
-        List<PrefabSpawnSave> barriers = levelSave.Barriers;
-        await Task.WhenAll(barriers.Select(barrier => barrier.Spawn()));
+        
+
+        //開始房間生成
+        await LoadRoom(currentRoomId);
 
         //玩家生成
         await PlayerSpawn();
 
-        //開始房間生成
-        await LoadRoom(currentRoomId);
+        Debug.Log("關卡載入完畢!");
     }
 
 #if UNITY_EDITOR

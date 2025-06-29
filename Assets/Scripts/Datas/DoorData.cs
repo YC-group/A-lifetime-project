@@ -26,4 +26,5 @@ public class DoorData
         this.psd = psd;
         this.spawns = spawns;
     }
+    public DoorData() { }
 }

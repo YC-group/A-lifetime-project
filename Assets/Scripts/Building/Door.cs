@@ -6,7 +6,12 @@ using UnityEngine;
 public class Door : MonoBehaviour
 {
     [SerializeField] private List<SpawnSave> spawns;
-       
+
+    public List<SpawnSave> Spawns
+    {
+        get => spawns;
+        set => spawns = value;
+    }
 
     public void SetSpawns(List<SpawnSave> spawnSaves)
     {

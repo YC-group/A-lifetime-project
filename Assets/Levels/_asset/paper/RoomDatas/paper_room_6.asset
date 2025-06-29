@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cab701b2893da884a85d7ba4f60d4acf, type: 3}
+  m_Name: paper_room_6
+  m_EditorClassIdentifier: 
+  enemies:
+  - prefab: {fileID: 1403199536775154003, guid: 56b24fea5c6dff847a795533b74774e6, type: 3}
+    position: {x: 19.5, y: 1.5, z: 4.5}
+    rotation: {x: 0, y: -0, z: -0, w: 1}
+    scale: {x: 1, y: 1, z: 1}
+  items: []
+  buildings: []

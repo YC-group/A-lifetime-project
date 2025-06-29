@@ -243,7 +243,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
         Building buildingComponent = objects[0].GetComponent<Building>();
         if (buildingComponent != null)
         {
-            Debug.Log("取得Building component");
+            //Debug.Log("取得Building component");
             ComponentUtility.CopyComponent(buildingComponent);
             ComponentUtility.PasteComponentAsNew(combinedObject);
         }
@@ -553,9 +553,9 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
         List<PrefabSpawnData> barriers = new List<PrefabSpawnData>();
         string prefabName = $"{levelName}_barrier";
         GameObject barrierGO = CombineObjectsAndSaveAsPrefab(barrierList.ToArray(), prefabName);
-        SaveAndLoadSystem.AddPrefabToAddressables(barrierGO, prefabName, levelName);
+        SaveAndLoadSystem.AddPrefabToAddressables(GetPrefab(barrierGO), prefabName, levelName);
         barriers.Add(PrefabSpawnData.MakeData(barrierGO, GetPrefab(barrierGO)));
-        
+
         /*
         foreach (GameObject barrier in barrierList)
         {
@@ -573,10 +573,10 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
             }
         }
         */
-        
+
         //door資料處理
         List<DoorData> doors = new List<DoorData>();
-        foreach(GameObject door in doorList)
+        foreach (GameObject door in doorList)
         {
             GameObject prefab = GetPrefab(door);
             if (prefab != null)
@@ -585,8 +585,22 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
                 if (doorComponent != null)
                 {
                     PrefabSpawnData psd = PrefabSpawnData.MakeData(door, prefab);
-                    List<SpawnData> spawns = doorComponent.GetSpawnDatas();
-                    DoorData doorData = new DoorData(psd, spawns);
+                    DoorData doorData = new DoorData();
+                    doorData.Psd = psd;
+                    doorData.Spawns = new List<SpawnData>();
+
+                    if (doorComponent.Spawns.Count != 2)
+                    {
+                        Debug.LogError("有 door 的 spawnpoint 數量不為 2");
+                        return;
+                    }
+
+                    foreach(SpawnSave spawnSave in doorComponent.Spawns)
+                    {
+                        SpawnData spawnData = new SpawnData();
+                        spawnData.Spawnpoint = spawnSave.Spawnpoint;
+                        doorData.Spawns.Add(spawnData);
+                    }
 
                     doors.Add(doorData);
                 }
@@ -602,7 +616,6 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
                 return;
             }
         }
-        
 
         //房間部分處理
         int roomCount = 0;
@@ -690,7 +703,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
                 );
                 return;
             }
-
+            
             roomData.Enemies = enemies;
             roomData.Items = items;
             roomData.Buildings = buildings;
