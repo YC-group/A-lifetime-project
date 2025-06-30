@@ -7,17 +7,39 @@ using System.Collections;
 /// </summary>
 public class RangeWeapon : ItemScript
 {
+
     public int bulletCount;
+
+    public bool selectEnemy = false;
+
 
     protected List<Transform> selectedTargets = new List<Transform>();
 
     protected virtual void Start()
     {
-        // ❗ 不建議在 Start() 呼叫 ItemInitialize()
+
     }
 
     protected virtual void Update()
     {
+
+        if (selectEnemy)
+        {
+            HandleSelectEnemy();
+
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                Debug.Log("✅ 確認發射！");
+                Fire();
+            }
+
+            if (Input.GetMouseButtonDown(1))
+            {
+                Debug.Log("❌ 攻擊取消");
+                CancelAttackAndRestore();
+            }
+
+        }
     }
 
     public override void Attack()
@@ -30,49 +52,38 @@ public class RangeWeapon : ItemScript
         // 預留轉換為投擲武器邏輯
     }
 
-    /// <summary>
-    /// 對外公開的瞄準流程（由 UIManager 呼叫）
-    /// </summary>
-    public virtual IEnumerator AimTarget()
+
+    public virtual void AimTarget()
     {
-        Debug.Log("⌛ 進入選擇模式，請選擇目標，按【空白鍵】發射，或按【右鍵】取消");
+        selectedTargets.Clear();
+        selectEnemy = true;
+        if (cardCanvasGroup == null)
+            Debug.LogWarning("⚠ cardCanvasGroup 尚未正確初始化！");
+    }
 
-        ClearSelection();
+    public void RestoreCardDisplay()
+    {
+        
+        Debug.Log("🎴 成功恢復卡片！");
+        cardCanvasGroup.alpha = 1f;
+        cardCanvasGroup.interactable = true;
+        cardCanvasGroup.blocksRaycasts = true;
 
-        while (true)
+    }
+
+    public void CancelAttackAndRestore()
+    {
+        selectedTargets.Clear();
+        selectEnemy = false;
+        RestoreCardDisplay();
+        var dragHandler = GetComponent<CardDragHandler>();
+        if (dragHandler != null)
         {
-            HandleSelectEnemy();
-
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                Debug.Log("✅ 確認發射！");
-                Fire();
-                break;
-            }
-
-            if (Input.GetMouseButtonDown(1))
-            {
-                Debug.Log("❌ 攻擊取消");
-                ClearSelection();
-                break;
-            }
-
-            yield return null;
+            dragHandler.ResetUsedFlag();
         }
     }
 
-    /// <summary>
-    /// 清空所有選擇的敵人
-    /// </summary>
-    public virtual void ClearSelection()
-    {
-        selectedTargets.Clear();
-        Debug.Log("🧹 選取已清除！");
-    }
 
-    /// <summary>
-    /// 發射攻擊
-    /// </summary>
     public virtual void Fire()
     {
         Debug.Log($"🔫 發射！共攻擊 {selectedTargets.Count} 個目標");
@@ -85,15 +96,33 @@ public class RangeWeapon : ItemScript
 
         bulletCount -= selectedTargets.Count;
         selectedTargets.Clear();
+        selectEnemy = false;
+        if (bulletCount > 0)
+        {
+            CancelAttackAndRestore();
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+            
+
     }
 
     protected virtual void HandleSelectEnemy()
     {
+
         if (Input.GetMouseButtonDown(0))
         {
+            if (bulletCount <= 0)
+            {
+                Debug.Log("⚠️ 沒有子彈了，不能選擇敵人");
+                return;
+            }
+
             if (selectedTargets.Count >= bulletCount)
             {
-                Debug.Log("⚠ 子彈數量已滿，無法再選！");
+                Debug.Log("⚠️ 選擇數已達最大（依照子彈數）");
                 return;
             }
 
@@ -106,13 +135,13 @@ public class RangeWeapon : ItemScript
                     Debug.Log("🎯 已選取敵人：" + hit.collider.name);
                 }
             }
+
         }
     }
+
 
     public override void ItemInitialize(ItemData data)
     {
         base.ItemInitialize(data);
-        bulletCount = data.damage;
-        Debug.Log($"✅ RangeWeapon 初始化完成，彈藥數：{bulletCount}");
     }
 }

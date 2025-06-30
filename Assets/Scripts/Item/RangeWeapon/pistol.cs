@@ -11,18 +11,19 @@ public class Pistol : RangeWeapon
     public override void ItemInitialize(ItemData data)
     {
         base.ItemInitialize(data);
-        bulletCount = 2; // 強制使用 Pistol 固定子彈數
+
     }
 
     protected override void Start()
     {
-        bulletCount = 2;
+        bulletCount = 3;
         base.Start(); // ✅ 正確呼叫父類 Start
     }
 
     protected override void Update()
     {
         base.Update(); // ✅ 正確呼叫父類 Update
+
     }
 
 
@@ -32,15 +33,12 @@ public class Pistol : RangeWeapon
         Debug.Log("🔫 Pistol 的攻擊實作");
     }
 
-    public override IEnumerator AimTarget()
+    public override void AimTarget()
     {
-        Debug.Log("🔫 Pistol 的選取流程開始");
-
-        yield return base.AimTarget();  // 呼叫父類邏輯，或你自己客製
+        base.AimTarget();  // 呼叫父類邏輯，或你自己客製
     }
     public override void Use()
     {
-        Debug.Log("🟢 Pistol.Use() 被呼叫！");
-        StartCoroutine(AimTarget()); // ✅ 呼叫自己的攻擊邏輯
+        AimTarget(); // ✅ 呼叫自己的攻擊邏輯
     }
 }

@@ -47,17 +47,9 @@ public class UIManager : MonoBehaviour
         else
             Debug.LogWarning("❗ 無法找到 TextMeshProUGUI 元件，請確認 prefab 結構");
 
-        // ✅ 嘗試使用 itemName 當類別名稱（需加上命名空間）
         ItemScript itemScript = null;
-
-        // 假設你的類別像 Pistol 是放在 global namespace（沒有命名空間）
-        // 若有，請填上正確命名空間，例如："Game.Items." + itemData.itemName;
         string fullClassName = itemData.itemName;
 
-        // 若你有自己的命名空間，請寫成：
-        // string fullClassName = "MyGame.Weapons." + itemData.itemName;
-
-        // 🔍 取得目前 Assembly 來尋找類別（Unity 通常不會直接找到 global class）
         Type type = null;
         foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
         {
@@ -76,6 +68,13 @@ public class UIManager : MonoBehaviour
         itemScript = (ItemScript)card.AddComponent(type);
         itemScript.ItemInitialize(itemData);
 
+        // ✅ 統一傳入 CanvasGroup
+        var canvasGroup = card.GetComponent<CanvasGroup>();
+        if (canvasGroup == null)
+            canvasGroup = card.AddComponent<CanvasGroup>();
+
+        itemScript.cardCanvasGroup = canvasGroup;
+
         // ✅ 設定拖曳控制
         var drag = card.GetComponent<CardDragHandler>();
         if (drag != null)
@@ -91,10 +90,7 @@ public class UIManager : MonoBehaviour
     }
 
 
-    //void showItem(player)
-    //{
 
-    //}
 
     // 修改 UIManager
     public void useItem(ItemScript script)
@@ -102,9 +98,6 @@ public class UIManager : MonoBehaviour
         Debug.Log("🃏 使用了卡片：「" + script.itemName + "」");
         script.Use(); // ✅ 多型解法，只呼叫 Use，不管它是誰
     }
-    //void attackRecord()
-    //{
 
-    //}
 
 }

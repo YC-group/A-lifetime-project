@@ -24,7 +24,9 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     {
         rectTransform = GetComponent<RectTransform>();
         canvas = GetComponentInParent<Canvas>();
-
+        canvasGroup = GetComponent<CanvasGroup>();
+        if (canvasGroup == null)
+            canvasGroup = gameObject.AddComponent<CanvasGroup>();
         // 自動抓 player
         if (player == null)
         {
@@ -71,10 +73,12 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         if (rectTransform.anchoredPosition.y > originalPos.y + 150f)
         {
             used = true; // 標記為已使用
-            Debug.Log("🟢 使用卡片：「" + cardName + "」");
-            UiManager.useItem(attachedScript); // 通知 UI Manager 使用該卡片
+            //隱藏卡片
+            canvasGroup.alpha = 0f;
+            canvasGroup.blocksRaycasts = false;
+            canvasGroup.interactable = false;
 
-            Destroy(gameObject);         // 移除卡片物件（卡片消失）
+            UiManager.useItem(attachedScript); // 通知 UI Manager 使用該卡片
         }
     }
 
@@ -82,10 +86,10 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     public void OnEndDrag(PointerEventData eventData)
     {
         // 如果卡片未使用，就播放回原位動畫
-        if (!used)
-        {
-            StartCoroutine(SmoothReturn());
-        }
+
+        
+        StartCoroutine(SmoothReturn());
+
 
         canvasGroup.blocksRaycasts = true; // 恢復 Raycast 判定
     }
@@ -107,4 +111,10 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
         rectTransform.anchoredPosition = originalPos; // 確保最後位置正確
     }
+    public void ResetUsedFlag()
+    {
+        used = false;
+        Debug.Log("🔄 卡片已重設為未使用狀態");
+    }
+
 }
