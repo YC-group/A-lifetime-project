@@ -16,8 +16,8 @@ public class EnemyData : ScriptableObject
     public float speed; // unit / second
     [Tooltip("Acceleration in NavMeshAgent , units^2 / sec")]
     public float acceleration; // unit^2 / second
-    [Tooltip("Angular speed in NavMeshAgent , deg / sec")]
-    public float angularSpeed; // deg / sec
+    [Tooltip("Angular speed in SmoothRotation , speed * deltaTime at each frame")]
+    public float angularSpeed; // speed * deltaTime
     public int movePriority;
 }
 

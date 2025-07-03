@@ -18,5 +18,5 @@ MonoBehaviour:
   specialAct: 0
   speed: 100
   acceleration: 200
-  angularSpeed: 300
+  angularSpeed: 5
   movePriority: 0

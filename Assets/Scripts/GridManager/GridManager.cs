@@ -42,7 +42,7 @@ public class GridManager : MonoBehaviour
         InitializedGrid();
     }
     
-    private void OnDisable()
+    private void OnDestroy()
     {
         // Singleton
         if (Instance == this)

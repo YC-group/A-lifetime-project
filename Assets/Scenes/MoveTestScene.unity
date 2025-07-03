@@ -593,7 +593,7 @@ MonoBehaviour:
   isAlert: 0
   isStun: 0
   stunRound: 1
-  moveMode: 1
+  moveMode: 0
   movePriority: 0
   targetPosition: {x: 0, y: 0, z: 0}
   eyeHeight: 1.5
@@ -1184,8 +1184,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerSO: {fileID: 11400000, guid: 392ebe829a483cf4187e06ec49953088, type: 2}
-  grid: {fileID: 0}
   FREEMOVE: 0
+  grid: {fileID: 0}
   pocketList: []
   buildDetectionBox: {x: 0.9, y: 0.1, z: 0.8}
   moveDetectionBox: {x: 0.9, y: 0.1, z: 0.9}
@@ -1968,6 +1968,7 @@ MonoBehaviour:
   damage: 0
   range: 0
   itemSO: {fileID: 0}
+  cardCanvasGroup: {fileID: 0}
   weaponSO: {fileID: 11400000, guid: 9a0471b173231c94e8e14d71bb71918e, type: 2}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

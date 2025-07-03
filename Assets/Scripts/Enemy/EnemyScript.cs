@@ -22,10 +22,13 @@ public class EnemyScript : MonoBehaviour
 {
     [SerializeField] public EnemyData enemySO;
     [SerializeField] private Grid grid;
+    
     private GameObject gameManager;
     private Vector2 moveVector;
     private Vector3Int currentCell;
     private NavMeshPath path;
+    private Transform player;
+    private NavMeshAgent agent;
 
     [Header("狀態")] public bool isAlert; // 警戒狀態
     public bool isStun; // 擊暈狀態
@@ -45,9 +48,8 @@ public class EnemyScript : MonoBehaviour
 
     [Header("視野設定(警戒)")] public float viewRadiusAlert = 10f; // 偵測半徑
     [Range(0f, 360f)] public float viewAngleAlert = 360f; // 偵測角度
-
-    private Transform player;
-    private NavMeshAgent agent;
+    
+    public Coroutine rotationCoroutine = null;
 
     void Start()
     {
@@ -89,7 +91,7 @@ public class EnemyScript : MonoBehaviour
         agent = gameObject.GetComponent<NavMeshAgent>();
         agent.speed = enemySO.speed;
         agent.acceleration = enemySO.acceleration;
-        agent.angularSpeed = enemySO.angularSpeed;
+        agent.updateRotation = false; // 停用 NavMeshAgent 轉向方面的功能
     }
 
     public List<Vector3Int> SetMoveModeDirection(MoveMode mode) // 設定行為模式
@@ -108,6 +110,20 @@ public class EnemyScript : MonoBehaviour
                 return new List<Vector3Int>()
                     { Vector3Int.back, Vector3Int.right, Vector3Int.forward, Vector3Int.left, Vector3Int.zero };
         }
+    }
+
+    public IEnumerator SmoothRotation(Vector3Int direction) // 平滑轉向動畫
+    {
+        Quaternion targetRotation = Quaternion.LookRotation(direction); // 轉向方向
+        // Debug.Log("targetRotation : " + targetRotation);
+
+        while (Quaternion.Angle(transform.rotation, targetRotation) > 5f) // 轉向差值小於 5 就判定為轉向結束
+        {
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, enemySO.angularSpeed * Time.deltaTime);
+            yield return null; // 結束這一 Frame 的 Coroutine
+        }
+
+        transform.rotation = targetRotation; // 確保精準面向
     }
 
     public bool DetectPlayer()

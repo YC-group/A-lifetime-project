@@ -6,12 +6,12 @@ using UnityEngine;
 /// </summary>
 public abstract class ItemScript : MonoBehaviour
 {
-    private GameObject player;
     [SerializeField] protected ItemType itemType;
     [SerializeField] public string itemName;
     [SerializeField] protected string itemDescription;
     [SerializeField] protected int damage;
     [SerializeField] protected float range;
+    
     public ItemData itemSO;
     public CanvasGroup cardCanvasGroup; // 所有子類可共用此 CanvasGroup（用來控制 UI 顯示）
 

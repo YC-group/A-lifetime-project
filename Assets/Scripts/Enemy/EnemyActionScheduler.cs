@@ -10,6 +10,7 @@ using UnityEngine.AI;
 public class EnemyActionScheduler : MonoBehaviour
 {
     public GameObject[] EnemyGameObjects;
+    
     private RoundState currentRound;
     private bool isMoving;
 
@@ -95,6 +96,7 @@ public class EnemyActionScheduler : MonoBehaviour
         Vector3Int currentCell = grid.WorldToCell(enemy.transform.position); // 物件當前所在網格座標
         GameObject player = GameObject.FindWithTag("Player"); // 玩家物件
         List<Vector3Int> moveDirections = enemy.GetComponent<EnemyScript>().SetMoveModeDirection(enemy.GetComponent<EnemyScript>().moveMode); // 移動模式
+        Coroutine rotationCoroutine = enemy.GetComponent<EnemyScript>().rotationCoroutine;
 
         // 計算敵人的下一步該怎麼走
         if (!isAlert) // 非警戒狀態
@@ -116,8 +118,11 @@ public class EnemyActionScheduler : MonoBehaviour
                     {
                         GridManager.Instance.UpdateGameObjectFromMoveGrid(enemy, currentCell + direction);
                         enemy.GetComponent<EnemyScript>().targetPosition = moveTo;
-                        Quaternion targetRotation = Quaternion.LookRotation(direction);
-                        enemy.transform.rotation = Quaternion.Slerp(enemy.transform.rotation, targetRotation, 1f);
+                        if (rotationCoroutine != null) // 確保只有一個轉向行為
+                        {
+                            StopCoroutine(rotationCoroutine);
+                        }
+                        rotationCoroutine = StartCoroutine(enemy.GetComponent<EnemyScript>().SmoothRotation(direction));
                         agent.SetPath(path); // 移動到目的地
                         break;
                         // else 做其他行為
@@ -160,6 +165,11 @@ public class EnemyActionScheduler : MonoBehaviour
                         {
                             GridManager.Instance.UpdateGameObjectFromMoveGrid(enemy, grid.WorldToCell(moveTo));
                             enemy.GetComponent<EnemyScript>().targetPosition = moveTo;
+                            if (rotationCoroutine != null) // 確保只有一個轉向行為
+                            {
+                                StopCoroutine(rotationCoroutine);
+                            }
+                            rotationCoroutine = StartCoroutine(enemy.GetComponent<EnemyScript>().SmoothRotation(bestDir));
                             agent.SetPath(finalPath); // 移動到目的地
                         }
                     }

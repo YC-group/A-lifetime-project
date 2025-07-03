@@ -50,7 +50,7 @@ public class GameManager : MonoBehaviour
         Instance = this;
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
         // Singleton
         if (Instance == this)

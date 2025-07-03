@@ -14,17 +14,19 @@ using Unity.VisualScripting;
 public class PlayerScript : MonoBehaviour
 {
     public static PlayerScript Instance;
+    
     [SerializeField] private PlayerData playerSO; // 序列化玩家物件
-    private bool isMoving = false; // 判斷玩家是否正在移動
-    // private Rigidbody rb;
-    private Vector2 moveVector;
-    public Grid grid; // 網格系統
-    private Vector3Int currentCell;
+    
     public bool FREEMOVE = false; // 測試移動用，會讓回合維持在玩家回合
+    
+    public Grid grid; // 網格系統
     private InputSystemActions inputActions; // InputSystem 的 Action map
+    
+    private bool isMoving = false; // 判斷玩家是否正在移動
+    private Vector2 moveVector; // 移動方向
+    private Vector3Int currentCell;
+    
     public List<ItemScript> pocketList;
-
-    private bool checkCollider = false;
 
     
     public static PlayerScript GetInstance()  // Singleton
@@ -54,7 +56,7 @@ public class PlayerScript : MonoBehaviour
         Instance = this;
     }
     
-    private void OnDisable()
+    private void OnDestroy()
     {
         // Singleton
         if (Instance == this)
