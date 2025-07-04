@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemies:
   - prefab: {fileID: 1403199536775154003, guid: 56b24fea5c6dff847a795533b74774e6, type: 3}
-    position: {x: 16.5, y: 1.5, z: 16.5}
-    rotation: {x: 0, y: 0.7071068, z: -0, w: -0.7071068}
-    scale: {x: 1, y: 1, z: 1}
-  - prefab: {fileID: 1403199536775154003, guid: 56b24fea5c6dff847a795533b74774e6, type: 3}
     position: {x: 13.5, y: 1.5, z: 4.5}
     rotation: {x: 0, y: -0, z: -0, w: 1}
+    scale: {x: 1, y: 1, z: 1}
+  - prefab: {fileID: 1403199536775154003, guid: 56b24fea5c6dff847a795533b74774e6, type: 3}
+    position: {x: 16.5, y: 1.5, z: 16.5}
+    rotation: {x: 0, y: 0.7071068, z: -0, w: -0.7071068}
     scale: {x: 1, y: 1, z: 1}
   items: []
   buildings: []

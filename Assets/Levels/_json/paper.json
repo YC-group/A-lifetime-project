@@ -117,16 +117,16 @@
           "Position": {
             "x": 10.5,
             "y": 1.5,
-            "z": 4.5,
+            "z": 7.5,
             "normalized": {
-              "x": 0.911322355,
-              "y": 0.130188912,
-              "z": 0.3905667,
+              "x": 0.808290362,
+              "y": 0.115470052,
+              "z": 0.577350259,
               "magnitude": 1.0,
               "sqrMagnitude": 0.99999994
             },
-            "magnitude": 11.521719,
-            "sqrMagnitude": 132.75
+            "magnitude": 12.9903812,
+            "sqrMagnitude": 168.75
           },
           "Rotation": {
             "x": 0.0,
@@ -168,16 +168,16 @@
           "Position": {
             "x": 10.5,
             "y": 1.5,
-            "z": 7.5,
+            "z": 4.5,
             "normalized": {
-              "x": 0.808290362,
-              "y": 0.115470052,
-              "z": 0.577350259,
+              "x": 0.911322355,
+              "y": 0.130188912,
+              "z": 0.3905667,
               "magnitude": 1.0,
               "sqrMagnitude": 0.99999994
             },
-            "magnitude": 12.9903812,
-            "sqrMagnitude": 168.75
+            "magnitude": 11.521719,
+            "sqrMagnitude": 132.75
           },
           "Rotation": {
             "x": 0.0,
@@ -288,6 +288,50 @@
         {
           "PrefabAddress": "TestEnemy",
           "Position": {
+            "x": 13.5,
+            "y": 1.5,
+            "z": 4.5,
+            "normalized": {
+              "x": 0.943456352,
+              "y": 0.104828484,
+              "z": 0.314485461,
+              "magnitude": 1.0,
+              "sqrMagnitude": 1.0
+            },
+            "magnitude": 14.3090878,
+            "sqrMagnitude": 204.75
+          },
+          "Rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "w": 1.0,
+            "eulerAngles": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.0,
+              "magnitude": 0.0,
+              "sqrMagnitude": 0.0
+            }
+          },
+          "Scale": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0,
+            "normalized": {
+              "x": 0.577350259,
+              "y": 0.577350259,
+              "z": 0.577350259,
+              "magnitude": 1.0,
+              "sqrMagnitude": 0.99999994
+            },
+            "magnitude": 1.73205078,
+            "sqrMagnitude": 3.0
+          }
+        },
+        {
+          "PrefabAddress": "TestEnemy",
+          "Position": {
             "x": 16.5,
             "y": 1.5,
             "z": 16.5,
@@ -319,50 +363,6 @@
               },
               "magnitude": 270.0,
               "sqrMagnitude": 72900.0
-            }
-          },
-          "Scale": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0,
-            "normalized": {
-              "x": 0.577350259,
-              "y": 0.577350259,
-              "z": 0.577350259,
-              "magnitude": 1.0,
-              "sqrMagnitude": 0.99999994
-            },
-            "magnitude": 1.73205078,
-            "sqrMagnitude": 3.0
-          }
-        },
-        {
-          "PrefabAddress": "TestEnemy",
-          "Position": {
-            "x": 13.5,
-            "y": 1.5,
-            "z": 4.5,
-            "normalized": {
-              "x": 0.943456352,
-              "y": 0.104828484,
-              "z": 0.314485461,
-              "magnitude": 1.0,
-              "sqrMagnitude": 1.0
-            },
-            "magnitude": 14.3090878,
-            "sqrMagnitude": 204.75
-          },
-          "Rotation": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0,
-            "w": 1.0,
-            "eulerAngles": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 0.0,
-              "magnitude": 0.0,
-              "sqrMagnitude": 0.0
             }
           },
           "Scale": {
@@ -438,6 +438,95 @@
     }
   ],
   "Doors": [
+    {
+      "Pss": {
+        "PrefabAddress": "TestDoor",
+        "Position": {
+          "x": 2.0,
+          "y": 1.5,
+          "z": 9.0,
+          "normalized": {
+            "x": 0.2141151,
+            "y": 0.160586327,
+            "z": 0.9635179,
+            "magnitude": 1.0,
+            "sqrMagnitude": 1.0
+          },
+          "magnitude": 9.340771,
+          "sqrMagnitude": 87.25
+        },
+        "Rotation": {
+          "x": 0.0,
+          "y": 0.7071068,
+          "z": 0.0,
+          "w": 0.7071068,
+          "eulerAngles": {
+            "x": 0.0,
+            "y": 90.0,
+            "z": 0.0,
+            "normalized": {
+              "x": 0.0,
+              "y": 1.0,
+              "z": 0.0,
+              "magnitude": 1.0,
+              "sqrMagnitude": 1.0
+            },
+            "magnitude": 90.0,
+            "sqrMagnitude": 8100.0
+          }
+        },
+        "Scale": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0,
+          "normalized": {
+            "x": 0.577350259,
+            "y": 0.577350259,
+            "z": 0.577350259,
+            "magnitude": 1.0,
+            "sqrMagnitude": 0.99999994
+          },
+          "magnitude": 1.73205078,
+          "sqrMagnitude": 3.0
+        }
+      },
+      "Spawns": [
+        {
+          "Spawnpoint": {
+            "x": 1.5,
+            "y": 1.5,
+            "z": 7.5,
+            "normalized": {
+              "x": 0.192450091,
+              "y": 0.192450091,
+              "z": 0.9622505,
+              "magnitude": 1.0,
+              "sqrMagnitude": 1.0
+            },
+            "magnitude": 7.79422855,
+            "sqrMagnitude": 60.75
+          },
+          "RoomId": "paper_room_0"
+        },
+        {
+          "Spawnpoint": {
+            "x": 1.5,
+            "y": 1.5,
+            "z": 10.5,
+            "normalized": {
+              "x": 0.140028,
+              "y": 0.140028,
+              "z": 0.980196059,
+              "magnitude": 1.0,
+              "sqrMagnitude": 1.0
+            },
+            "magnitude": 10.7121429,
+            "sqrMagnitude": 114.75
+          },
+          "RoomId": "paper_room_1"
+        }
+      ]
+    },
     {
       "Pss": {
         "PrefabAddress": "TestDoor",
@@ -538,95 +627,6 @@
       "Pss": {
         "PrefabAddress": "TestDoor",
         "Position": {
-          "x": 8.0,
-          "y": 1.5,
-          "z": 12.0,
-          "normalized": {
-            "x": 0.551724136,
-            "y": 0.103448279,
-            "z": 0.827586234,
-            "magnitude": 1.0,
-            "sqrMagnitude": 1.0
-          },
-          "magnitude": 14.5,
-          "sqrMagnitude": 210.25
-        },
-        "Rotation": {
-          "x": 0.0,
-          "y": 0.7071068,
-          "z": 0.0,
-          "w": 0.7071068,
-          "eulerAngles": {
-            "x": 0.0,
-            "y": 90.0,
-            "z": 0.0,
-            "normalized": {
-              "x": 0.0,
-              "y": 1.0,
-              "z": 0.0,
-              "magnitude": 1.0,
-              "sqrMagnitude": 1.0
-            },
-            "magnitude": 90.0,
-            "sqrMagnitude": 8100.0
-          }
-        },
-        "Scale": {
-          "x": 1.0,
-          "y": 1.0,
-          "z": 1.0,
-          "normalized": {
-            "x": 0.577350259,
-            "y": 0.577350259,
-            "z": 0.577350259,
-            "magnitude": 1.0,
-            "sqrMagnitude": 0.99999994
-          },
-          "magnitude": 1.73205078,
-          "sqrMagnitude": 3.0
-        }
-      },
-      "Spawns": [
-        {
-          "Spawnpoint": {
-            "x": 7.5,
-            "y": 1.5,
-            "z": 13.5,
-            "normalized": {
-              "x": 0.483368248,
-              "y": 0.0966736451,
-              "z": 0.8700628,
-              "magnitude": 1.0,
-              "sqrMagnitude": 1.0
-            },
-            "magnitude": 15.5161209,
-            "sqrMagnitude": 240.75
-          },
-          "RoomId": "paper_room_3"
-        },
-        {
-          "Spawnpoint": {
-            "x": 7.5,
-            "y": 1.5,
-            "z": 10.5,
-            "normalized": {
-              "x": 0.577350259,
-              "y": 0.115470052,
-              "z": 0.808290362,
-              "magnitude": 1.0,
-              "sqrMagnitude": 0.99999994
-            },
-            "magnitude": 12.9903812,
-            "sqrMagnitude": 168.75
-          },
-          "RoomId": "paper_room_2"
-        }
-      ]
-    },
-    {
-      "Pss": {
-        "PrefabAddress": "TestDoor",
-        "Position": {
           "x": 18.0,
           "y": 1.5,
           "z": 8.0,
@@ -702,362 +702,6 @@
             "sqrMagnitude": 438.75
           },
           "RoomId": "paper_room_6"
-        }
-      ]
-    },
-    {
-      "Pss": {
-        "PrefabAddress": "TestDoor",
-        "Position": {
-          "x": 2.0,
-          "y": 1.5,
-          "z": 9.0,
-          "normalized": {
-            "x": 0.2141151,
-            "y": 0.160586327,
-            "z": 0.9635179,
-            "magnitude": 1.0,
-            "sqrMagnitude": 1.0
-          },
-          "magnitude": 9.340771,
-          "sqrMagnitude": 87.25
-        },
-        "Rotation": {
-          "x": 0.0,
-          "y": 0.7071068,
-          "z": 0.0,
-          "w": 0.7071068,
-          "eulerAngles": {
-            "x": 0.0,
-            "y": 90.0,
-            "z": 0.0,
-            "normalized": {
-              "x": 0.0,
-              "y": 1.0,
-              "z": 0.0,
-              "magnitude": 1.0,
-              "sqrMagnitude": 1.0
-            },
-            "magnitude": 90.0,
-            "sqrMagnitude": 8100.0
-          }
-        },
-        "Scale": {
-          "x": 1.0,
-          "y": 1.0,
-          "z": 1.0,
-          "normalized": {
-            "x": 0.577350259,
-            "y": 0.577350259,
-            "z": 0.577350259,
-            "magnitude": 1.0,
-            "sqrMagnitude": 0.99999994
-          },
-          "magnitude": 1.73205078,
-          "sqrMagnitude": 3.0
-        }
-      },
-      "Spawns": [
-        {
-          "Spawnpoint": {
-            "x": 1.5,
-            "y": 1.5,
-            "z": 7.5,
-            "normalized": {
-              "x": 0.192450091,
-              "y": 0.192450091,
-              "z": 0.9622505,
-              "magnitude": 1.0,
-              "sqrMagnitude": 1.0
-            },
-            "magnitude": 7.79422855,
-            "sqrMagnitude": 60.75
-          },
-          "RoomId": "paper_room_0"
-        },
-        {
-          "Spawnpoint": {
-            "x": 1.5,
-            "y": 1.5,
-            "z": 10.5,
-            "normalized": {
-              "x": 0.140028,
-              "y": 0.140028,
-              "z": 0.980196059,
-              "magnitude": 1.0,
-              "sqrMagnitude": 1.0
-            },
-            "magnitude": 10.7121429,
-            "sqrMagnitude": 114.75
-          },
-          "RoomId": "paper_room_1"
-        }
-      ]
-    },
-    {
-      "Pss": {
-        "PrefabAddress": "TestDoor",
-        "Position": {
-          "x": 6.0,
-          "y": 1.5,
-          "z": 17.0,
-          "normalized": {
-            "x": 0.331674,
-            "y": 0.0829185,
-            "z": 0.939743042,
-            "magnitude": 1.0,
-            "sqrMagnitude": 1.00000012
-          },
-          "magnitude": 18.0900517,
-          "sqrMagnitude": 327.25
-        },
-        "Rotation": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0,
-          "w": 1.0,
-          "eulerAngles": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0,
-            "magnitude": 0.0,
-            "sqrMagnitude": 0.0
-          }
-        },
-        "Scale": {
-          "x": 1.0,
-          "y": 1.0,
-          "z": 1.0,
-          "normalized": {
-            "x": 0.577350259,
-            "y": 0.577350259,
-            "z": 0.577350259,
-            "magnitude": 1.0,
-            "sqrMagnitude": 0.99999994
-          },
-          "magnitude": 1.73205078,
-          "sqrMagnitude": 3.0
-        }
-      },
-      "Spawns": [
-        {
-          "Spawnpoint": {
-            "x": 4.5,
-            "y": 1.5,
-            "z": 16.5,
-            "normalized": {
-              "x": 0.262111217,
-              "y": 0.0873704,
-              "z": 0.9610744,
-              "normalized": {
-                "x": 0.262111247,
-                "y": 0.08737041,
-                "z": 0.9610745,
-                "magnitude": 1.0,
-                "sqrMagnitude": 1.0
-              },
-              "magnitude": 0.99999994,
-              "sqrMagnitude": 0.9999999
-            },
-            "magnitude": 17.1682854,
-            "sqrMagnitude": 294.75
-          },
-          "RoomId": "paper_room_1"
-        },
-        {
-          "Spawnpoint": {
-            "x": 7.5,
-            "y": 1.5,
-            "z": 16.5,
-            "normalized": {
-              "x": 0.412393063,
-              "y": 0.08247861,
-              "z": 0.9072647,
-              "magnitude": 1.0,
-              "sqrMagnitude": 1.0
-            },
-            "magnitude": 18.186533,
-            "sqrMagnitude": 330.75
-          },
-          "RoomId": "paper_room_3"
-        }
-      ]
-    },
-    {
-      "Pss": {
-        "PrefabAddress": "TestDoor",
-        "Position": {
-          "x": 2.0,
-          "y": 1.5,
-          "z": 9.0,
-          "normalized": {
-            "x": 0.2141151,
-            "y": 0.160586327,
-            "z": 0.9635179,
-            "magnitude": 1.0,
-            "sqrMagnitude": 1.0
-          },
-          "magnitude": 9.340771,
-          "sqrMagnitude": 87.25
-        },
-        "Rotation": {
-          "x": 0.0,
-          "y": 0.7071068,
-          "z": 0.0,
-          "w": 0.7071068,
-          "eulerAngles": {
-            "x": 0.0,
-            "y": 90.0,
-            "z": 0.0,
-            "normalized": {
-              "x": 0.0,
-              "y": 1.0,
-              "z": 0.0,
-              "magnitude": 1.0,
-              "sqrMagnitude": 1.0
-            },
-            "magnitude": 90.0,
-            "sqrMagnitude": 8100.0
-          }
-        },
-        "Scale": {
-          "x": 1.0,
-          "y": 1.0,
-          "z": 1.0,
-          "normalized": {
-            "x": 0.577350259,
-            "y": 0.577350259,
-            "z": 0.577350259,
-            "magnitude": 1.0,
-            "sqrMagnitude": 0.99999994
-          },
-          "magnitude": 1.73205078,
-          "sqrMagnitude": 3.0
-        }
-      },
-      "Spawns": [
-        {
-          "Spawnpoint": {
-            "x": 1.5,
-            "y": 1.5,
-            "z": 7.5,
-            "normalized": {
-              "x": 0.192450091,
-              "y": 0.192450091,
-              "z": 0.9622505,
-              "magnitude": 1.0,
-              "sqrMagnitude": 1.0
-            },
-            "magnitude": 7.79422855,
-            "sqrMagnitude": 60.75
-          },
-          "RoomId": "paper_room_0"
-        },
-        {
-          "Spawnpoint": {
-            "x": 1.5,
-            "y": 1.5,
-            "z": 10.5,
-            "normalized": {
-              "x": 0.140028,
-              "y": 0.140028,
-              "z": 0.980196059,
-              "magnitude": 1.0,
-              "sqrMagnitude": 1.0
-            },
-            "magnitude": 10.7121429,
-            "sqrMagnitude": 114.75
-          },
-          "RoomId": "paper_room_1"
-        }
-      ]
-    },
-    {
-      "Pss": {
-        "PrefabAddress": "TestDoor",
-        "Position": {
-          "x": 12.0,
-          "y": 1.5,
-          "z": 11.0,
-          "normalized": {
-            "x": 0.734044552,
-            "y": 0.09175557,
-            "z": 0.672874153,
-            "magnitude": 1.0,
-            "sqrMagnitude": 1.00000012
-          },
-          "magnitude": 16.3477821,
-          "sqrMagnitude": 267.25
-        },
-        "Rotation": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0,
-          "w": 1.0,
-          "eulerAngles": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0,
-            "magnitude": 0.0,
-            "sqrMagnitude": 0.0
-          }
-        },
-        "Scale": {
-          "x": 1.0,
-          "y": 1.0,
-          "z": 1.0,
-          "normalized": {
-            "x": 0.577350259,
-            "y": 0.577350259,
-            "z": 0.577350259,
-            "magnitude": 1.0,
-            "sqrMagnitude": 0.99999994
-          },
-          "magnitude": 1.73205078,
-          "sqrMagnitude": 3.0
-        }
-      },
-      "Spawns": [
-        {
-          "Spawnpoint": {
-            "x": 10.5,
-            "y": 1.5,
-            "z": 10.5,
-            "normalized": {
-              "x": 0.7035265,
-              "y": 0.10050378,
-              "z": 0.7035265,
-              "magnitude": 1.0,
-              "sqrMagnitude": 1.00000012
-            },
-            "magnitude": 14.9248114,
-            "sqrMagnitude": 222.75
-          },
-          "RoomId": "paper_room_2"
-        },
-        {
-          "Spawnpoint": {
-            "x": 13.5,
-            "y": 1.5,
-            "z": 10.5,
-            "normalized": {
-              "x": 0.7863336,
-              "y": 0.0873704,
-              "z": 0.6115928,
-              "normalized": {
-                "x": 0.7863337,
-                "y": 0.08737041,
-                "z": 0.6115929,
-                "magnitude": 1.0,
-                "sqrMagnitude": 1.00000012
-              },
-              "magnitude": 0.99999994,
-              "sqrMagnitude": 0.99999994
-            },
-            "magnitude": 17.1682854,
-            "sqrMagnitude": 294.75
-          },
-          "RoomId": "paper_room_5"
         }
       ]
     },
@@ -1161,6 +805,273 @@
             "sqrMagnitude": 276.75
           },
           "RoomId": "paper_room_4"
+        }
+      ]
+    },
+    {
+      "Pss": {
+        "PrefabAddress": "TestDoor",
+        "Position": {
+          "x": 8.0,
+          "y": 1.5,
+          "z": 12.0,
+          "normalized": {
+            "x": 0.551724136,
+            "y": 0.103448279,
+            "z": 0.827586234,
+            "magnitude": 1.0,
+            "sqrMagnitude": 1.0
+          },
+          "magnitude": 14.5,
+          "sqrMagnitude": 210.25
+        },
+        "Rotation": {
+          "x": 0.0,
+          "y": 0.7071068,
+          "z": 0.0,
+          "w": 0.7071068,
+          "eulerAngles": {
+            "x": 0.0,
+            "y": 90.0,
+            "z": 0.0,
+            "normalized": {
+              "x": 0.0,
+              "y": 1.0,
+              "z": 0.0,
+              "magnitude": 1.0,
+              "sqrMagnitude": 1.0
+            },
+            "magnitude": 90.0,
+            "sqrMagnitude": 8100.0
+          }
+        },
+        "Scale": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0,
+          "normalized": {
+            "x": 0.577350259,
+            "y": 0.577350259,
+            "z": 0.577350259,
+            "magnitude": 1.0,
+            "sqrMagnitude": 0.99999994
+          },
+          "magnitude": 1.73205078,
+          "sqrMagnitude": 3.0
+        }
+      },
+      "Spawns": [
+        {
+          "Spawnpoint": {
+            "x": 7.5,
+            "y": 1.5,
+            "z": 13.5,
+            "normalized": {
+              "x": 0.483368248,
+              "y": 0.0966736451,
+              "z": 0.8700628,
+              "magnitude": 1.0,
+              "sqrMagnitude": 1.0
+            },
+            "magnitude": 15.5161209,
+            "sqrMagnitude": 240.75
+          },
+          "RoomId": "paper_room_3"
+        },
+        {
+          "Spawnpoint": {
+            "x": 7.5,
+            "y": 1.5,
+            "z": 10.5,
+            "normalized": {
+              "x": 0.577350259,
+              "y": 0.115470052,
+              "z": 0.808290362,
+              "magnitude": 1.0,
+              "sqrMagnitude": 0.99999994
+            },
+            "magnitude": 12.9903812,
+            "sqrMagnitude": 168.75
+          },
+          "RoomId": "paper_room_2"
+        }
+      ]
+    },
+    {
+      "Pss": {
+        "PrefabAddress": "TestDoor",
+        "Position": {
+          "x": 6.0,
+          "y": 1.5,
+          "z": 17.0,
+          "normalized": {
+            "x": 0.331674,
+            "y": 0.0829185,
+            "z": 0.939743042,
+            "magnitude": 1.0,
+            "sqrMagnitude": 1.00000012
+          },
+          "magnitude": 18.0900517,
+          "sqrMagnitude": 327.25
+        },
+        "Rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 1.0,
+          "eulerAngles": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "magnitude": 0.0,
+            "sqrMagnitude": 0.0
+          }
+        },
+        "Scale": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0,
+          "normalized": {
+            "x": 0.577350259,
+            "y": 0.577350259,
+            "z": 0.577350259,
+            "magnitude": 1.0,
+            "sqrMagnitude": 0.99999994
+          },
+          "magnitude": 1.73205078,
+          "sqrMagnitude": 3.0
+        }
+      },
+      "Spawns": [
+        {
+          "Spawnpoint": {
+            "x": 4.5,
+            "y": 1.5,
+            "z": 16.5,
+            "normalized": {
+              "x": 0.262111217,
+              "y": 0.0873704,
+              "z": 0.9610744,
+              "normalized": {
+                "x": 0.262111247,
+                "y": 0.08737041,
+                "z": 0.9610745,
+                "magnitude": 1.0,
+                "sqrMagnitude": 1.0
+              },
+              "magnitude": 0.99999994,
+              "sqrMagnitude": 0.9999999
+            },
+            "magnitude": 17.1682854,
+            "sqrMagnitude": 294.75
+          },
+          "RoomId": "paper_room_1"
+        },
+        {
+          "Spawnpoint": {
+            "x": 7.5,
+            "y": 1.5,
+            "z": 16.5,
+            "normalized": {
+              "x": 0.412393063,
+              "y": 0.08247861,
+              "z": 0.9072647,
+              "magnitude": 1.0,
+              "sqrMagnitude": 1.0
+            },
+            "magnitude": 18.186533,
+            "sqrMagnitude": 330.75
+          },
+          "RoomId": "paper_room_3"
+        }
+      ]
+    },
+    {
+      "Pss": {
+        "PrefabAddress": "TestDoor",
+        "Position": {
+          "x": 12.0,
+          "y": 1.5,
+          "z": 11.0,
+          "normalized": {
+            "x": 0.734044552,
+            "y": 0.09175557,
+            "z": 0.672874153,
+            "magnitude": 1.0,
+            "sqrMagnitude": 1.00000012
+          },
+          "magnitude": 16.3477821,
+          "sqrMagnitude": 267.25
+        },
+        "Rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 1.0,
+          "eulerAngles": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "magnitude": 0.0,
+            "sqrMagnitude": 0.0
+          }
+        },
+        "Scale": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0,
+          "normalized": {
+            "x": 0.577350259,
+            "y": 0.577350259,
+            "z": 0.577350259,
+            "magnitude": 1.0,
+            "sqrMagnitude": 0.99999994
+          },
+          "magnitude": 1.73205078,
+          "sqrMagnitude": 3.0
+        }
+      },
+      "Spawns": [
+        {
+          "Spawnpoint": {
+            "x": 10.5,
+            "y": 1.5,
+            "z": 10.5,
+            "normalized": {
+              "x": 0.7035265,
+              "y": 0.10050378,
+              "z": 0.7035265,
+              "magnitude": 1.0,
+              "sqrMagnitude": 1.00000012
+            },
+            "magnitude": 14.9248114,
+            "sqrMagnitude": 222.75
+          },
+          "RoomId": "paper_room_2"
+        },
+        {
+          "Spawnpoint": {
+            "x": 13.5,
+            "y": 1.5,
+            "z": 10.5,
+            "normalized": {
+              "x": 0.7863336,
+              "y": 0.0873704,
+              "z": 0.6115928,
+              "normalized": {
+                "x": 0.7863337,
+                "y": 0.08737041,
+                "z": 0.6115929,
+                "magnitude": 1.0,
+                "sqrMagnitude": 1.00000012
+              },
+              "magnitude": 0.99999994,
+              "sqrMagnitude": 0.99999994
+            },
+            "magnitude": 17.1682854,
+            "sqrMagnitude": 294.75
+          },
+          "RoomId": "paper_room_5"
         }
       ]
     }

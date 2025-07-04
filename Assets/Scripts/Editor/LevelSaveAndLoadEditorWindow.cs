@@ -492,6 +492,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
         string levelSavePath = BASE_LEVEL_JSON_PATH + $"/{levelName}.json";
         LevelSave levelSave = DataConverter.ConvertToLevelSave(levelData);
         SaveAndLoadSystem.SaveAsJSON<LevelSave>(levelSave, levelSavePath);
+        Debug.Log("將關卡asset轉成json成功");
     }
 
     //關卡載入

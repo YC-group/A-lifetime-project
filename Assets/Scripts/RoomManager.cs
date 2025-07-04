@@ -58,8 +58,7 @@ public class RoomManager : MonoBehaviour
         
         Instance = this;
     }
-
-    private void OnDisable()
+    private void OnDestroy()
     {
         if (Instance == this)
         {
@@ -82,8 +81,8 @@ public class RoomManager : MonoBehaviour
         if (allRooms.ContainsKey(targetRoomId))
         {
             currentRoomId = targetRoomId;
-
-            RoomSave roomSave = allRooms[targetRoomId];
+            roomIsVisited[targetRoomId] = true;
+            CheckNearRoom();
         }
         else
         {
@@ -120,7 +119,14 @@ public class RoomManager : MonoBehaviour
 
         foreach(string neighbor in neighbors)
         {
-
+            if (roomIsVisited[neighbor])
+            {
+                //房間已經造訪過
+            }
+            else
+            {
+                LoadRoom(neighbor);
+            }
         }
     }
 
@@ -165,9 +171,9 @@ public class RoomManager : MonoBehaviour
             roomIsAlert.Add(roomSave.RoomId, false);
             roomIsVisited.Add(roomSave.RoomId, false);
         }
-        roomIsVisited[currentRoomId] = true;
 
-        
+        roomIsVisited[currentRoomId] = true;
+               
 
         //建立房間之間的連結
         List<DoorSave> doorSaves = levelSave.Doors;
@@ -210,14 +216,17 @@ public class RoomManager : MonoBehaviour
             door.SetSpawns(doorSave.Spawns);
         }
         Debug.Log("door生成完畢!");
-
-        
-
+                
         //開始房間生成
         await LoadRoom(currentRoomId);
+        Debug.Log("初始房間生成完畢!");
+
+        //周圍房間確認
+        CheckNearRoom();
 
         //玩家生成
         await PlayerSpawn();
+        Debug.Log("玩家生成完畢!");
 
         Debug.Log("關卡載入完畢!");
     }

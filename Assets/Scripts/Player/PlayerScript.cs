@@ -123,23 +123,23 @@ public class PlayerScript : MonoBehaviour
                     Door door = null;
                     foreach (KeyValuePair<string, List<Door>> kvp in doorDict)
                     {
-                        foreach(var v in kvp.Value)
+                        foreach(Door doorComponent in kvp.Value)
                         {
-                            //Debug.Log($"Door value: {v}");
                             if(door != null)
                             {
-                                if(door.gameObject != v.gameObject)
+                                if(door.gameObject != doorComponent.gameObject)
                                 {
+                                    Debug.Log($"{door.gameObject.name};{doorComponent.gameObject.name}");
                                     Debug.LogError("非重複的門");
                                 }
                             }
                             else
                             {
-                                door = v;
+                                door = doorComponent;
                             }
                         }
                     }
-                    // door.OpenDoor();
+                    if(door != null) door.OpenDoor();
 
                     currentCell += direction * playerSO.moveDistance * step;
                     Vector3 dest = grid.GetCellCenterWorld(currentCell);
@@ -225,8 +225,7 @@ public class PlayerScript : MonoBehaviour
 
         Dictionary<string, List<Door>> doorDict = new Dictionary<string, List<Door>>
         {
-            {"door1", new List<Door>()},
-            {"door2", new List<Door>()}
+            {"door1", new List<Door>()}
         };
 
         Dictionary<string, object> result = new()
