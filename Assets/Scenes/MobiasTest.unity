@@ -1930,6 +1930,7 @@ MonoBehaviour:
   cardPanel: {fileID: 733797189}
   weaponItems:
   - {fileID: 11400000, guid: 9a0471b173231c94e8e14d71bb71918e, type: 2}
+  - {fileID: 11400000, guid: a0370c3e9548a2a40a64755d8f1472ad, type: 2}
 --- !u!114 &144464037
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5895,8 +5896,11 @@ MonoBehaviour:
   enemySO: {fileID: 11400000, guid: e450abdacdb07a045b1cfbb39978c86e, type: 2}
   grid: {fileID: 0}
   isAlert: 0
+  isStun: 0
+  stunRound: 0
   moveMode: 0
   movePriority: 0
+  targetPosition: {x: 0, y: 0, z: 0}
   eyeHeight: 1.5
   viewRadiusForward: 6
   viewAngleForward: 90
@@ -6637,8 +6641,11 @@ MonoBehaviour:
   enemySO: {fileID: 11400000, guid: e450abdacdb07a045b1cfbb39978c86e, type: 2}
   grid: {fileID: 0}
   isAlert: 0
+  isStun: 0
+  stunRound: 0
   moveMode: 0
   movePriority: 0
+  targetPosition: {x: 0, y: 0, z: 0}
   eyeHeight: 1.5
   viewRadiusForward: 6
   viewAngleForward: 27
@@ -13648,7 +13655,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51f450f1686508145893fe4c69baa02c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  roundCounts: 0
   SHOWROUNDSTATE: 1
+  SHOWENEMYSTUNSTATE: 1
 --- !u!4 &920858245
 Transform:
   m_ObjectHideFlags: 0
@@ -28416,6 +28425,7 @@ GameObject:
   - component: {fileID: 1960714107}
   - component: {fileID: 1960714106}
   - component: {fileID: 1960714109}
+  - component: {fileID: 1960714110}
   m_Layer: 0
   m_Name: TestPlayer(Clone)
   m_TagString: Player
@@ -28506,9 +28516,35 @@ MonoBehaviour:
   playerSO: {fileID: 11400000, guid: 392ebe829a483cf4187e06ec49953088, type: 2}
   grid: {fileID: 54626892}
   FREEMOVE: 1
+  pocketList: []
   buildDetectionBox: {x: 0.9, y: 1.5, z: 0.8}
   moveDetectionBox: {x: 0.9, y: 1.5, z: 0.9}
   overlapDetectionBoxYOffset: 2
+--- !u!143 &1960714110
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1960714105}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Height: 2
+  m_Radius: 0.5
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1973275019
 GameObject:
   m_ObjectHideFlags: 0
@@ -29224,8 +29260,11 @@ MonoBehaviour:
   enemySO: {fileID: 11400000, guid: e450abdacdb07a045b1cfbb39978c86e, type: 2}
   grid: {fileID: 0}
   isAlert: 0
+  isStun: 0
+  stunRound: 0
   moveMode: 0
   movePriority: 0
+  targetPosition: {x: 0, y: 0, z: 0}
   eyeHeight: 1.5
   viewRadiusForward: 10
   viewAngleForward: 59

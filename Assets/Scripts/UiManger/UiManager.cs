@@ -2,80 +2,73 @@
 using UnityEngine.UI;
 using TMPro;
 using System;
+using UnityEngine.InputSystem;
+
 /// <summary>
 /// 顯示道具腳本 - mobias
 /// </summary>
-
 public class UIManager : MonoBehaviour
 {
-
     private GameObject player;
-    public GameObject cardPrefab;         // 🃏 卡牌預製物
-    public RectTransform cardPanel;       // 📦 放卡牌的 Panel（要拉 Panel 的 RectTransform）
-    public ItemData[] weaponItems; // 在 Inspector 中拉入 ScriptableObject 陣列
+
+    public static UIManager Instance;
+    public bool isCardLocking = false; // ✅ UI 鎖定狀態（鎖定操作）
+    public bool isPlayerLocked = false; // ✅ 玩家是否可移動
+    public ItemScript currentUsingCard;
+
+    [Header("UI 元件")]
+    public GameObject cardPrefab;             // 🃏 卡牌預製物
+    public RectTransform cardPanel;           // 📦 放卡牌的 Panel
+
+    [Header("道具設定")]
+    public ItemData[] weaponItems;            // 在 Inspector 中拉入 ScriptableObject 陣列
 
     void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player");
+        player = GameObject.FindGameObjectWithTag("Item");
 
-        // 設定 Panel 錨點（保持）
-        cardPanel.anchorMin = new Vector2(0.5f, 0f);
-        cardPanel.anchorMax = new Vector2(0.5f, 0f);
-        cardPanel.pivot = new Vector2(0.5f, 0f);
-        cardPanel.anchoredPosition = new Vector2(0, 0);
-        cardPanel.sizeDelta = new Vector2(600, 120);
-
-        // ✅ 依照 ScriptableObject 清單建立卡片
+        SetupCardPanelLayout();
+        Instance = this;
         foreach (var item in weaponItems)
         {
             if (item != null)
                 CreateCard(item);
             else
-                Debug.LogWarning($"item 是空的");
+                Debug.LogWarning("⚠️ item 是空的，請確認設定");
         }
     }
 
-
+    // 建立一張卡片，並附加對應的腳本與初始化
     public void CreateCard(ItemData itemData)
     {
         GameObject card = Instantiate(cardPrefab, cardPanel);
 
-        // 🔒 設定 UI 名稱
-        TextMeshProUGUI tmp = card.GetComponentInChildren<TextMeshProUGUI>();
+        // 設定 UI 顯示名稱
+        var tmp = card.GetComponentInChildren<TextMeshProUGUI>();
         if (tmp != null)
             tmp.text = itemData.itemName;
         else
             Debug.LogWarning("❗ 無法找到 TextMeshProUGUI 元件，請確認 prefab 結構");
 
-        ItemScript itemScript = null;
-        string fullClassName = itemData.itemName;
-
-        Type type = null;
-        foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-        {
-            type = assembly.GetType(fullClassName);
-            if (type != null)
-                break;
-        }
-
+        // 根據 itemData.itemName 找出對應腳本類別
+        Type type = GetItemScriptType(itemData.itemName);
         if (type == null)
         {
-            Debug.LogError($"❌ 找不到類別：{fullClassName}，請確認類別名稱與 itemName 完全一致，或是否需要補上命名空間");
+            Debug.LogError($"❌ 找不到類別：{itemData.itemName}，請確認類名是否正確");
             return;
         }
 
-        // ✅ 加上腳本並初始化
-        itemScript = (ItemScript)card.AddComponent(type);
+        // 加上腳本並初始化
+        ItemScript itemScript = (ItemScript)card.AddComponent(type);
         itemScript.ItemInitialize(itemData);
 
-        // ✅ 統一傳入 CanvasGroup
+        // 設定 CanvasGroup
         var canvasGroup = card.GetComponent<CanvasGroup>();
         if (canvasGroup == null)
             canvasGroup = card.AddComponent<CanvasGroup>();
-
         itemScript.cardCanvasGroup = canvasGroup;
 
-        // ✅ 設定拖曳控制
+        // 設定拖曳控制
         var drag = card.GetComponent<CardDragHandler>();
         if (drag != null)
         {
@@ -89,15 +82,48 @@ public class UIManager : MonoBehaviour
         }
     }
 
-
-
-
-    // 修改 UIManager
-    public void useItem(ItemScript script)
+    // 根據道具名稱尋找對應腳本類別
+    private Type GetItemScriptType(string className)
     {
-        Debug.Log("🃏 使用了卡片：「" + script.itemName + "」");
-        script.Use(); // ✅ 多型解法，只呼叫 Use，不管它是誰
+        foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+        {
+            var type = assembly.GetType(className);
+            if (type != null)
+                return type;
+        }
+        return null;
     }
 
+    // 設定卡片面板位置與大小
+    private void SetupCardPanelLayout()
+    {
+        cardPanel.anchorMin = new Vector2(0.5f, 0f);
+        cardPanel.anchorMax = new Vector2(0.5f, 0f);
+        cardPanel.pivot = new Vector2(0.5f, 0f);
+        cardPanel.anchoredPosition = Vector2.zero;
+        cardPanel.sizeDelta = new Vector2(600, 120);
+    }
 
+    // 呼叫道具的 Use() 行為
+    public void useItem(ItemScript script)
+    {
+        UIManager.Instance?.LockCardAndPlayer();
+        script.Use();
+    }
+
+    public void LockCardAndPlayer()
+    {
+        isCardLocking = true;
+        isPlayerLocked = true;
+    }
+
+    public void UnlockCardAndPlayer()
+    {
+        isCardLocking = false;
+        isPlayerLocked = false;
+    }
+    public bool CanUseNewCard()
+    {
+        return !isCardLocking && currentUsingCard == null;
+    }
 }

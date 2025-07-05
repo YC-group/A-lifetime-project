@@ -38,7 +38,7 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         // 自動抓 UiManager
         if (UiManager == null)
         {
-            UiManager = FindObjectOfType<UIManager>();
+            UiManager = FindFirstObjectByType<UIManager>();
             if (UiManager == null) Debug.LogWarning("⚠ 無法自動找到 UiManager！");
         }
 
@@ -52,14 +52,19 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     // 開始拖曳時呼叫
     public void OnBeginDrag(PointerEventData eventData)
     {
+
         originalPos = rectTransform.anchoredPosition; // 記錄原始位置
-        Debug.Log("📌 開始拖曳，原始位置：" + originalPos);
         canvasGroup.blocksRaycasts = false; // 關閉 Raycast 擋住判定（讓丟到 Drop 區可以偵測）
     }
 
     // 拖曳過程中持續呼叫
     public void OnDrag(PointerEventData eventData)
     {
+        if (UIManager.Instance != null && UIManager.Instance.isCardLocking)
+        {
+            Debug.Log("🚫 卡片鎖定中，不能使用其他卡片");
+            return;
+        }
         // 如果已經使用過或物件失效就不處理
         if (used || rectTransform == null || canvas == null) return;
 
@@ -114,7 +119,7 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     public void ResetUsedFlag()
     {
         used = false;
-        Debug.Log("🔄 卡片已重設為未使用狀態");
+
     }
 
 }

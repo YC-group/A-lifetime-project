@@ -14,21 +14,16 @@ using Unity.VisualScripting;
 public class PlayerScript : MonoBehaviour
 {
     public static PlayerScript Instance;
-    
-    [SerializeField] private PlayerData playerSO; // 序列化玩家物件
-    
     public bool FREEMOVE = false; // 測試移動用，會讓回合維持在玩家回合
-    
     public Grid grid; // 網格系統
+    public List<ItemScript> pocketList;
+
+    [SerializeField] private PlayerData playerSO; // 序列化玩家物件
     private InputSystemActions inputActions; // InputSystem 的 Action map
-    
     private bool isMoving = false; // 判斷玩家是否正在移動
     private Vector2 moveVector; // 移動方向
     private Vector3Int currentCell;
-    
-    public List<ItemScript> pocketList;
 
-    
     public static PlayerScript GetInstance()  // Singleton
     {
         if (Instance == null)
@@ -105,6 +100,12 @@ public class PlayerScript : MonoBehaviour
     // WASD 移動行為
     public void Move(InputAction.CallbackContext ctx)
     {
+        // ✅ 檢查 UI 是否鎖定玩家
+        if (UIManager.Instance != null && UIManager.Instance.isPlayerLocked)
+        {
+            Debug.Log("🚫 玩家被鎖定，不能移動！");
+            return;
+        }
         if (ctx.performed && !isMoving && GameManager.Instance.GetCurrentRound().Equals(RoundState.PlayerTurn))
         {
             moveVector = ctx.ReadValue<Vector2>();
