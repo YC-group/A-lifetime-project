@@ -18,13 +18,13 @@ public enum RoundState
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager Instance;
+    private static GameManager Instance;
     private RoundState currentRound;
     [SerializeField] private int roundCounts;
     public bool SHOWROUNDSTATE = true;
     public bool SHOWENEMYSTUNSTATE = true;
     
-    private static GameManager GetInstance() // Singleton
+    public static GameManager GetInstance() // Singleton
     {
         if (Instance == null)
         {

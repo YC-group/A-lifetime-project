@@ -6,25 +6,27 @@ using UnityEngine;
 /// </summary>
 public abstract class ItemScript : MonoBehaviour
 {
-    [SerializeField] protected ItemType itemType;
     [SerializeField] public string itemName;
+    [SerializeField] protected ItemType itemType;
     [SerializeField] protected string itemDescription;
     [SerializeField] protected int damage;
     [SerializeField] protected float range;
+    
+    private PlayerScript playerScript;
     
     public ItemData itemSO;
     public CanvasGroup cardCanvasGroup; // 所有子類可共用此 CanvasGroup（用來控制 UI 顯示）
 
     public virtual void AddItemToPocket() // 將物品加入口袋
     {
-        PlayerScript.Instance.pocketList.Add(this);
-        Debug.Log("Pocket Counts: " + PlayerScript.Instance.pocketList.Count);
+        playerScript.pocketList.Add(this);
+        Debug.Log("Pocket Counts: " + playerScript.pocketList.Count);
         Destroy(this.gameObject);
     }
 
     public virtual void RemoveItemFromPocket() // 將物品從口袋刪除
     {
-        PlayerScript.Instance.pocketList.Remove(this);
+        playerScript.pocketList.Remove(this);
     }
 
     public virtual void DropItem() // 掉落物品
@@ -47,7 +49,7 @@ public abstract class ItemScript : MonoBehaviour
 
     public abstract void Attack(); // 讓子物件實作攻擊
     
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other) // 撿起道具
     {
         if (other.CompareTag("Player"))
         {

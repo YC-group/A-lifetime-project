@@ -21,41 +21,52 @@ public enum MoveMode // 行為模式列舉
 public class EnemyScript : MonoBehaviour
 {
     [SerializeField] public EnemyData enemySO;
-    [SerializeField] private Grid grid;
     
-    private GameObject gameManager;
+    private GameManager gameManager;
+    private GridManager gridManager;
     private Vector2 moveVector;
     private Vector3Int currentCell;
     private NavMeshPath path;
-    private Transform player;
+    private PlayerScript playerScript;
     private NavMeshAgent agent;
 
-    [Header("狀態")] public bool isAlert; // 警戒狀態
+    [Header("狀態")] 
+    public bool isAlert; // 警戒狀態
     public bool isStun; // 擊暈狀態
     public int stunRound = 0; // 擊暈持續回合
 
-    [Header("移動模式")] public MoveMode moveMode;
+    [Header("移動模式")] 
+    public MoveMode moveMode;
     public int movePriority;
     public Vector3 targetPosition; // 移動到下個位置
 
-    [Header("視野高度")] public float eyeHeight = 1.5f; // 射線發射高度
+    [Header("視野高度")] 
+    public float eyeHeight = 1.5f; // 射線發射高度
 
-    [Header("視野設定(前)")] public float viewRadiusForward = 6f; // 偵測半徑
-    [Range(0f, 360f)] public float viewAngleForward = 90f; // 偵測角度
+    [Header("視野設定(前)")] 
+    public float viewRadiusForward = 6f; // 偵測半徑
+    [Range(0f, 360f)] 
+    public float viewAngleForward = 90f; // 偵測角度
 
-    [Header("視野設定(側邊)")] public float viewRadiusBack = 4f; // 偵測半徑
-    [Range(0f, 360f)] public float viewAngleBack = 270f; // 偵測角度
+    [Header("視野設定(側邊)")] 
+    public float viewRadiusBack = 4f; // 偵測半徑
+    [Range(0f, 360f)] 
+    public float viewAngleBack = 270f; // 偵測角度
 
-    [Header("視野設定(警戒)")] public float viewRadiusAlert = 10f; // 偵測半徑
-    [Range(0f, 360f)] public float viewAngleAlert = 360f; // 偵測角度
+    [Header("視野設定(警戒)")] 
+    public float viewRadiusAlert = 10f; // 偵測半徑
+    [Range(0f, 360f)] 
+    public float viewAngleAlert = 360f; // 偵測角度
     
-    public Coroutine rotationCoroutine = null;
+    public Coroutine rotationCoroutine = null; 
+    public List<ItemScript> pocketList; // 口袋
 
     void Start()
     {
+        gameManager = GameManager.GetInstance();
+        gridManager = GridManager.GetInstance();
+        playerScript = PlayerScript.GetInstance();
         EnemyDataInitializer();
-        GameObject go = PlayerScript.Instance.gameObject;
-        if (go != null) player = go.transform;
     }
 
     void Update()
@@ -66,10 +77,10 @@ public class EnemyScript : MonoBehaviour
             //Debug.Log("偵測到玩家");
         }
         
-        if (GameManager.Instance.GetCurrentRound() == RoundState.EnemyTurn)
+        if (gameManager.GetCurrentRound() == RoundState.EnemyTurn)
         {
             // 經過一回合恢復狀態
-            if (GameManager.Instance.GetAfterRoundsCounts() >= stunRound + 3 && isStun)
+            if (gameManager.GetAfterRoundsCounts() >= stunRound + 3 && isStun)
             {
                 isStun = false;
             }
@@ -81,12 +92,10 @@ public class EnemyScript : MonoBehaviour
         isAlert = false;
         isStun = false;
         targetPosition = transform.position;
-        gameManager = GameObject.FindWithTag("GameManager");
         movePriority = enemySO.movePriority;
         // 設定移動網格
-        grid = GameObject.FindWithTag("MoveGrid").GetComponent<Grid>();
-        currentCell = grid.WorldToCell(transform.position);
-        transform.position = grid.GetCellCenterWorld(currentCell);
+        currentCell = gridManager.moveGrid.WorldToCell(transform.position);
+        transform.position = gridManager.moveGrid.GetCellCenterWorld(currentCell);
         // 設定移動速度與加速度
         agent = gameObject.GetComponent<NavMeshAgent>();
         agent.speed = enemySO.speed;
@@ -111,8 +120,9 @@ public class EnemyScript : MonoBehaviour
                     { Vector3Int.back, Vector3Int.right, Vector3Int.forward, Vector3Int.left, Vector3Int.zero };
         }
     }
-
-    public IEnumerator SmoothRotation(Vector3Int direction) // 平滑轉向動畫
+    
+    // HACK: 平滑轉向動畫
+    public IEnumerator SmoothRotation(Vector3Int direction)
     {
         Quaternion targetRotation = Quaternion.LookRotation(direction); // 轉向方向
         // Debug.Log("targetRotation : " + targetRotation);
@@ -128,16 +138,10 @@ public class EnemyScript : MonoBehaviour
 
     public bool DetectPlayer()
     {
-        if (player == null)
-        {
-            Debug.LogWarning("❌ 玩家尚未指定或找不到 Player Tag");
-            return false;
-        }
-
         Vector3 origin = transform.position + Vector3.up * eyeHeight;
 
         // 取得玩家的水平位置（忽略高度差）
-        Vector3 playerPos = new Vector3(player.position.x, origin.y, player.position.z);
+        Vector3 playerPos = new Vector3(playerScript.transform.position.x, origin.y, playerScript.transform.position.z);
         Vector3 toPlayer = playerPos - origin;
         float distanceToPlayer = toPlayer.magnitude;
         float angle = Vector3.Angle(transform.forward, toPlayer);
@@ -224,6 +228,7 @@ public class EnemyScript : MonoBehaviour
         isAlert = true;
     }
 
+    // HACK: 臨時擊殺處理
     //敵人死亡
     public void DestroyEnemy()
     {
@@ -231,7 +236,7 @@ public class EnemyScript : MonoBehaviour
         Destroy(gameObject);
     }
     
-    // 敵人暈眩狀態表現
+    // TODO: 敵人暈眩示意
     // public void ShowEnemyIsStun()
     // {
     //     if (GameManager.Instance.SHOWENEMYSTUNSTATE)

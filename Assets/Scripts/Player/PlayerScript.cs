@@ -13,16 +13,21 @@ using Unity.VisualScripting;
 [RequireComponent(typeof(CharacterController))]
 public class PlayerScript : MonoBehaviour
 {
-    public static PlayerScript Instance;
+    private static PlayerScript Instance;
+    
     public bool FREEMOVE = false; // 測試移動用，會讓回合維持在玩家回合
-    public Grid grid; // 網格系統
+    
     public List<ItemScript> pocketList;
 
     [SerializeField] private PlayerData playerSO; // 序列化玩家物件
+    
     private InputSystemActions inputActions; // InputSystem 的 Action map
     private bool isMoving = false; // 判斷玩家是否正在移動
     private Vector2 moveVector; // 移動方向
-    private Vector3Int currentCell;
+    private Vector3Int currentCell; // 當下網格位置
+    private GameManager gameManager; // 遊戲系統
+    private GridManager gridManager; // 網格系統
+    private Grid moveGrid; // 移動網格
 
     public static PlayerScript GetInstance()  // Singleton
     {
@@ -62,9 +67,12 @@ public class PlayerScript : MonoBehaviour
 
     private void Start()
     {
-        grid = GameObject.FindWithTag("MoveGrid").GetComponent<Grid>();
-        currentCell = grid.WorldToCell(transform.position);
-        transform.position = grid.GetCellCenterWorld(currentCell);
+        gameManager = GameManager.GetInstance();
+        gridManager = GridManager.GetInstance();
+        moveGrid = gridManager.moveGrid;
+        currentCell = moveGrid.WorldToCell(transform.position);
+        gridManager.AddGameObjectToMoveGrid(this.gameObject);
+        transform.position = moveGrid.GetCellCenterWorld(currentCell);
         pocketList = new List<ItemScript>();
         // 註冊移動行為
         inputActions = new InputSystemActions();
@@ -76,28 +84,31 @@ public class PlayerScript : MonoBehaviour
     }
 
     // Space 跳過行為
+    // NOTE: 使用 InputAction
     public void Skip(InputAction.CallbackContext ctx)
     {
-        if (ctx.performed && GameManager.Instance.GetCurrentRound().Equals(RoundState.PlayerTurn))
+        if (ctx.performed && gameManager.GetCurrentRound().Equals(RoundState.PlayerTurn))
         {
-            if (GridManager.Instance.IsOccupied(grid.WorldToCell(transform.position)))
+            if (gridManager.IsOccupiedByEnemy(moveGrid.WorldToCell(transform.position)))
             {
-                GameObject enemy = GridManager.Instance.GetGameObjectFromMoveGrid(grid.WorldToCell(transform.position));
+                GameObject enemy = gridManager.GetGameObjectFromMoveGrid(moveGrid.WorldToCell(transform.position));
                 if (enemy.GetComponent<EnemyScript>().isStun == true)
                 {
                     enemy.GetComponent<EnemyScript>().DestroyEnemy();
                 }
                 else
                 {
-                    Debug.Log("GameOver");
+                    Debug.Log("Game Over");
+                    // TODO: 玩家死亡
                 }
             }
-            GameManager.Instance.SetToNextRound();
+            gameManager.SetToNextRound();
         }
     }
 
 
     // WASD 移動行為
+    // NOTE: 使用 InputAction
     public void Move(InputAction.CallbackContext ctx)
     {
         // ✅ 檢查 UI 是否鎖定玩家
@@ -106,7 +117,7 @@ public class PlayerScript : MonoBehaviour
             Debug.Log("🚫 玩家被鎖定，不能移動！");
             return;
         }
-        if (ctx.performed && !isMoving && GameManager.Instance.GetCurrentRound().Equals(RoundState.PlayerTurn))
+        if (ctx.performed && !isMoving && gameManager.GetCurrentRound().Equals(RoundState.PlayerTurn))
         {
             moveVector = ctx.ReadValue<Vector2>();
             //Debug.Log("輸入向量：" + moveVector);
@@ -141,18 +152,18 @@ public class PlayerScript : MonoBehaviour
                         }
                     }
                     if(door != null) door.OpenDoor();
-
+                    
                     currentCell += direction * playerSO.moveDistance * step;
-                    Vector3 dest = grid.GetCellCenterWorld(currentCell);
+                    gridManager.UpdateGameObjectFromMoveGrid(this.gameObject, currentCell); // 更新在網格系統的所在位置
+                    Vector3 dest = moveGrid.GetCellCenterWorld(currentCell);
                     enemyCheck(enemyDict, step);
                     StartCoroutine(SmoothMove(dest));
                     if (!FREEMOVE)
                     {
-                        GameManager.Instance.SetToNextRound(); // 敵人回合開始
+                        gameManager.SetToNextRound(); // 敵人回合開始
                     }
                 }
                 return;
-                
             }
         }
     }
@@ -175,8 +186,8 @@ public class PlayerScript : MonoBehaviour
         transform.position = destination; // 確保精準落格
         isMoving = false;
     }
-
-    // 近戰攻擊行為
+    
+    // HACK: 近戰攻擊行為
     public void MeleeAttack(EnemyScript enemy)
     {
         if (enemy.isStun)
@@ -186,7 +197,7 @@ public class PlayerScript : MonoBehaviour
         else
         {
             enemy.isStun = true;
-            enemy.stunRound = GameManager.Instance.GetAfterRoundsCounts();
+            enemy.stunRound = gameManager.GetAfterRoundsCounts();
             Debug.Log("擊暈敵人");
         }
     }
@@ -245,7 +256,7 @@ public class PlayerScript : MonoBehaviour
         {
             // ========= moveX: 格子中心 OverlapBox =========
             Vector3Int checkCell = currentCell + forwardGridDir * i;
-            Vector3 worldPos = grid.GetCellCenterWorld(checkCell)+Vector3.up* overlapDetectionBoxYOffset;
+            Vector3 worldPos = moveGrid.GetCellCenterWorld(checkCell)+Vector3.up* overlapDetectionBoxYOffset;
 
             Collider[] hitsA = Physics.OverlapBox(worldPos, moveDetectionBox); // 格子中心偵測
             foreach (var hit in hitsA)
@@ -310,10 +321,10 @@ public class PlayerScript : MonoBehaviour
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
-        if (grid == null) return;
+        if (moveGrid == null) return;
 
         // 取得角色目前格子
-        Vector3Int currentCellGizmo = grid.WorldToCell(transform.position);
+        Vector3Int currentCellGizmo = moveGrid.WorldToCell(transform.position);
 
         // 根據移動向量計算方向（X,Z）
         Vector3Int forwardGridDir = new Vector3Int(Mathf.RoundToInt(moveVector.x), 0, Mathf.RoundToInt(moveVector.y));
@@ -325,7 +336,7 @@ public class PlayerScript : MonoBehaviour
         for (int i = 1; i <= 2; i++)
         {
             Vector3Int targetCell = currentCellGizmo + forwardGridDir * i;
-            Vector3 cellCenter = grid.GetCellCenterWorld(targetCell)+ Vector3.up* overlapDetectionBoxYOffset;
+            Vector3 cellCenter = moveGrid.GetCellCenterWorld(targetCell)+ Vector3.up* overlapDetectionBoxYOffset;
             Gizmos.DrawCube(cellCenter, moveDetectionBox);
         }
 
@@ -334,7 +345,7 @@ public class PlayerScript : MonoBehaviour
         for (int i = 1; i <= 2; i++)
         {
             Vector3Int firstFrontCell = currentCellGizmo + forwardGridDir * i;
-            Vector3 frontCenter = grid.GetCellCenterWorld(firstFrontCell);
+            Vector3 frontCenter = moveGrid.GetCellCenterWorld(firstFrontCell);
 
             // 保護：避免 zero 向量導致 Quaternion.LookRotation 出錯
             if (forwardDir == Vector3.zero) return;
