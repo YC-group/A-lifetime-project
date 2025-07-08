@@ -11,7 +11,6 @@ public class UIManager : MonoBehaviour
 {
     private GameObject player;
 
-    public static UIManager Instance;
     public bool isCardLocking = false; // ✅ UI 鎖定狀態（鎖定操作）
     public bool isPlayerLocked = false; // ✅ 玩家是否可移動
     public ItemScript currentUsingCard;
@@ -28,7 +27,6 @@ public class UIManager : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Item");
 
         SetupCardPanelLayout();
-        Instance = this;
         foreach (var item in weaponItems)
         {
             if (item != null)
@@ -107,23 +105,19 @@ public class UIManager : MonoBehaviour
     // 呼叫道具的 Use() 行為
     public void useItem(ItemScript script)
     {
-        UIManager.Instance?.LockCardAndPlayer();
+
+        currentUsingCard = script;
+
+        if (script is RangeWeapon weapon)
+        {
+            var playerScript = PlayerScript.GetInstance();
+            if (playerScript != null)
+                playerScript.currentCard = weapon;
+            else
+                Debug.LogError("❌ 找不到 PlayerScript 實例");
+        }
+        // 執行 Use 行為
         script.Use();
     }
 
-    public void LockCardAndPlayer()
-    {
-        isCardLocking = true;
-        isPlayerLocked = true;
-    }
-
-    public void UnlockCardAndPlayer()
-    {
-        isCardLocking = false;
-        isPlayerLocked = false;
-    }
-    public bool CanUseNewCard()
-    {
-        return !isCardLocking && currentUsingCard == null;
-    }
 }

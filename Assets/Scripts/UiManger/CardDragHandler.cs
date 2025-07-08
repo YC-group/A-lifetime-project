@@ -60,11 +60,7 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     // 拖曳過程中持續呼叫
     public void OnDrag(PointerEventData eventData)
     {
-        if (UIManager.Instance != null && UIManager.Instance.isCardLocking)
-        {
-            Debug.Log("🚫 卡片鎖定中，不能使用其他卡片");
-            return;
-        }
+
         // 如果已經使用過或物件失效就不處理
         if (used || rectTransform == null || canvas == null) return;
 
@@ -92,7 +88,7 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     {
         // 如果卡片未使用，就播放回原位動畫
 
-        
+
         StartCoroutine(SmoothReturn());
 
 

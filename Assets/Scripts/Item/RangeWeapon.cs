@@ -16,49 +16,14 @@ public class RangeWeapon : ItemScript
 
     protected virtual void Start()
     {
-        inputActions = new InputSystemActions(); // ✅ 建立實例
-        // 綁定事件
-        inputActions.Item.Fire.performed += OnFire;
-        inputActions.Item.Cancel.performed += OnCancel;
-        inputActions.Item.SelectTarget.performed += OnSelectTarget;
-        inputActions.Enable(); // ✅ 啟用整組 input
-    }
-
-    protected virtual void OnDisable()
-    {
-
-        inputActions.Item.Fire.performed -= OnFire;
-        inputActions.Item.Cancel.performed -= OnCancel;
-        inputActions.Item.SelectTarget.performed -= OnSelectTarget;
-        inputActions.Disable();
     }
 
     protected virtual void Update()
     {
-        if (selectEnemy)
-        {
-            HandleSelectEnemy();
-        }
+
     }
 
-    private void OnFire(InputAction.CallbackContext ctx)
-    {
-        if (!selectEnemy) return;
-
-        Debug.Log("✅ 確認發射！");
-        Fire();
-        Debug.Log("剩餘子彈：" + bulletCount);
-    }
-
-    private void OnCancel(InputAction.CallbackContext ctx)
-    {
-        if (!selectEnemy) return;
-
-        Debug.Log("❌ 攻擊取消");
-        CancelAttackAndRestore();
-    }
-
-    private void OnSelectTarget(InputAction.CallbackContext ctx)
+    public void SelectTarget()
     {
         if (!selectEnemy) return;
 
@@ -107,16 +72,18 @@ public class RangeWeapon : ItemScript
 
     public void CancelAttackAndRestore()
     {
+        Debug.Log("❌ 攻擊取消");
         selectedTargets.Clear();
         selectEnemy = false;
         RestoreCardDisplay();
         var dragHandler = GetComponent<CardDragHandler>();
         dragHandler?.ResetUsedFlag();
-        UIManager.Instance?.UnlockCardAndPlayer();
     }
 
     public virtual void Fire()
     {
+        Debug.Log("✅ 確認發射！");
+        
         foreach (Transform enemy in selectedTargets)
         {
             Debug.Log($"➡ 攻擊敵人：{enemy.name}");
@@ -135,10 +102,10 @@ public class RangeWeapon : ItemScript
         {
             Destroy(gameObject);
         }
-        UIManager.Instance?.UnlockCardAndPlayer();
+        Debug.Log("剩餘子彈：" + bulletCount);
     }
 
-    protected virtual void HandleSelectEnemy() { }
+
 
     public override void ItemInitialize(ItemData data)
     {

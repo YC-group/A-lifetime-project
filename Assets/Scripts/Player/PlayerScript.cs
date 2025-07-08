@@ -14,12 +14,11 @@ using Unity.VisualScripting;
 public class PlayerScript : MonoBehaviour
 {
     private static PlayerScript Instance;
-    
+   
     public bool FREEMOVE = false; // 測試移動用，會讓回合維持在玩家回合
-    
     public List<ItemScript> pocketList;
     public Vector3Int currentCell; // 當下網格位置
-
+    public RangeWeapon currentCard;
     [SerializeField] private PlayerData playerSO; // 序列化玩家物件
     
     private InputSystemActions inputActions; // InputSystem 的 Action map
@@ -28,6 +27,7 @@ public class PlayerScript : MonoBehaviour
     private GameManager gameManager; // 遊戲系統
     private GridManager gridManager; // 網格系統
     private Grid moveGrid; // 移動網格
+
 
     public static PlayerScript GetInstance()  // Singleton
     {
@@ -79,6 +79,24 @@ public class PlayerScript : MonoBehaviour
         inputActions.Player.Move.canceled += Move;
         inputActions.Player.Skip.performed += Skip;
         inputActions.Player.Skip.canceled += Skip;
+        inputActions.Player.Fire.performed += ctx =>
+        {
+            if (currentCard != null && currentCard.selectEnemy)
+                currentCard.Fire();
+        };
+
+        inputActions.Player.Cancel.performed += ctx =>
+        {
+            if (currentCard != null && currentCard.selectEnemy)
+                currentCard.CancelAttackAndRestore();
+        };
+
+        inputActions.Player.Select.performed += ctx =>
+        {
+
+            if (currentCard != null && currentCard.selectEnemy)
+                currentCard.SelectTarget();
+        };
         inputActions.Enable();
     }
 
@@ -110,12 +128,7 @@ public class PlayerScript : MonoBehaviour
     // NOTE: 使用 InputAction
     public void Move(InputAction.CallbackContext ctx)
     {
-        // ✅ 檢查 UI 是否鎖定玩家
-        if (UIManager.Instance != null && UIManager.Instance.isPlayerLocked)
-        {
-            Debug.Log("🚫 玩家被鎖定，不能移動！");
-            return;
-        }
+
         if (ctx.performed && !isMoving && gameManager.GetCurrentRound().Equals(RoundState.PlayerTurn))
         {
             moveVector = ctx.ReadValue<Vector2>();
