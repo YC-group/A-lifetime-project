@@ -186,10 +186,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 6508207981371737692, guid: f390d2617ad1a8f459c0b0acaeed5fba, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1393273802}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f390d2617ad1a8f459c0b0acaeed5fba, type: 3}
 --- !u!1 &77025252
 GameObject:
@@ -243,7 +240,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!65 &124703963
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -281,7 +278,7 @@ MonoBehaviour:
   isAlert: 0
   isStun: 0
   stunRound: 1
-  moveMode: 0
+  moveMode: 1
   movePriority: 0
   targetPosition: {x: 0, y: 0, z: 0}
   eyeHeight: 1.5
@@ -304,7 +301,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0b0be5f9a1db8f46bdfdb280166727d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IsPathVisualize: 1
+  IsPathVisualize: 0
 --- !u!195 &124703966
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -470,10 +467,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 4492877457616828392, guid: f1733c798e44b9b469dc5cb795fd6580, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1650110931}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f1733c798e44b9b469dc5cb795fd6580, type: 3}
 --- !u!1 &597202765
 GameObject:
@@ -558,7 +552,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!65 &808336713
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1189,6 +1183,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   FREEMOVE: 0
   pocketList: []
+  currentCell: {x: 0, y: 0, z: 0}
   playerSO: {fileID: 11400000, guid: 392ebe829a483cf4187e06ec49953088, type: 2}
   buildDetectionBox: {x: 0.9, y: 0.1, z: 0.8}
   moveDetectionBox: {x: 0.9, y: 0.1, z: 0.9}
@@ -1292,24 +1287,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1795785779}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1393273796 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6508207981371737692, guid: f390d2617ad1a8f459c0b0acaeed5fba, type: 3}
-  m_PrefabInstance: {fileID: 43313944}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1393273802
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1393273796}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fbf068fe26e94924197edadf95f26509, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  EnemyGameObjects: []
 --- !u!1 &1538648549
 GameObject:
   m_ObjectHideFlags: 0
@@ -1377,27 +1354,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3090147180948170123, guid: 9be3c9957c7cc5747a2188da381cad40, type: 3}
   m_PrefabInstance: {fileID: 7886175691363278621}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1650110929 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4492877457616828392, guid: f1733c798e44b9b469dc5cb795fd6580, type: 3}
-  m_PrefabInstance: {fileID: 160859293}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1650110931
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1650110929}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b26bf7f0544c4424ca730b6ef79bdc1c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveGrid: {fileID: 0}
-  cellSize: 3
-  gridWidth: 10
-  gridHeight: 10
 --- !u!1 &1657685235
 GameObject:
   m_ObjectHideFlags: 0

@@ -18,13 +18,13 @@ public class PlayerScript : MonoBehaviour
     public bool FREEMOVE = false; // 測試移動用，會讓回合維持在玩家回合
     
     public List<ItemScript> pocketList;
+    public Vector3Int currentCell; // 當下網格位置
 
     [SerializeField] private PlayerData playerSO; // 序列化玩家物件
     
     private InputSystemActions inputActions; // InputSystem 的 Action map
     private bool isMoving = false; // 判斷玩家是否正在移動
     private Vector2 moveVector; // 移動方向
-    private Vector3Int currentCell; // 當下網格位置
     private GameManager gameManager; // 遊戲系統
     private GridManager gridManager; // 網格系統
     private Grid moveGrid; // 移動網格
@@ -71,7 +71,6 @@ public class PlayerScript : MonoBehaviour
         gridManager = GridManager.GetInstance();
         moveGrid = gridManager.moveGrid;
         currentCell = moveGrid.WorldToCell(transform.position);
-        gridManager.AddGameObjectToMoveGrid(this.gameObject);
         transform.position = moveGrid.GetCellCenterWorld(currentCell);
         pocketList = new List<ItemScript>();
         // 註冊移動行為
@@ -92,7 +91,7 @@ public class PlayerScript : MonoBehaviour
             if (gridManager.IsOccupiedByEnemy(moveGrid.WorldToCell(transform.position)))
             {
                 GameObject enemy = gridManager.GetGameObjectFromMoveGrid(moveGrid.WorldToCell(transform.position));
-                if (enemy.GetComponent<EnemyScript>().isStun == true)
+                if (enemy.GetComponent<EnemyScript>().isStun)
                 {
                     enemy.GetComponent<EnemyScript>().DestroyEnemy();
                 }
@@ -154,7 +153,7 @@ public class PlayerScript : MonoBehaviour
                     if(door != null) door.OpenDoor();
                     
                     currentCell += direction * playerSO.moveDistance * step;
-                    gridManager.UpdateGameObjectFromMoveGrid(this.gameObject, currentCell); // 更新在網格系統的所在位置
+                    // gridManager.UpdateGameObjectFromMoveGrid(this.gameObject, currentCell); // 更新在網格系統的所在位置
                     Vector3 dest = moveGrid.GetCellCenterWorld(currentCell);
                     enemyCheck(enemyDict, step);
                     StartCoroutine(SmoothMove(dest));

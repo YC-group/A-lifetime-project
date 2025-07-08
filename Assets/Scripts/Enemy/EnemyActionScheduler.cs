@@ -15,12 +15,14 @@ public class EnemyActionScheduler : MonoBehaviour
     private bool isMoving;
     private GridManager gridManager;
     private GameManager gameManager;
+    private PlayerScript player;
     
     void Start()
     {
         isMoving = false;
         gridManager = GridManager.GetInstance();
         gameManager = GameManager.GetInstance();
+        player = PlayerScript.GetInstance(); // 玩家物件
         
         foreach (var enemy in EnemyGameObjects)
         {
@@ -96,8 +98,6 @@ public class EnemyActionScheduler : MonoBehaviour
             {
                 EnemyMovePathFinding(enemy); // 規劃移動路線
             }
-
-            return;
         }
     }
     
@@ -110,7 +110,7 @@ public class EnemyActionScheduler : MonoBehaviour
         Grid moveGrid = GridManager.GetInstance().moveGrid; // 移動網格
         NavMeshAgent agent = enemy.GetComponent<NavMeshAgent>(); 
         Vector3Int currentCell = moveGrid.WorldToCell(enemy.transform.position); // 物件當前所在網格座標
-        PlayerScript player = PlayerScript.GetInstance(); // 玩家物件
+        
         List<Vector3Int> moveDirections = enemyScript.SetMoveModeDirection(enemyScript.moveMode); // 移動模式
         Coroutine rotationCoroutine = enemyScript.rotationCoroutine;
 
@@ -174,18 +174,16 @@ public class EnemyActionScheduler : MonoBehaviour
                     Vector3 moveTo = (moveGrid.GetCellCenterWorld(currentCell + bestDir)); // 以網格座標中心轉換為世界座標
                     // 繪製到下一格的最短路徑
                     NavMeshPath finalPath = new NavMeshPath();
+                    Debug.Log(!gridManager.IsOccupied(moveTo));
                     if (NavMesh.CalculatePath(enemy.transform.position, moveTo, NavMesh.AllAreas, finalPath) &&
-                        !gridManager.IsOccupiedByObjectWithoutTag(moveGrid.WorldToCell(moveTo), "Player"))
+                        !gridManager.IsOccupied(moveTo))
                     {
                         if (path.status == NavMeshPathStatus.PathComplete)
                         {
-                            if (!enemyScript.isStun && gridManager.GetGameObjectFromMoveGrid(moveTo) != null)
+                            if (!enemyScript.isStun && moveGrid.GetCellCenterWorld(player.currentCell).Equals(moveTo))
                             {
-                                if (gridManager.GetGameObjectFromMoveGrid(moveTo).CompareTag("Player"))
-                                {
-                                    Debug.Log("Game Over");
-                                    // TODO: 玩家死亡
-                                }
+                                Debug.Log("Game Over");
+                                // TODO: 玩家死亡
                             }
                             enemyScript.targetPosition = moveTo;
                             if (rotationCoroutine != null) // 確保只有一個轉向行為

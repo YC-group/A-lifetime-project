@@ -127,6 +127,19 @@ public class GridManager : MonoBehaviour
         return false;
     }
     /// <summary>
+    /// 查詢網格是否已被占用
+    /// </summary>
+    /// <returns>void</returns>
+    public bool IsOccupied(Vector3 position)
+    {
+        Vector3Int cell = moveGrid.WorldToCell(position);
+        if (moveGridArray[cell.x, cell.z] != null)
+        {
+            return true;
+        }
+        return false;
+    }
+    /// <summary>
     /// 查詢網格是否被指定物件占用
     /// </summary>
     /// <returns>void</returns>
