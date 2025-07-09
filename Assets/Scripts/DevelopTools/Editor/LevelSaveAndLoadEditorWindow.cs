@@ -9,6 +9,7 @@ using UnityEditor.SceneManagement;
 using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 /// <summary>
 /// 關卡存讀檔流程 - js5515
@@ -281,6 +282,8 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
         {
             name = combinedName
         };
+        combinedMesh.indexFormat = IndexFormat.UInt32;
+
         combinedMesh.CombineMeshes(combine.ToArray());
 
         // 儲存 Mesh 成為 asset
@@ -687,7 +690,6 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
                 else
                 {
                     //不是任何指定tag的物件處理(預計不做任何處理，頂多提醒開發者)
-                    //PrefabSpawnData prefabSpawnData = PrefabSpawnData.MakeData(go, GetPrefab(go));
 
 
                 }

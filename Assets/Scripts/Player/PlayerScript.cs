@@ -153,7 +153,6 @@ public class PlayerScript : MonoBehaviour
                             {
                                 if(door.gameObject != doorComponent.gameObject)
                                 {
-                                    Debug.Log($"{door.gameObject.name};{doorComponent.gameObject.name}");
                                     Debug.LogError("非重複的門");
                                 }
                             }

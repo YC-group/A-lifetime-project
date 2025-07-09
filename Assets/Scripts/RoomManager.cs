@@ -112,7 +112,7 @@ public class RoomManager : MonoBehaviour
             Debug.LogError($"載入房間時發生錯誤: {ex.Message}");
         }
     }
-
+    
     public void CheckNearRoom()
     {
         List<string> neighbors = roomLinks[currentRoomId];
