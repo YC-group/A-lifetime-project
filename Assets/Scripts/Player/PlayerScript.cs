@@ -15,13 +15,15 @@ public class PlayerScript : MonoBehaviour
 {
     private static PlayerScript Instance;
    
+    public InputSystemActions inputActions; // InputSystem 的 Action map
     public bool FREEMOVE = false; // 測試移動用，會讓回合維持在玩家回合
     public List<ItemScript> pocketList;
     public Vector3Int currentCell; // 當下網格位置
     public RangeWeapon currentCard;
+    public float playerHp;
+    
     [SerializeField] private PlayerData playerSO; // 序列化玩家物件
     
-    private InputSystemActions inputActions; // InputSystem 的 Action map
     private bool isMoving = false; // 判斷玩家是否正在移動
     private Vector2 moveVector; // 移動方向
     private GameManager gameManager; // 遊戲系統
@@ -70,33 +72,21 @@ public class PlayerScript : MonoBehaviour
         gameManager = GameManager.GetInstance();
         gridManager = GridManager.GetInstance();
         moveGrid = gridManager.moveGrid;
+        playerHp = playerSO.hp;
         currentCell = moveGrid.WorldToCell(transform.position);
         transform.position = moveGrid.GetCellCenterWorld(currentCell);
         pocketList = new List<ItemScript>();
-        // 註冊移動行為
         inputActions = new InputSystemActions();
+        // 註冊移動行為
         inputActions.Player.Move.performed += Move;
         inputActions.Player.Move.canceled += Move;
+        
         inputActions.Player.Skip.performed += Skip;
         inputActions.Player.Skip.canceled += Skip;
-        inputActions.Player.Fire.performed += ctx =>
-        {
-            if (currentCard != null && currentCard.selectEnemy)
-                currentCard.Fire();
-        };
-
-        inputActions.Player.Cancel.performed += ctx =>
-        {
-            if (currentCard != null && currentCard.selectEnemy)
-                currentCard.CancelAttackAndRestore();
-        };
-
-        inputActions.Player.Select.performed += ctx =>
-        {
-
-            if (currentCard != null && currentCard.selectEnemy)
-                currentCard.SelectTarget();
-        };
+        
+        inputActions.Player.Fire.performed += Fire;
+        inputActions.Player.Cancel.performed += Cancel;
+        inputActions.Player.Select.performed += Select;
         inputActions.Enable();
     }
 
@@ -112,11 +102,6 @@ public class PlayerScript : MonoBehaviour
                 if (enemy.GetComponent<EnemyScript>().isStun)
                 {
                     enemy.GetComponent<EnemyScript>().DestroyEnemy();
-                }
-                else
-                {
-                    Debug.Log("Game Over");
-                    // TODO: 玩家死亡
                 }
             }
             gameManager.SetToNextRound();
@@ -179,7 +164,28 @@ public class PlayerScript : MonoBehaviour
         }
     }
 
+    // NOTE: 使用 InputAction
+    public void Fire(InputAction.CallbackContext ctx)
+    {
+        if (currentCard != null && currentCard.selectEnemy)
+            currentCard.Fire();
+    }
 
+    // NOTE: 使用 InputAction
+    public void Cancel(InputAction.CallbackContext ctx)
+    {
+        if (currentCard != null && currentCard.selectEnemy)
+            currentCard.CancelAttackAndRestore();
+    }
+
+    // NOTE: 使用 InputAction
+    public void Select(InputAction.CallbackContext ctx)
+    {
+        if (currentCard != null && currentCard.selectEnemy)
+            currentCard.SelectTarget();
+    }
+    
+    // HACK: 暫時移動動畫
     IEnumerator SmoothMove(Vector3 destination) // 使用迭代做平滑移動
     {
         isMoving = true;

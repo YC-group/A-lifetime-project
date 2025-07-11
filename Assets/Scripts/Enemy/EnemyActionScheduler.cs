@@ -96,6 +96,7 @@ public class EnemyActionScheduler : MonoBehaviour
         {
             if (enemy.GetComponent<EnemyScript>().isStun == false) // 在沒有被擊暈的狀態下
             {
+                // Invoke("EnemyMovePathFinding", 1f);
                 EnemyMovePathFinding(enemy); // 規劃移動路線
             }
         }
@@ -174,7 +175,7 @@ public class EnemyActionScheduler : MonoBehaviour
                     Vector3 moveTo = (moveGrid.GetCellCenterWorld(currentCell + bestDir)); // 以網格座標中心轉換為世界座標
                     // 繪製到下一格的最短路徑
                     NavMeshPath finalPath = new NavMeshPath();
-                    Debug.Log(!gridManager.IsOccupied(moveTo));
+                    // Debug.Log(!gridManager.IsOccupied(moveTo));
                     if (NavMesh.CalculatePath(enemy.transform.position, moveTo, NavMesh.AllAreas, finalPath) &&
                         !gridManager.IsOccupied(moveTo))
                     {
@@ -182,8 +183,7 @@ public class EnemyActionScheduler : MonoBehaviour
                         {
                             if (!enemyScript.isStun && moveGrid.GetCellCenterWorld(player.currentCell).Equals(moveTo))
                             {
-                                Debug.Log("Game Over");
-                                // TODO: 玩家死亡
+                                player.playerHp--;
                             }
                             enemyScript.targetPosition = moveTo;
                             if (rotationCoroutine != null) // 確保只有一個轉向行為
