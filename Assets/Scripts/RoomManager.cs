@@ -138,7 +138,7 @@ public class RoomManager : MonoBehaviour
             return;
         }
 
-        GameObject player = await SaveAndLoadSystem.LoadFromAddressableAndInstantiate<GameObject>(PLAYER_ADDRESS);
+        GameObject player = await SaveAndLoadTools.LoadFromAddressableAndInstantiate<GameObject>(PLAYER_ADDRESS);
         player.transform.position = currentSpawnpoint;
     }
 

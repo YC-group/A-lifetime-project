@@ -1,9 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading;
-using Codice.Client.BaseCommands;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEditorInternal;
@@ -47,6 +45,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
 
     private List<GameObject> barrierList = new List<GameObject>();
     private List<GameObject> doorList = new List<GameObject>();
+    private Dictionary<Vector3Int, GameObject> barrierDict = new Dictionary<Vector3Int, GameObject>();
     #endregion
 
     [MenuItem("Tools/Level Save And Load")]
@@ -209,7 +208,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
         if (GUILayout.Button("Load Level From JSON"))
         {
             string path = BASE_LEVEL_JSON_PATH + $"/{levelName}.json";
-            LevelSave levelSave = SaveAndLoadSystem.LoadFromJSON<LevelSave>(path);
+            LevelSave levelSave = SaveAndLoadTools.LoadFromJSON<LevelSave>(path);
             RoomManager.GetInstance().ClearAll();
             RoomManager.GetInstance().LoadLevel(levelSave);
         }
@@ -249,7 +248,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
             ComponentUtility.PasteComponentAsNew(combinedObject);
         }
 
-        SaveAndLoadSystem.SaveAsPrefab(combinedObject, prefabPath);
+        SaveAndLoadTools.SaveAsPrefab(combinedObject, prefabPath);
 
         return combinedObject;
     }
@@ -315,8 +314,11 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
 
     private void ClearAllData()
     {
+        barrierList.Clear();
+        doorList.Clear();
         barrierPositions.Clear();
         doorPositions.Clear();
+        barrierDict.Clear();
         detectedRooms.Clear();
         roomConnections.Clear();
     }
@@ -329,6 +331,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
         doorList.Clear();
         barrierPositions.Clear();
         doorPositions.Clear();
+        barrierDict.Clear();
         //取得所有物件
         GameObject[] allObjects = GameObject.FindObjectsByType<GameObject>(FindObjectsSortMode.None);
 
@@ -343,7 +346,8 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
             if (go.CompareTag("Barrier"))
             {
                 barrierPositions.Add(pos);
-
+                barrierDict.Add(pos, go);
+                
                 barrierList.Add(go);
             }
             else if (go.CompareTag("Door"))
@@ -356,6 +360,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
             else if (go.CompareTag("FakeBarrier"))
             {
                 barrierPositions.Add(pos);
+                barrierDict.Add(pos, go);
             }
         }
 
@@ -372,6 +377,8 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
         //用於紀錄拜訪過的位置
         HashSet<Vector3Int> visited = new HashSet<Vector3Int>();
 
+        Func<Vector3Int, bool> isValid = pos => !barrierPositions.Contains(pos) && IsInBounds(pos);
+
         //走訪偵測範圍
         for (int x = detectBoundsStart.x; x <= detectBoundsEnd.x; x++)
         {
@@ -381,11 +388,15 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
                 {
                     Vector3Int pos = new Vector3Int(x, y, z);
 
-                    //若該格沒有被拜訪且不是屏障，使用FloodFill找出連通空間
-                    if (!visited.Contains(pos) && !barrierPositions.Contains(pos))
+                    if (!visited.Contains(pos) && isValid(pos))
                     {
-                        var room = FloodFill(pos, visited);
-                        //確認房間是封閉的才採用
+                        var room = FloodFillTools.FloodFill3D(
+                            pos,
+                            visited,
+                            FloodFillTools.sixDirections,
+                            isValid
+                        );
+
                         if (IsRoomEnclosed(room))
                         {
                             detectedRooms.Add(room);
@@ -490,11 +501,11 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
     private void ConvertLevelAssetToJSON()
     {
         string levelDataPath = BASE_LEVEL_ASSET_PATH + $"/{levelName}/{levelName}.asset";
-        LevelData levelData = SaveAndLoadSystem.LoadFromAsset<LevelData>(levelDataPath);
+        LevelData levelData = SaveAndLoadTools.LoadFromAsset<LevelData>(levelDataPath);
 
         string levelSavePath = BASE_LEVEL_JSON_PATH + $"/{levelName}.json";
         LevelSave levelSave = DataConverter.ConvertToLevelSave(levelData);
-        SaveAndLoadSystem.SaveAsJSON<LevelSave>(levelSave, levelSavePath);
+        SaveAndLoadTools.SaveAsJSON<LevelSave>(levelSave, levelSavePath);
         Debug.Log("將關卡asset轉成json成功");
     }
 
@@ -502,7 +513,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
     private void LoadLevelFromAsset()
     {
         string levelDataPath = BASE_LEVEL_ASSET_PATH + $"/{levelName}/{levelName}.asset";
-        LevelData levelData = SaveAndLoadSystem.LoadFromAsset<LevelData>(levelDataPath);
+        LevelData levelData = SaveAndLoadTools.LoadFromAsset<LevelData>(levelDataPath);
 
         //生成barriers
         foreach (PrefabSpawnData barrier in levelData.Barriers)
@@ -557,7 +568,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
         List<PrefabSpawnData> barriers = new List<PrefabSpawnData>();
         string prefabName = $"{levelName}_barrier";
         GameObject barrierGO = CombineObjectsAndSaveAsPrefab(barrierList.ToArray(), prefabName);
-        SaveAndLoadSystem.AddPrefabToAddressables(GetPrefab(barrierGO), prefabName, levelName);
+        SaveAndLoadTools.AddPrefabToAddressables(GetPrefab(barrierGO), prefabName, levelName);
         barriers.Add(PrefabSpawnData.MakeData(barrierGO, GetPrefab(barrierGO)));
 
         /*
@@ -714,7 +725,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
             //roomData寫成asset檔
             string roomName = $"{levelName}_room_{roomCount}";
             string roomDataPath = BASE_LEVEL_ASSET_PATH + $"/{levelName}/RoomDatas/{roomName}.asset";
-            SaveAndLoadSystem.SaveAsAsset<RoomData>(roomData, roomDataPath);
+            SaveAndLoadTools.SaveAsAsset<RoomData>(roomData, roomDataPath);
 
             // 使用儲存後的 asset 實例來填入 levelData
             RoomData savedRoomData = AssetDatabase.LoadAssetAtPath<RoomData>(roomDataPath);
@@ -730,7 +741,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
 
         //levelData寫成asset檔
         string levelDataPath = BASE_LEVEL_ASSET_PATH + $"/{levelName}/{levelName}.asset";
-        SaveAndLoadSystem.SaveAsAsset<LevelData>(levelData, levelDataPath);
+        SaveAndLoadTools.SaveAsAsset<LevelData>(levelData, levelDataPath);
 
         ClearAllData();
     }
@@ -832,35 +843,6 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
             sum += buildingGrid.GetCellCenterWorld(cell) + Vector3.Scale(gridOffset, buildingGrid.cellSize);
         }
         return sum / room.Count;
-    }
-
-    //FloodFill演算法，用來找連通空間
-    private HashSet<Vector3Int> FloodFill(Vector3Int start, HashSet<Vector3Int> visited)
-    {
-        HashSet<Vector3Int> region = new HashSet<Vector3Int>();
-        Queue<Vector3Int> queue = new Queue<Vector3Int>();
-        queue.Enqueue(start);
-
-        while (queue.Count > 0)
-        {
-            Vector3Int current = queue.Dequeue();
-            if (visited.Contains(current) || barrierPositions.Contains(current)) continue;
-            if (!IsInBounds(current)) continue;
-
-            visited.Add(current);
-            region.Add(current);
-
-            foreach (Vector3Int dir in GetSixDirections())
-            {
-                Vector3Int next = current + dir;
-                if (!visited.Contains(next) && !barrierPositions.Contains(next))
-                {
-                    queue.Enqueue(next);
-                }
-            }
-        }
-
-        return region;
     }
 
     //判斷房間是否封閉

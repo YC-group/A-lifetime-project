@@ -2,7 +2,6 @@
 using System.IO;
 using UnityEditor;
 using Newtonsoft.Json;
-using Unity.VisualScripting;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings.GroupSchemas;
 using UnityEditor.AddressableAssets.Settings;
@@ -14,7 +13,7 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 /// 存讀JSON檔
 /// 存讀asset檔
 /// </summary>
-public static class SaveAndLoadSystem
+public static class SaveAndLoadTools
 {
     public static void SaveAsJSON<T>(T t, string path)
     {

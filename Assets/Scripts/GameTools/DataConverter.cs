@@ -14,7 +14,7 @@ public static class DataConverter
         SpawnData spawnData = new SpawnData();
         RoomData roomData;
 
-        roomData = SaveAndLoadSystem.LoadByName<RoomData>(spawnSave.RoomId);
+        roomData = SaveAndLoadTools.LoadByName<RoomData>(spawnSave.RoomId);
         if (roomData == null)
         {
             Debug.LogError("無法取得roomData");
@@ -32,7 +32,7 @@ public static class DataConverter
         SpawnSave spawnSave = new SpawnSave();
         string roomId;
 
-        roomId = SaveAndLoadSystem.GetAssetFileNameWithoutExtension(spawnData.RoomData);
+        roomId = SaveAndLoadTools.GetAssetFileNameWithoutExtension(spawnData.RoomData);
         if (string.IsNullOrEmpty(roomId))
         {
             Debug.LogError("無法取得roomData的檔案名稱");
@@ -50,7 +50,7 @@ public static class DataConverter
         PrefabSpawnSave prefabSpawnSave = new PrefabSpawnSave();
         string prefabAddress;
 
-        prefabAddress = SaveAndLoadSystem.GetPrefabAddress(prefabSpawnData.Prefab);
+        prefabAddress = SaveAndLoadTools.GetPrefabAddress(prefabSpawnData.Prefab);
         if (string.IsNullOrEmpty(prefabAddress))
         {
             Debug.LogError("找不到該 Prefab 的 Address");
@@ -93,7 +93,7 @@ public static class DataConverter
         roomData.Items.ForEach(item => items.Add(ConvertToPrefabSpawnSave(item)));
         roomData.Buildings.ForEach(building => buildings.Add(ConvertToPrefabSpawnSave(building)));
 
-        roomId = SaveAndLoadSystem.GetAssetFileNameWithoutExtension(roomData);
+        roomId = SaveAndLoadTools.GetAssetFileNameWithoutExtension(roomData);
         if (string.IsNullOrEmpty(roomId))
         {
             Debug.LogError("無法取得roomData的檔案名稱");
@@ -128,7 +128,7 @@ public static class DataConverter
         {
             doors.Add(ConvertToDoorSave(doorData));
         }
-        startRoomId = SaveAndLoadSystem.GetAssetFileNameWithoutExtension(levelData.StartRoomData);
+        startRoomId = SaveAndLoadTools.GetAssetFileNameWithoutExtension(levelData.StartRoomData);
         if (string.IsNullOrEmpty(startRoomId))
         {
             Debug.LogError("無法取得roomData的檔案名稱");
