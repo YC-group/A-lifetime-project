@@ -638,11 +638,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buildingSO: {fileID: 11400000, guid: 18114c06179128645acf0e00b99b72dd, type: 2}
---- !u!156049354 &54626892 stripped
-Grid:
-  m_CorrespondingSourceObject: {fileID: 5277672471571251928, guid: f1733c798e44b9b469dc5cb795fd6580, type: 3}
-  m_PrefabInstance: {fileID: 1780600555}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &60218524
 GameObject:
   m_ObjectHideFlags: 0
@@ -1926,11 +1921,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee1e034bcae959e44971f2f906ea2eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isCardLocking: 0
+  isPlayerLocked: 0
+  currentUsingCard: {fileID: 0}
   cardPrefab: {fileID: 4838384550741636742, guid: 4c97aa95b983b7241bd7a8cde8ce547a, type: 3}
   cardPanel: {fileID: 733797189}
   weaponItems:
   - {fileID: 11400000, guid: 9a0471b173231c94e8e14d71bb71918e, type: 2}
   - {fileID: 11400000, guid: a0370c3e9548a2a40a64755d8f1472ad, type: 2}
+  - {fileID: 11400000, guid: 9d889964e4192fc43b77919ed62515e0, type: 2}
 --- !u!114 &144464037
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5894,7 +5893,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemySO: {fileID: 11400000, guid: e450abdacdb07a045b1cfbb39978c86e, type: 2}
-  grid: {fileID: 0}
+  hp: 1
   isAlert: 0
   isStun: 0
   stunRound: 0
@@ -5908,6 +5907,7 @@ MonoBehaviour:
   viewAngleBack: 270
   viewRadiusAlert: 10
   viewAngleAlert: 360
+  pocketList: []
 --- !u!195 &444704358
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -6639,7 +6639,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemySO: {fileID: 11400000, guid: e450abdacdb07a045b1cfbb39978c86e, type: 2}
-  grid: {fileID: 0}
+  hp: 1
   isAlert: 0
   isStun: 0
   stunRound: 0
@@ -6653,6 +6653,7 @@ MonoBehaviour:
   viewAngleBack: 223
   viewRadiusAlert: 10
   viewAngleAlert: 360
+  pocketList: []
 --- !u!114 &466146492
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -28513,10 +28514,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79aff8223d38bbd42b14369bbd1d0127, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerSO: {fileID: 11400000, guid: 392ebe829a483cf4187e06ec49953088, type: 2}
-  grid: {fileID: 54626892}
   FREEMOVE: 1
   pocketList: []
+  currentCell: {x: 0, y: 0, z: 0}
+  RangeCurrentCard: {fileID: 0}
+  ThrowCurrentCard: {fileID: 0}
+  hp: 1
+  playerSO: {fileID: 11400000, guid: 392ebe829a483cf4187e06ec49953088, type: 2}
   buildDetectionBox: {x: 0.9, y: 1.5, z: 0.8}
   moveDetectionBox: {x: 0.9, y: 1.5, z: 0.9}
   overlapDetectionBoxYOffset: 2
@@ -29258,7 +29262,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemySO: {fileID: 11400000, guid: e450abdacdb07a045b1cfbb39978c86e, type: 2}
-  grid: {fileID: 0}
+  hp: 1
   isAlert: 0
   isStun: 0
   stunRound: 0
@@ -29272,6 +29276,7 @@ MonoBehaviour:
   viewAngleBack: 249
   viewRadiusAlert: 6
   viewAngleAlert: 360
+  pocketList: []
 --- !u!114 &2034462504
 MonoBehaviour:
   m_ObjectHideFlags: 0

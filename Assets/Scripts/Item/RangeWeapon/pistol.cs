@@ -11,7 +11,6 @@ public class Pistol : RangeWeapon
     public override void ItemInitialize(ItemData data)
     {
         base.ItemInitialize(data);
-
     }
 
     protected override void Start()

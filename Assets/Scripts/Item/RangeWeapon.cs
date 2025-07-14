@@ -9,10 +9,7 @@ public class RangeWeapon : ItemScript
 {
     public int bulletCount;
     public bool selectEnemy = false;
-
     protected List<Transform> selectedTargets = new List<Transform>();
-
-    private InputSystemActions inputActions; // ✅ 改用類別方式
 
     protected virtual void Start()
     {

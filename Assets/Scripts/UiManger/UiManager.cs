@@ -108,14 +108,23 @@ public class UIManager : MonoBehaviour
 
         currentUsingCard = script;
 
-        if (script is RangeWeapon weapon)
+        var playerScript = PlayerScript.GetInstance();
+        if (playerScript == null)
         {
-            var playerScript = PlayerScript.GetInstance();
-            if (playerScript != null)
-                playerScript.currentCard = weapon;
-            else
-                Debug.LogError("❌ 找不到 PlayerScript 實例");
+            Debug.LogError("❌ 找不到 PlayerScript 實例");
+            return;
         }
+
+        // 根據實際類型處理，但都能指定給 currentCard（因為 currentCard 是 ItemScript）
+        if (script is RangeWeapon rangeWeapon)
+        {
+            playerScript.RangeCurrentCard = rangeWeapon;
+        }
+        else if (script is ThrowWeapon throwWeapon)
+        {
+            playerScript.ThrowCurrentCard = throwWeapon;
+        }
+
         // 執行 Use 行為
         script.Use();
     }

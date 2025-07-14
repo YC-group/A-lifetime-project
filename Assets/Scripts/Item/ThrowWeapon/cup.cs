@@ -3,9 +3,9 @@ using UnityEngine;
 using System.Collections;
 
 /// <summary>
-/// 步槍 - mobias
+/// 杯子- mobias
 /// </summary>
-public class Rifle : RangeWeapon
+public class cup : ThrowWeapon
 {
 
     public override void ItemInitialize(ItemData data)
@@ -15,21 +15,21 @@ public class Rifle : RangeWeapon
 
     protected override void Start()
     {
-        bulletCount = 2;
         base.Start(); // ✅ 正確呼叫父類 Start
     }
 
     protected override void Update()
     {
         base.Update(); // ✅ 正確呼叫父類 Update
+
     }
 
 
 
-    public override void Attack()
-    {
-        Debug.Log("🔫 Rifle 的攻擊實作");
-    }
+    //public override void Attack()
+    //{
+    //    Debug.Log("🔫 Pistol 的攻擊實作");
+    //}
 
     public override void AimTarget()
     {
@@ -37,7 +37,7 @@ public class Rifle : RangeWeapon
     }
     public override void Use()
     {
-        AimTarget(); // ✅ 呼叫自己的攻擊邏輯
+        AimTarget();
+
     }
 }
-

@@ -62,4 +62,6 @@ public abstract class ItemScript : MonoBehaviour
     {
         Debug.Log($"🧪 使用了通用道具：{itemName}");
     }
+
+
 }
