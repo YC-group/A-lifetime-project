@@ -275,6 +275,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemySO: {fileID: 11400000, guid: e450abdacdb07a045b1cfbb39978c86e, type: 2}
+  hp: 0
   isAlert: 0
   isStun: 0
   stunRound: 1
@@ -587,6 +588,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemySO: {fileID: 11400000, guid: e450abdacdb07a045b1cfbb39978c86e, type: 2}
+  hp: 0
   isAlert: 0
   isStun: 0
   stunRound: 1
@@ -1185,6 +1187,7 @@ MonoBehaviour:
   pocketList: []
   currentCell: {x: 0, y: 0, z: 0}
   currentCard: {fileID: 0}
+  hp: 0
   playerSO: {fileID: 11400000, guid: 392ebe829a483cf4187e06ec49953088, type: 2}
   buildDetectionBox: {x: 0.9, y: 0.1, z: 0.8}
   moveDetectionBox: {x: 0.9, y: 0.1, z: 0.9}

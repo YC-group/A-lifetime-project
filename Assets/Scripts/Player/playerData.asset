@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerName: 
   attack: 0
-  hp: 0
+  hp: 1
   moveDistance: 1
   moveTime: 0.2

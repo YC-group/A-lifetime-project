@@ -7,7 +7,7 @@ using System.Linq;
 using Unity.VisualScripting;
 
 /// <summary>
-/// 角色移動腳本 - Jerry0401
+/// 玩家角色腳本 - Jerry0401
 /// </summary>
 
 [RequireComponent(typeof(CharacterController))]
@@ -20,7 +20,7 @@ public class PlayerScript : MonoBehaviour
     public List<ItemScript> pocketList;
     public Vector3Int currentCell; // 當下網格位置
     public RangeWeapon currentCard;
-    public float playerHp;
+    public float hp;
     
     [SerializeField] private PlayerData playerSO; // 序列化玩家物件
     
@@ -29,6 +29,7 @@ public class PlayerScript : MonoBehaviour
     private GameManager gameManager; // 遊戲系統
     private GridManager gridManager; // 網格系統
     private Grid moveGrid; // 移動網格
+    private HealthPointsScript healthPointsScript; // 血量計算腳本
 
 
     public static PlayerScript GetInstance()  // Singleton
@@ -71,8 +72,9 @@ public class PlayerScript : MonoBehaviour
     {
         gameManager = GameManager.GetInstance();
         gridManager = GridManager.GetInstance();
+        healthPointsScript = HealthPointsScript.GetInstance();
         moveGrid = gridManager.moveGrid;
-        playerHp = playerSO.hp;
+        hp = playerSO.hp;
         currentCell = moveGrid.WorldToCell(transform.position);
         transform.position = moveGrid.GetCellCenterWorld(currentCell);
         pocketList = new List<ItemScript>();
@@ -90,6 +92,16 @@ public class PlayerScript : MonoBehaviour
         inputActions.Enable();
     }
 
+    private void Update()
+    {
+        if (this.hp == 0)
+        {
+            gameObject.SetActive(false);
+            Debug.Log("Game Over");
+            // TODO: 遊戲結束處理
+        }
+    }
+
     // Space 跳過行為
     // NOTE: 使用 InputAction
     public void Skip(InputAction.CallbackContext ctx)
@@ -101,7 +113,8 @@ public class PlayerScript : MonoBehaviour
                 GameObject enemy = gridManager.GetGameObjectFromMoveGrid(moveGrid.WorldToCell(transform.position));
                 if (enemy.GetComponent<EnemyScript>().isStun)
                 {
-                    enemy.GetComponent<EnemyScript>().DestroyEnemy();
+                    enemy.GetComponent<EnemyScript>().hp =
+                        healthPointsScript.TakeMeleeDamage(enemy.GetComponent<EnemyScript>().hp);
                 }
             }
             gameManager.SetToNextRound();
@@ -209,7 +222,7 @@ public class PlayerScript : MonoBehaviour
     {
         if (enemy.isStun)
         {
-            enemy.DestroyEnemy();
+            enemy.hp = healthPointsScript.TakeMeleeDamage(enemy.hp);
         }
         else
         {

@@ -91,7 +91,7 @@ public class GameManager : MonoBehaviour
     /// 回合重新開始
     /// </summary>
     /// <returns>bool</returns>
-    public bool RoundReset()
+    public bool GameOver()
     {
         currentRound = RoundState.PlayerTurn;
         roundCounts = 0;

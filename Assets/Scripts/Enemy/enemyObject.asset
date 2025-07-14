@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: enemyObject
   m_EditorClassIdentifier: 
   enemyName: 
-  hp: 10
+  hp: 1
   attack: 1
   specialAct: 0
   speed: 100

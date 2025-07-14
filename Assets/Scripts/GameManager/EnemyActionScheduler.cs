@@ -16,6 +16,7 @@ public class EnemyActionScheduler : MonoBehaviour
     private GridManager gridManager;
     private GameManager gameManager;
     private PlayerScript player;
+    private HealthPointsScript healthPointsScript;
     
     void Start()
     {
@@ -23,6 +24,7 @@ public class EnemyActionScheduler : MonoBehaviour
         gridManager = GridManager.GetInstance();
         gameManager = GameManager.GetInstance();
         player = PlayerScript.GetInstance(); // 玩家物件
+        healthPointsScript = HealthPointsScript.GetInstance();
         
         foreach (var enemy in EnemyGameObjects)
         {
@@ -126,7 +128,7 @@ public class EnemyActionScheduler : MonoBehaviour
                 Vector3 moveTo = (moveGrid.GetCellCenterWorld(currentCell + direction)); // 目的地
                 NavMeshPath path = new NavMeshPath();
                 // Debug.Log(NavMesh.CalculatePath(enemy.transform.position, moveTo, NavMesh.AllAreas, path));
-                if (NavMesh.CalculatePath(enemy.transform.position, moveTo, NavMesh.AllAreas, path)) // 計算路徑
+                if (NavMesh.CalculatePath(enemy.transform.position, moveTo, NavMesh.AllAreas, path) && moveGrid.GetCellCenterWorld(player.currentCell) != moveTo)
                 {
                     // Debug.Log("corners : " + path.corners.Length);
                     // Debug.Log(GridManager.Instance.IsOccupied(currentCell + direction));
@@ -183,7 +185,7 @@ public class EnemyActionScheduler : MonoBehaviour
                         {
                             if (!enemyScript.isStun && moveGrid.GetCellCenterWorld(player.currentCell).Equals(moveTo))
                             {
-                                player.playerHp--;
+                                player.hp = healthPointsScript.TakeMeleeDamage(player.hp);
                             }
                             enemyScript.targetPosition = moveTo;
                             if (rotationCoroutine != null) // 確保只有一個轉向行為

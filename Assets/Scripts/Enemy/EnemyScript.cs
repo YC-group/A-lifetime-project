@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.AI.Navigation;
+using Unity.VisualScripting;
 using UnityEngine.AI;
 
 /// <summary>
@@ -31,6 +32,7 @@ public class EnemyScript : MonoBehaviour
     private NavMeshAgent agent;
 
     [Header("狀態")] 
+    public float hp; // 血量
     public bool isAlert; // 警戒狀態
     public bool isStun; // 擊暈狀態
     public int stunRound = 0; // 擊暈持續回合
@@ -71,6 +73,12 @@ public class EnemyScript : MonoBehaviour
 
     void Update()
     {
+        if (hp == 0)
+        {
+            gameObject.SetActive(false);
+            gridManager.RemoveGameObjectFromMoveGrid(this.gameObject);
+        }
+        
         if (DetectPlayer())
         {
             DetectAlert();
@@ -89,6 +97,7 @@ public class EnemyScript : MonoBehaviour
 
     private void EnemyDataInitializer() // 初始化
     {
+        hp = enemySO.hp;
         isAlert = false;
         isStun = false;
         targetPosition = transform.position;
@@ -226,14 +235,6 @@ public class EnemyScript : MonoBehaviour
     private void DetectAlert()
     {
         isAlert = true;
-    }
-
-    // HACK: 臨時擊殺處理
-    //敵人死亡
-    public void DestroyEnemy()
-    {
-        Debug.Log($"{enemySO.enemyName} 被殺了！");
-        Destroy(gameObject);
     }
     
     // TODO: 敵人暈眩示意
