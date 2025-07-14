@@ -127,7 +127,7 @@ public static class SaveAndLoadTools
         Debug.Log($"儲存 Prefab 成功：{path}");
     }
 
-    public static void SaveAsAsset<T>(T t, string path) where T : ScriptableObject
+    public static void SaveAsAsset<T>(T t, string path) where T : UnityEngine.Object
     {
         if(t == null)
         {
@@ -152,7 +152,7 @@ public static class SaveAndLoadTools
         AssetDatabase.Refresh();
     }
 
-    public static T LoadFromAsset<T>(string path) where T : ScriptableObject
+    public static T LoadFromAsset<T>(string path) where T : UnityEngine.Object
     {
         if (!path.EndsWith(".asset")) path += ".asset";
 
@@ -164,7 +164,7 @@ public static class SaveAndLoadTools
         return t;
     }
 
-    public static T LoadByName<T>(string fileNameWithoutExtension) where T : ScriptableObject
+    public static T LoadByName<T>(string fileNameWithoutExtension) where T : UnityEngine.Object
     {
         string[] guids = AssetDatabase.FindAssets($"t:{typeof(T).Name}");
 

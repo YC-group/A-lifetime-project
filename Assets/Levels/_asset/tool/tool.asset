@@ -1,0 +1,104 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba56fa16497b95148b4c8e6b7084d88a, type: 3}
+  m_Name: tool
+  m_EditorClassIdentifier: 
+  startSpawnpoint: {x: 1.5, y: 1.5, z: 1.5}
+  startRoomData: {fileID: 11400000, guid: cffb83da937bcb74cb2314144c9ad8f0, type: 2}
+  barriers:
+  - prefab: {fileID: 8430177776643290758, guid: dbf46fd1572e51548bce2e525130aa2f, type: 3}
+    position: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0, w: 1}
+    scale: {x: 1, y: 1, z: 1}
+  - prefab: {fileID: 2871159049167621519, guid: 49e7ff39dbfc5d64c8ee88a6c2b830f7, type: 3}
+    position: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0, w: 1}
+    scale: {x: 1, y: 1, z: 1}
+  rooms:
+  - {fileID: 11400000, guid: cffb83da937bcb74cb2314144c9ad8f0, type: 2}
+  - {fileID: 11400000, guid: c229738431d9ef247b3b7f6534c70c57, type: 2}
+  - {fileID: 11400000, guid: 233c25f4610ac044ca85a1a0386fcd05, type: 2}
+  - {fileID: 11400000, guid: 56e08f0bf7612b440abceb17ab2974ec, type: 2}
+  - {fileID: 11400000, guid: 966852be3f4c3024b84f9377dc2bb499, type: 2}
+  - {fileID: 11400000, guid: d1ef915e9a5b05a4baec2772716b25b7, type: 2}
+  - {fileID: 11400000, guid: e3535e1b19aa8974bb7a02d3e7b5e890, type: 2}
+  doors:
+  - psd:
+      prefab: {fileID: 467075791498425554, guid: a78c58d2ca5fdcd43927c9671f20201d, type: 3}
+      position: {x: 6, y: 1.5, z: 17}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    spawns:
+    - spawnpoint: {x: 4.5, y: 1.5, z: 16.5}
+      roomData: {fileID: 11400000, guid: c229738431d9ef247b3b7f6534c70c57, type: 2}
+    - spawnpoint: {x: 7.5, y: 1.5, z: 16.5}
+      roomData: {fileID: 11400000, guid: 56e08f0bf7612b440abceb17ab2974ec, type: 2}
+  - psd:
+      prefab: {fileID: 467075791498425554, guid: a78c58d2ca5fdcd43927c9671f20201d, type: 3}
+      position: {x: 8, y: 1.5, z: 12}
+      rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+      scale: {x: 1, y: 1, z: 1}
+    spawns:
+    - spawnpoint: {x: 7.5, y: 1.5, z: 13.5}
+      roomData: {fileID: 11400000, guid: 56e08f0bf7612b440abceb17ab2974ec, type: 2}
+    - spawnpoint: {x: 7.5, y: 1.5, z: 10.5}
+      roomData: {fileID: 11400000, guid: 233c25f4610ac044ca85a1a0386fcd05, type: 2}
+  - psd:
+      prefab: {fileID: 467075791498425554, guid: a78c58d2ca5fdcd43927c9671f20201d, type: 3}
+      position: {x: 17, y: 1.5, z: 3}
+      rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+      scale: {x: 1, y: 1, z: 1}
+    spawns:
+    - spawnpoint: {x: 16.5, y: 1.5, z: 4.5}
+      roomData: {fileID: 11400000, guid: d1ef915e9a5b05a4baec2772716b25b7, type: 2}
+    - spawnpoint: {x: 16.5, y: 1.5, z: 1.5}
+      roomData: {fileID: 11400000, guid: 966852be3f4c3024b84f9377dc2bb499, type: 2}
+  - psd:
+      prefab: {fileID: 467075791498425554, guid: a78c58d2ca5fdcd43927c9671f20201d, type: 3}
+      position: {x: 2, y: 1.5, z: 9}
+      rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+      scale: {x: 1, y: 1, z: 1}
+    spawns:
+    - spawnpoint: {x: 1.5, y: 1.5, z: 7.5}
+      roomData: {fileID: 11400000, guid: cffb83da937bcb74cb2314144c9ad8f0, type: 2}
+    - spawnpoint: {x: 1.5, y: 1.5, z: 10.5}
+      roomData: {fileID: 11400000, guid: c229738431d9ef247b3b7f6534c70c57, type: 2}
+  - psd:
+      prefab: {fileID: 467075791498425554, guid: a78c58d2ca5fdcd43927c9671f20201d, type: 3}
+      position: {x: 12, y: 1.5, z: 11}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    spawns:
+    - spawnpoint: {x: 10.5, y: 1.5, z: 10.5}
+      roomData: {fileID: 11400000, guid: 233c25f4610ac044ca85a1a0386fcd05, type: 2}
+    - spawnpoint: {x: 13.5, y: 1.5, z: 10.5}
+      roomData: {fileID: 11400000, guid: d1ef915e9a5b05a4baec2772716b25b7, type: 2}
+  - psd:
+      prefab: {fileID: 467075791498425554, guid: a78c58d2ca5fdcd43927c9671f20201d, type: 3}
+      position: {x: 6, y: 1.5, z: 8}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    spawns:
+    - spawnpoint: {x: 4.5, y: 1.5, z: 7.5}
+      roomData: {fileID: 11400000, guid: cffb83da937bcb74cb2314144c9ad8f0, type: 2}
+    - spawnpoint: {x: 7.5, y: 1.5, z: 7.5}
+      roomData: {fileID: 11400000, guid: 233c25f4610ac044ca85a1a0386fcd05, type: 2}
+  - psd:
+      prefab: {fileID: 467075791498425554, guid: a78c58d2ca5fdcd43927c9671f20201d, type: 3}
+      position: {x: 18, y: 1.5, z: 8}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    spawns:
+    - spawnpoint: {x: 16.5, y: 1.5, z: 7.5}
+      roomData: {fileID: 11400000, guid: d1ef915e9a5b05a4baec2772716b25b7, type: 2}
+    - spawnpoint: {x: 19.5, y: 1.5, z: 7.5}
+      roomData: {fileID: 11400000, guid: e3535e1b19aa8974bb7a02d3e7b5e890, type: 2}

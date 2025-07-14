@@ -1,64 +1,68 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 
 public static class MeshTools
 {
-    public static GameObject CombineMeshes(GameObject[] objects, string combinedName, string meshAssetPath)
+
+    public static GameObject CombineGameObjects(GameObject[] gameObjects)
     {
-        List<MeshFilter> meshFilters = new List<MeshFilter>();
-        foreach (var go in objects)
+        if (gameObjects.Length == 0)
         {
-            meshFilters.AddRange(go.GetComponentsInChildren<MeshFilter>());
-        }
-
-        List<CombineInstance> combine = new List<CombineInstance>();
-        foreach (var mf in meshFilters)
-        {
-            if (mf.sharedMesh == null) continue;
-
-            combine.Add(new CombineInstance
-            {
-                mesh = mf.sharedMesh,
-                transform = mf.transform.localToWorldMatrix
-            });
-        }
-
-        if (combine.Count == 0)
-        {
-            Debug.LogWarning("沒有可用的 Mesh 進行合併！");
+            Debug.LogError("無法合併gameObject: 物件數量為0");
             return null;
         }
 
-        Mesh combinedMesh = new Mesh
-        {
-            name = combinedName,
-            indexFormat = IndexFormat.UInt32 // 支援超過 65535 點的 mesh
-        };
-        combinedMesh.CombineMeshes(combine.ToArray());
+        Mesh mesh = CombineMeshes(gameObjects);
 
-        // 儲存 Mesh 為 Asset（如果不存在）
-        if (!AssetDatabase.Contains(combinedMesh))
+        GameObject gameObject = new GameObject();
+        MeshFilter meshFilter = gameObject.AddComponent<MeshFilter>();
+        MeshRenderer meshRenderer = gameObject.AddComponent<MeshRenderer>();
+
+        meshFilter.sharedMesh = mesh;
+        if (gameObjects.Length > 0)
         {
-            AssetDatabase.CreateAsset(combinedMesh, meshAssetPath);
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
+            var originalRenderer = gameObjects[0].GetComponentInChildren<MeshRenderer>();
+            if (originalRenderer != null)
+            {
+                meshRenderer.sharedMaterials = originalRenderer.sharedMaterials;
+            }
+            else
+            {
+                // 使用 Unity 預設材質
+                meshRenderer.sharedMaterial = new Material(Shader.Find("Standard"));
+            }
         }
 
-        GameObject combinedObject = new GameObject(combinedName);
-        var mfCombined = combinedObject.AddComponent<MeshFilter>();
-        var mrCombined = combinedObject.AddComponent<MeshRenderer>();
+        return gameObject;
+    }
 
-        mfCombined.sharedMesh = combinedMesh;
+    public static Mesh CombineMeshes(GameObject[] gameObjects)
+    {
+        List<MeshFilter> meshFilters = new List<MeshFilter>();
+        List<CombineInstance> combineInstances = new List<CombineInstance>();
 
-        // 嘗試從第一個 renderer 複製材質（單一材質情境）
-        var firstRenderer = meshFilters[0].GetComponent<MeshRenderer>();
-        if (firstRenderer != null)
+        foreach (GameObject gameObject in gameObjects)
         {
-            mrCombined.sharedMaterials = firstRenderer.sharedMaterials;
+            meshFilters.AddRange(gameObject.GetComponentsInChildren<MeshFilter>());
         }
 
-        return combinedObject;
+        foreach (MeshFilter meshFilter in meshFilters)
+        {
+            if (meshFilter.sharedMesh == null) continue;
+
+            CombineInstance combineInstance = new CombineInstance();
+            combineInstance.mesh = meshFilter.sharedMesh;
+            combineInstance.transform = meshFilter.transform.localToWorldMatrix;
+
+            combineInstances.Add(combineInstance);
+        }
+
+        Mesh mesh = new Mesh();
+        mesh.indexFormat = IndexFormat.UInt32;
+        mesh.CombineMeshes(combineInstances.ToArray());
+        return mesh;
     }
 }

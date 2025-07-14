@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
+using static UnityEngine.Mesh;
 /// <summary>
 /// 關卡存讀檔流程 - js5515
 /// </summary>
@@ -65,6 +66,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
         SceneView.duringSceneGui -= OnSceneGUI;
     }
 
+    //Scene視覺支援
     private void OnSceneGUI(SceneView sceneView)
     {
         if (buildingGrid == null) buildingGrid = GameObject.FindWithTag("BuildingGrid")?.GetComponent<Grid>();
@@ -119,6 +121,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
         }
     }
 
+    //EditorWindow介面
     private void OnGUI()
     {
         selectedTab = GUILayout.Toolbar(selectedTab, tabNames);
@@ -157,15 +160,12 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
     private void SaveAndLoadTabGUI()
     {
         scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.ExpandHeight(true));
-        
-        /*                
+                   
         prefabName = EditorGUILayout.TextField("Prefab Name", prefabName);
-
         if (GUILayout.Button("將選取物件合併並存成prefab"))
         {
             CombineObjectsAndSaveAsPrefab(Selection.gameObjects, prefabName);
         }
-        */
 
         EditorGUILayout.Space(10);
 
@@ -216,100 +216,43 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
         EditorGUILayout.EndScrollView();
     }
 
-    public GameObject CombineObjectsAndSaveAsPrefab(GameObject[] objects, string prefabName)
+    public GameObject CombineObjectsAndSaveAsPrefab(GameObject[] gameObjects, string prefabName)
     {
         if (string.IsNullOrEmpty(levelName) || string.IsNullOrEmpty(prefabName))
         {
-            Debug.LogError("合併並轉存prefab失敗，無效的levelName或是prefabName");
+            Debug.LogError("合併並轉存prefab失敗: 無效的levelName或是prefabName");
             return null;
         }
-        if(objects.Length <= 0)
+        if(gameObjects.Length <= 0)
         {
-            Debug.LogError("合併並轉存prefab失敗，未傳入任何物件");
+            Debug.LogError("合併並轉存prefab失敗: 未傳入任何物件");
             return null;
         }
 
-        string prefabPath = BASE_LEVEL_ASSET_PATH + $"/{levelName}/prefabs/{prefabName}.prefab";
-        string meshAssetPath = BASE_LEVEL_ASSET_PATH + $"/{levelName}/prefabs/{prefabName}_mesh.asset";
-
-        Directory.CreateDirectory(Path.GetDirectoryName(meshAssetPath));
-        GameObject combinedObject = CombineMeshes(objects, prefabName, meshAssetPath);
-
-        AddCombinedMeshCollider(combinedObject, combinedObject.GetComponent<MeshFilter>().sharedMesh);
-
-        string firstTag = objects.Length > 0 ? objects[0].tag : "Untagged";
-        combinedObject.tag = firstTag;
-
-        Building buildingComponent = objects[0].GetComponent<Building>();
+        GameObject gameObject = MeshTools.CombineGameObjects(gameObjects);
+        Mesh mesh = gameObject.GetComponent<MeshFilter>().sharedMesh;
+        MeshCollider meshCollider = gameObject.AddComponent<MeshCollider>();
+               
+        gameObject.name = prefabName;
+        gameObject.tag = gameObjects[0].tag;
+        mesh.name = prefabName+"_mesh";
+        meshCollider.sharedMesh = mesh;
+        meshCollider.convex = false; // 不需移動的靜態物件設 false，否則需設 true
+        
+        Building buildingComponent = gameObjects[0].GetComponent<Building>();
         if (buildingComponent != null)
         {
             //Debug.Log("取得Building component");
             ComponentUtility.CopyComponent(buildingComponent);
-            ComponentUtility.PasteComponentAsNew(combinedObject);
+            ComponentUtility.PasteComponentAsNew(gameObject);
         }
 
-        SaveAndLoadTools.SaveAsPrefab(combinedObject, prefabPath);
+        string prefabPath = BASE_LEVEL_ASSET_PATH + $"/{levelName}/prefabs/{prefabName}.prefab";
+        string meshAssetPath = BASE_LEVEL_ASSET_PATH + $"/{levelName}/prefabs/{prefabName}_mesh.asset";
+        SaveAndLoadTools.SaveAsAsset<Mesh>(mesh, meshAssetPath);
+        SaveAndLoadTools.SaveAsPrefab(gameObject, prefabPath);
 
-        return combinedObject;
-    }
-
-    public GameObject CombineMeshes(GameObject[] objects, string combinedName, string meshAssetPath)
-    {
-        List<MeshFilter> meshFilters = new List<MeshFilter>();
-
-        // 將所有物件的子物件中 MeshFilter 收集起來
-        foreach (var go in objects)
-        {
-            meshFilters.AddRange(go.GetComponentsInChildren<MeshFilter>());
-        }
-
-        List<CombineInstance> combine = new List<CombineInstance>();
-
-        // 準備合併資料（每個 Mesh 與其轉換矩陣）
-        foreach (var mf in meshFilters)
-        {
-            CombineInstance ci = new CombineInstance
-            {
-                mesh = mf.sharedMesh,
-                transform = mf.transform.localToWorldMatrix
-            };
-            combine.Add(ci);
-        }
-
-        // 建立合併後的 Mesh
-        Mesh combinedMesh = new Mesh
-        {
-            name = combinedName
-        };
-        combinedMesh.indexFormat = IndexFormat.UInt32;
-
-        combinedMesh.CombineMeshes(combine.ToArray());
-
-        // 儲存 Mesh 成為 asset
-        AssetDatabase.CreateAsset(combinedMesh, meshAssetPath);
-        AssetDatabase.SaveAssets();
-        AssetDatabase.Refresh();
-
-        // 建立新的 GameObject 並掛上 MeshFilter 和 MeshRenderer
-        GameObject combinedObject = new GameObject(combinedName);
-        MeshFilter mfCombined = combinedObject.AddComponent<MeshFilter>();
-        MeshRenderer mrCombined = combinedObject.AddComponent<MeshRenderer>();
-
-        mfCombined.sharedMesh = AssetDatabase.LoadAssetAtPath<Mesh>(meshAssetPath);
-
-        // 設定 Mesh 與 Material（這邊只抓第一個的材質）
-        mfCombined.sharedMesh = combinedMesh;
-        if (meshFilters.Count > 0)
-            mrCombined.sharedMaterials = meshFilters[0].GetComponent<MeshRenderer>().sharedMaterials;
-
-        return combinedObject;
-    }
-
-    public void AddCombinedMeshCollider(GameObject combinedObject, Mesh mesh)
-    {
-        MeshCollider collider = combinedObject.AddComponent<MeshCollider>();
-        collider.sharedMesh = mesh;
-        collider.convex = false; // 不需移動的靜態物件設 false，否則需設 true
+        return gameObject;
     }
 
     private void ClearAllData()
@@ -360,12 +303,12 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
             else if (go.CompareTag("FakeBarrier"))
             {
                 barrierPositions.Add(pos);
-                barrierDict.Add(pos, go);
             }
         }
 
         Debug.Log($"收集到 {barrierPositions.Count} 個邊界格子 (包含 {doorPositions.Count} 個門) (範圍 {detectBoundsStart} ~ {detectBoundsEnd})。\n");
         Debug.Log($"Barrier個數: {barrierList.Count}, Door個數: {doorList.Count}");
+        Debug.Log($"BarrierDict: {barrierDict.Count}");
     }
 
     //找出所有房間
@@ -393,7 +336,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
                         var room = FloodFillTools.FloodFill3D(
                             pos,
                             visited,
-                            FloodFillTools.sixDirections,
+                            FloodFillTools.SixDirections,
                             isValid
                         );
 
@@ -492,12 +435,6 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
         return false;
     }
 
-    //取得物件原本的prefab
-    private GameObject GetPrefab(GameObject go)
-    {
-        return PrefabUtility.GetCorrespondingObjectFromSource(go);
-    }
-
     private void ConvertLevelAssetToJSON()
     {
         string levelDataPath = BASE_LEVEL_ASSET_PATH + $"/{levelName}/{levelName}.asset";
@@ -567,9 +504,35 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
         //barrier資料處理
         List<PrefabSpawnData> barriers = new List<PrefabSpawnData>();
         string prefabName = $"{levelName}_barrier";
-        GameObject barrierGO = CombineObjectsAndSaveAsPrefab(barrierList.ToArray(), prefabName);
-        SaveAndLoadTools.AddPrefabToAddressables(GetPrefab(barrierGO), prefabName, levelName);
-        barriers.Add(PrefabSpawnData.MakeData(barrierGO, GetPrefab(barrierGO)));
+
+        HashSet<Vector3Int> visited = new HashSet<Vector3Int>();
+        Func<Vector3Int, GameObject> func = pos => barrierDict.ContainsKey(pos) ? barrierDict[pos] : null;
+        List<HashSet<Vector3Int>> regions = FloodFillTools.FindAllConnectedRegions3D(
+            visited,
+            FloodFillTools.SixDirections,
+            func,
+            detectBoundsStart,
+            detectBoundsEnd
+        );
+        Debug.Log($"Regions Count: {regions.Count}");
+
+        int i = 0;
+        foreach (HashSet<Vector3Int> region in regions)
+        {
+            List<GameObject> gameObjects = new List<GameObject>();
+            foreach (Vector3Int vector3Int in region)
+            {
+                if (barrierDict.ContainsKey(vector3Int))
+                {
+                    gameObjects.Add(barrierDict[vector3Int]);
+                }
+            }
+            GameObject barrierGO = CombineObjectsAndSaveAsPrefab(gameObjects.ToArray(), prefabName + "_" + i);
+            SaveAndLoadTools.AddPrefabToAddressables(CommonTools.GetPrefab(barrierGO), prefabName + "_" + i, levelName);
+            barriers.Add(PrefabSpawnData.MakeData(barrierGO, CommonTools.GetPrefab(barrierGO)));
+            gameObjects.Clear();
+            ++i;
+        }
 
         /*
         foreach (GameObject barrier in barrierList)
@@ -593,7 +556,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
         List<DoorData> doors = new List<DoorData>();
         foreach (GameObject door in doorList)
         {
-            GameObject prefab = GetPrefab(door);
+            GameObject prefab = CommonTools.GetPrefab(door);
             if (prefab != null)
             {
                 Door doorComponent = door.GetComponent<Door>();
@@ -668,17 +631,17 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
 
                 if (go.CompareTag("Enemy"))
                 {
-                    PrefabSpawnData prefabSpawnData = PrefabSpawnData.MakeData(go, GetPrefab(go));
+                    PrefabSpawnData prefabSpawnData = PrefabSpawnData.MakeData(go, CommonTools.GetPrefab(go));
                     enemies.Add(prefabSpawnData);
                 }
                 else if (go.CompareTag("Item"))
                 {
-                    PrefabSpawnData prefabSpawnData = PrefabSpawnData.MakeData(go, GetPrefab(go));
+                    PrefabSpawnData prefabSpawnData = PrefabSpawnData.MakeData(go, CommonTools.GetPrefab(go));
                     items.Add(prefabSpawnData);
                 }
                 else if (go.CompareTag("Building"))
                 {
-                    PrefabSpawnData prefabSpawnData = PrefabSpawnData.MakeData(go, GetPrefab(go));
+                    PrefabSpawnData prefabSpawnData = PrefabSpawnData.MakeData(go, CommonTools.GetPrefab(go));
                     buildings.Add(prefabSpawnData);
                 }
                 else if (go.CompareTag("Spawnpoint"))
@@ -869,9 +832,7 @@ public class LevelSaveAndLoadEditorWindow : EditorWindow
     //判斷給定座標是否在偵測範圍
     private bool IsInBounds(Vector3Int pos)
     {
-        return pos.x >= detectBoundsStart.x && pos.x <= detectBoundsEnd.x &&
-               pos.y >= detectBoundsStart.y && pos.y <= detectBoundsEnd.y &&
-               pos.z >= detectBoundsStart.z && pos.z <= detectBoundsEnd.z;
+        return CommonTools.IsInBounds(pos, detectBoundsStart, detectBoundsEnd);
     }
 
     //6方向，上下左右前後
