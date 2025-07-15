@@ -28520,7 +28520,12 @@ MonoBehaviour:
   RangeCurrentCard: {fileID: 0}
   ThrowCurrentCard: {fileID: 0}
   hp: 1
+  isCardDragging: 0
   playerSO: {fileID: 11400000, guid: 392ebe829a483cf4187e06ec49953088, type: 2}
+  weaponItems:
+  - {fileID: 11400000, guid: 9d889964e4192fc43b77919ed62515e0, type: 2}
+  - {fileID: 11400000, guid: 9a0471b173231c94e8e14d71bb71918e, type: 2}
+  - {fileID: 11400000, guid: a0370c3e9548a2a40a64755d8f1472ad, type: 2}
   buildDetectionBox: {x: 0.9, y: 1.5, z: 0.8}
   moveDetectionBox: {x: 0.9, y: 1.5, z: 0.9}
   overlapDetectionBoxYOffset: 2

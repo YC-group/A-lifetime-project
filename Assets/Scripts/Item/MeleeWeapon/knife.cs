@@ -1,16 +1,17 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
+using System.Collections;
+
 /// <summary>
-/// 近戰武器腳本 - Jerry0401
+/// 刀- mobias
 /// </summary>
-public class MeleeWeapon : ItemScript
+
+public class knife : MeleeWeapon
 {
-    public ItemData weaponSO;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        ItemInitialize(weaponSO);
+        
     }
 
     // Update is called once per frame
@@ -18,10 +19,4 @@ public class MeleeWeapon : ItemScript
     {
         
     }
-
-    public override void Attack()
-    {
-        throw new System.NotImplementedException();
-    }
-    
 }

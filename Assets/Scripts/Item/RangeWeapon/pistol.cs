@@ -38,6 +38,7 @@ public class Pistol : RangeWeapon
     }
     public override void Use()
     {
+        base.Use();
         AimTarget(); // ✅ 呼叫自己的攻擊邏輯
     }
 }

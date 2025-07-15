@@ -59,22 +59,16 @@ public class RangeWeapon : ItemScript
             Debug.LogWarning("⚠ cardCanvasGroup 尚未正確初始化！");
     }
 
-    public void RestoreCardDisplay()
+    public override void RestoreCardDisplay()
     {
-        if (cardCanvasGroup == null) return;
-        cardCanvasGroup.alpha = 1f;
-        cardCanvasGroup.interactable = true;
-        cardCanvasGroup.blocksRaycasts = true;
+        base.RestoreCardDisplay();
     }
 
     public void CancelAttackAndRestore()
     {
-        Debug.Log("❌ 攻擊取消");
+        base.CancelAttackAndRestore();
         selectedTargets.Clear();
         selectEnemy = false;
-        RestoreCardDisplay();
-        var dragHandler = GetComponent<CardDragHandler>();
-        dragHandler?.ResetUsedFlag();
     }
 
     public virtual void Fire()
@@ -90,7 +84,7 @@ public class RangeWeapon : ItemScript
         bulletCount -= selectedTargets.Count;
         selectedTargets.Clear();
         selectEnemy = false;
-
+        playerScript.isCardDragging = false;
         if (bulletCount > 0)
         {
             CancelAttackAndRestore();

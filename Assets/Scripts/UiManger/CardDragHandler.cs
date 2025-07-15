@@ -18,6 +18,7 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     public GameObject player;            // 角色物件（預留給後續功能使用）
     public UIManager UiManager;          // UI 管理器，用來通知卡片被使用
     public ItemScript attachedScript;
+    
 
     // 初始化元件
     void Awake()
@@ -52,7 +53,6 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     // 開始拖曳時呼叫
     public void OnBeginDrag(PointerEventData eventData)
     {
-
         originalPos = rectTransform.anchoredPosition; // 記錄原始位置
         canvasGroup.blocksRaycasts = false; // 關閉 Raycast 擋住判定（讓丟到 Drop 區可以偵測）
     }
@@ -87,12 +87,9 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     public void OnEndDrag(PointerEventData eventData)
     {
         // 如果卡片未使用，就播放回原位動畫
-
-
         StartCoroutine(SmoothReturn());
-
-
         canvasGroup.blocksRaycasts = true; // 恢復 Raycast 判定
+
     }
 
     // 卡片平滑移動回原位的協程
@@ -115,7 +112,6 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     public void ResetUsedFlag()
     {
         used = false;
-
     }
 
 }

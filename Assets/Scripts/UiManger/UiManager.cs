@@ -9,7 +9,7 @@ using UnityEngine.InputSystem;
 /// </summary>
 public class UIManager : MonoBehaviour
 {
-    private GameObject player;
+    private PlayerScript playerScript;
 
     public bool isCardLocking = false; // ✅ UI 鎖定狀態（鎖定操作）
     public bool isPlayerLocked = false; // ✅ 玩家是否可移動
@@ -19,12 +19,15 @@ public class UIManager : MonoBehaviour
     public GameObject cardPrefab;             // 🃏 卡牌預製物
     public RectTransform cardPanel;           // 📦 放卡牌的 Panel
 
+    
     [Header("道具設定")]
-    public ItemData[] weaponItems;            // 在 Inspector 中拉入 ScriptableObject 陣列
+    public ItemData[] weaponItems;        // 在 Inspector 中拉入 ScriptableObject 陣列
 
     void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Item");
+        playerScript = PlayerScript.GetInstance();
+
+        weaponItems = playerScript.weaponItems;
 
         SetupCardPanelLayout();
         foreach (var item in weaponItems)
@@ -108,7 +111,7 @@ public class UIManager : MonoBehaviour
 
         currentUsingCard = script;
 
-        var playerScript = PlayerScript.GetInstance();
+        
         if (playerScript == null)
         {
             Debug.LogError("❌ 找不到 PlayerScript 實例");

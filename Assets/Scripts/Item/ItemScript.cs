@@ -11,11 +11,16 @@ public abstract class ItemScript : MonoBehaviour
     [SerializeField] protected string itemDescription;
     [SerializeField] protected int damage;
     [SerializeField] protected float range;
-    
-    private PlayerScript playerScript;
+
+    public PlayerScript playerScript;
     
     public ItemData itemSO;
     public CanvasGroup cardCanvasGroup; // 所有子類可共用此 CanvasGroup（用來控制 UI 顯示）
+
+    public virtual void Awake()
+    {
+        playerScript = PlayerScript.GetInstance();
+    }
 
     public virtual void AddItemToPocket() // 將物品加入口袋
     {
@@ -61,7 +66,25 @@ public abstract class ItemScript : MonoBehaviour
     public virtual void Use()
     {
         Debug.Log($"🧪 使用了通用道具：{itemName}");
+        playerScript.isCardDragging = true;
     }
 
+    public virtual void CancelAttackAndRestore()
+    {
+        Debug.Log("❌ 攻擊取消");
+        playerScript.isCardDragging = false;
+        RestoreCardDisplay();
+        var dragHandler = GetComponent<CardDragHandler>();
+        dragHandler?.ResetUsedFlag();
+    }
+
+
+    public virtual void RestoreCardDisplay()
+    {
+        if (cardCanvasGroup == null) return;
+        cardCanvasGroup.alpha = 1f;
+        cardCanvasGroup.interactable = true;
+        cardCanvasGroup.blocksRaycasts = true;
+    }
 
 }

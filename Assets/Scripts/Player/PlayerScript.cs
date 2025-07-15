@@ -22,7 +22,8 @@ public class PlayerScript : MonoBehaviour
     public RangeWeapon RangeCurrentCard;
     public ThrowWeapon ThrowCurrentCard;
     public float hp;
-    
+    public bool isCardDragging = false;
+
     [SerializeField] private PlayerData playerSO; // 序列化玩家物件
     
     private bool isMoving = false; // 判斷玩家是否正在移動
@@ -31,6 +32,9 @@ public class PlayerScript : MonoBehaviour
     private GridManager gridManager; // 網格系統
     private Grid moveGrid; // 移動網格
     private HealthPointsScript healthPointsScript; // 血量計算腳本
+
+    [Header("道具設定")]
+    public ItemData[] weaponItems; //玩家道具
 
 
     public static PlayerScript GetInstance()  // Singleton
@@ -101,6 +105,7 @@ public class PlayerScript : MonoBehaviour
             Debug.Log("Game Over");
             // TODO: 遊戲結束處理
         }
+
     }
 
     // Space 跳過行為
@@ -128,7 +133,7 @@ public class PlayerScript : MonoBehaviour
     public void Move(InputAction.CallbackContext ctx)
     {
 
-        if (ctx.performed && !isMoving && gameManager.GetCurrentRound().Equals(RoundState.PlayerTurn))
+        if (ctx.performed && !isMoving && gameManager.GetCurrentRound().Equals(RoundState.PlayerTurn) && !isCardDragging)
         {
             moveVector = ctx.ReadValue<Vector2>();
             //Debug.Log("輸入向量：" + moveVector);

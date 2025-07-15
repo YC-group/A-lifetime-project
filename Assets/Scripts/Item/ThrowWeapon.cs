@@ -45,6 +45,7 @@ public class ThrowWeapon : ItemScript
         }
         selectedTargets.Clear();
         selectEnemy = false;
+        playerScript.isCardDragging = false;
         Destroy(gameObject);
 
     }   
@@ -65,20 +66,15 @@ public class ThrowWeapon : ItemScript
         base.ItemInitialize(data);
     }
 
-    public void CancelAttackAndRestore()
+    public override void CancelAttackAndRestore()
     {
-        Debug.Log("❌ 攻擊取消");
+        base.CancelAttackAndRestore();
         selectedTargets.Clear();
         selectEnemy = false;
-        RestoreCardDisplay();
-        var dragHandler = GetComponent<CardDragHandler>();
-        dragHandler?.ResetUsedFlag();
+
     }
-    public void RestoreCardDisplay()
+    public override void RestoreCardDisplay()
     {
-        if (cardCanvasGroup == null) return;
-        cardCanvasGroup.alpha = 1f;
-        cardCanvasGroup.interactable = true;
-        cardCanvasGroup.blocksRaycasts = true;
+        base.RestoreCardDisplay();
     }
 }

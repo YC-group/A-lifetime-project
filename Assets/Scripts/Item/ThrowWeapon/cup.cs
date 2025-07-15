@@ -37,7 +37,8 @@ public class cup : ThrowWeapon
     }
     public override void Use()
     {
+        base.Use();
         AimTarget();
-
+        
     }
 }
