@@ -16,6 +16,7 @@ TagManager:
   - FakeBarrier
   - GameManager
   - LevelScene
+  - LevelParent
   layers:
   - Default
   - TransparentFX

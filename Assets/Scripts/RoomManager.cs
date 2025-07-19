@@ -16,6 +16,8 @@ public class RoomManager : MonoBehaviour
 
     private const string PLAYER_ADDRESS = "TestPlayer";
 
+    private Transform levelParent;
+
     private string currentRoomId;
     private Vector3 currentSpawnpoint;
     private Dictionary<string, RoomSave> allRooms = new();
@@ -57,6 +59,8 @@ public class RoomManager : MonoBehaviour
         }
         
         Instance = this;
+
+        
     }
     private void OnDestroy()
     {
@@ -76,13 +80,13 @@ public class RoomManager : MonoBehaviour
         roomLinks.Clear();
     }
 
-    public void ChangeRoom(string targetRoomId)
+    public async Task ChangeRoom(string targetRoomId)
     {
         if (allRooms.ContainsKey(targetRoomId))
         {
             currentRoomId = targetRoomId;
             roomIsVisited[targetRoomId] = true;
-            CheckNearRoom();
+            await CheckNearRoom();
         }
         else
         {
@@ -99,11 +103,14 @@ public class RoomManager : MonoBehaviour
             return;
         }
 
+        Transform roomParent = levelParent.transform.Find(targetRoomId);
+        
+
         try
         {
-            var enemyTasks = targetRoom.Enemies?.Select(enemy => enemy.Spawn()) ?? Enumerable.Empty<Task<GameObject>>();
-            var itemTasks = targetRoom.Items?.Select(item => item.Spawn()) ?? Enumerable.Empty<Task<GameObject>>();
-            var buildingTasks = targetRoom.Buildings?.Select(building => building.Spawn()) ?? Enumerable.Empty<Task<GameObject>>();
+            var enemyTasks = targetRoom.Enemies?.Select(enemy => enemy.Spawn(roomParent)) ?? Enumerable.Empty<Task<GameObject>>();
+            var itemTasks = targetRoom.Items?.Select(item => item.Spawn(roomParent)) ?? Enumerable.Empty<Task<GameObject>>();
+            var buildingTasks = targetRoom.Buildings?.Select(building => building.Spawn(roomParent)) ?? Enumerable.Empty<Task<GameObject>>();
 
             await Task.WhenAll(enemyTasks.Concat(itemTasks).Concat(buildingTasks));
         }
@@ -113,7 +120,7 @@ public class RoomManager : MonoBehaviour
         }
     }
     
-    public void CheckNearRoom()
+    public async Task CheckNearRoom()
     {
         List<string> neighbors = roomLinks[currentRoomId];
 
@@ -125,7 +132,7 @@ public class RoomManager : MonoBehaviour
             }
             else
             {
-                LoadRoom(neighbor);
+                await LoadRoom(neighbor);
             }
         }
     }
@@ -158,6 +165,12 @@ public class RoomManager : MonoBehaviour
     public async Task LoadLevel(LevelSave levelSave)
     {
         ClearAll();
+        levelParent = GameObject.FindGameObjectWithTag("LevelParent").transform;
+        if (levelParent == null)
+        {
+            Debug.LogError("載入關卡失敗: 無法找到levelParent");
+            return;
+        }
 
         //設定初始房間和重生點
         currentRoomId = levelSave.StartRoomId;
@@ -170,6 +183,8 @@ public class RoomManager : MonoBehaviour
             allRooms.Add(roomSave.RoomId, roomSave);
             roomIsAlert.Add(roomSave.RoomId, false);
             roomIsVisited.Add(roomSave.RoomId, false);
+
+            new GameObject(roomSave.RoomId).transform.SetParent(levelParent.transform);
         }
 
         roomIsVisited[currentRoomId] = true;
@@ -192,14 +207,14 @@ public class RoomManager : MonoBehaviour
 
         //barrier生成
         List<PrefabSpawnSave> barriers = levelSave.Barriers;
-        await Task.WhenAll(barriers.Select(barrier => barrier.Spawn()));
+        await Task.WhenAll(barriers.Select(barrier => barrier.Spawn(levelParent)));
         Debug.Log("barrier生成完畢!");
         
         //door生成
         foreach(DoorSave doorSave in doorSaves)
         {
             
-            GameObject instance = await doorSave.Pss.Spawn();
+            GameObject instance = await doorSave.Pss.Spawn(levelParent);
 
             if (instance == null)
             {
@@ -222,7 +237,7 @@ public class RoomManager : MonoBehaviour
         Debug.Log("初始房間生成完畢!");
 
         //周圍房間確認
-        CheckNearRoom();
+        await CheckNearRoom();
 
         //玩家生成
         await PlayerSpawn();
