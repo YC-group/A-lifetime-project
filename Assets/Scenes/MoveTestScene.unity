@@ -282,6 +282,9 @@ MonoBehaviour:
   moveMode: 1
   movePriority: 0
   targetPosition: {x: 0, y: 0, z: 0}
+  moveSpeed: 100
+  moveAcceleration: 200
+  moveAngularSpeed: 5
   eyeHeight: 1.5
   viewRadiusForward: 6
   viewAngleForward: 90
@@ -595,6 +598,9 @@ MonoBehaviour:
   moveMode: 0
   movePriority: 0
   targetPosition: {x: 0, y: 0, z: 0}
+  moveSpeed: 100
+  moveAcceleration: 200
+  moveAngularSpeed: 5
   eyeHeight: 1.5
   viewRadiusForward: 6
   viewAngleForward: 90
@@ -1186,9 +1192,14 @@ MonoBehaviour:
   FREEMOVE: 0
   pocketList: []
   currentCell: {x: 0, y: 0, z: 0}
-  currentCard: {fileID: 0}
+  RangeCurrentCard: {fileID: 0}
+  ThrowCurrentCard: {fileID: 0}
   hp: 0
+  isCardDragging: 0
   playerSO: {fileID: 11400000, guid: 392ebe829a483cf4187e06ec49953088, type: 2}
+  moveDistance: 1
+  moveTime: 0.2
+  weaponItems: []
   buildDetectionBox: {x: 0.9, y: 0.1, z: 0.8}
   moveDetectionBox: {x: 0.9, y: 0.1, z: 0.9}
   overlapDetectionBoxYOffset: 0.5
@@ -1888,6 +1899,7 @@ MonoBehaviour:
   itemDescription: 
   damage: 0
   range: 0
+  playerScript: {fileID: 0}
   itemSO: {fileID: 0}
   cardCanvasGroup: {fileID: 0}
   weaponSO: {fileID: 11400000, guid: 9a0471b173231c94e8e14d71bb71918e, type: 2}

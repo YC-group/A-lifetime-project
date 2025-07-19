@@ -10,14 +10,7 @@ public class EnemyData : ScriptableObject
     public float hp;
     public float attack;
     //public Item weapon;
-    public enum SpecialAct { None, }
-    public SpecialAct specialAct;
-    [Tooltip("Speed in NavMeshAgent , units / sec")]
-    public float speed; // unit / second
-    [Tooltip("Acceleration in NavMeshAgent , units^2 / sec")]
-    public float acceleration; // unit^2 / second
-    [Tooltip("Angular speed in SmoothRotation , speed * deltaTime at each frame")]
-    public float angularSpeed; // speed * deltaTime
+    public SpecialAction specialAct;
     public int movePriority;
 }
 

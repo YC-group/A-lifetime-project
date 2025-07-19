@@ -41,6 +41,12 @@ public class EnemyScript : MonoBehaviour
     public MoveMode moveMode;
     public int movePriority;
     public Vector3 targetPosition; // 移動到下個位置
+    [Tooltip("Speed in NavMeshAgent , units / sec")]
+    public float moveSpeed; // unit / second
+    [Tooltip("Acceleration in NavMeshAgent , units^2 / sec")]
+    public float moveAcceleration; // unit^2 / second
+    [Tooltip("Angular speed in SmoothRotation , speed * deltaTime at each frame")]
+    public float moveAngularSpeed; // speed * deltaTime
 
     [Header("視野高度")] 
     public float eyeHeight = 1.5f; // 射線發射高度
@@ -107,8 +113,8 @@ public class EnemyScript : MonoBehaviour
         transform.position = gridManager.moveGrid.GetCellCenterWorld(currentCell);
         // 設定移動速度與加速度
         agent = gameObject.GetComponent<NavMeshAgent>();
-        agent.speed = enemySO.speed;
-        agent.acceleration = enemySO.acceleration;
+        agent.speed = moveSpeed;
+        agent.acceleration = moveAcceleration;
         agent.updateRotation = false; // 停用 NavMeshAgent 轉向方面的功能
     }
 
@@ -138,7 +144,7 @@ public class EnemyScript : MonoBehaviour
 
         while (Quaternion.Angle(transform.rotation, targetRotation) > 5f) // 轉向差值小於 5 就判定為轉向結束
         {
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, enemySO.angularSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, moveAngularSpeed * Time.deltaTime);
             yield return null; // 結束這一 Frame 的 Coroutine
         }
 

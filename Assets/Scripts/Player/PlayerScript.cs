@@ -25,6 +25,8 @@ public class PlayerScript : MonoBehaviour
     public bool isCardDragging = false;
 
     [SerializeField] private PlayerData playerSO; // 序列化玩家物件
+    [SerializeField] private int moveDistance = 1; // 每步移動距離
+    [SerializeField] private float moveTime = 0.2f; // 每步移動時間
     
     private bool isMoving = false; // 判斷玩家是否正在移動
     private Vector2 moveVector; // 移動方向
@@ -168,7 +170,7 @@ public class PlayerScript : MonoBehaviour
                     }
                     if(door != null) door.OpenDoor();
                     
-                    currentCell += direction * playerSO.moveDistance * step;
+                    currentCell += direction * moveDistance * step;
                     // gridManager.UpdateGameObjectFromMoveGrid(this.gameObject, currentCell); // 更新在網格系統的所在位置
                     Vector3 dest = moveGrid.GetCellCenterWorld(currentCell);
                     enemyCheck(enemyDict, step);
@@ -216,7 +218,7 @@ public class PlayerScript : MonoBehaviour
         isMoving = true;
         Vector3 start = transform.position;
         float elapsed = 0f; // 已經過時間
-        float duration = playerSO.moveTime; // 移動時間，可調整
+        float duration = moveTime; // 移動時間，可調整
 
         while (elapsed < duration)
         {
