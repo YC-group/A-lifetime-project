@@ -11,11 +11,12 @@ public class Pistol : RangeWeapon
     public override void ItemInitialize(ItemData data)
     {
         base.ItemInitialize(data);
+        bulletCount = 5;
     }
 
     protected override void Start()
     {
-        bulletCount = 3;
+        
         base.Start(); // ✅ 正確呼叫父類 Start
     }
 

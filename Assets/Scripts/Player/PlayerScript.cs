@@ -17,12 +17,13 @@ public class PlayerScript : MonoBehaviour
    
     public InputSystemActions inputActions; // InputSystem 的 Action map
     public bool FREEMOVE = false; // 測試移動用，會讓回合維持在玩家回合
-    public List<ItemScript> pocketList;
+    public List<GameObject> pocketList; // 儲存item GO
     public Vector3Int currentCell; // 當下網格位置
     public RangeWeapon RangeCurrentCard;
     public ThrowWeapon ThrowCurrentCard;
     public float hp;
     public bool isCardDragging = false;
+    
 
     [SerializeField] private PlayerData playerSO; // 序列化玩家物件
     [SerializeField] private int moveDistance = 1; // 每步移動距離
@@ -34,10 +35,6 @@ public class PlayerScript : MonoBehaviour
     private GridManager gridManager; // 網格系統
     private Grid moveGrid; // 移動網格
     private HealthPointsScript healthPointsScript; // 血量計算腳本
-
-    [Header("道具設定")]
-    public ItemData[] weaponItems; //玩家道具
-
 
     public static PlayerScript GetInstance()  // Singleton
     {
@@ -84,7 +81,7 @@ public class PlayerScript : MonoBehaviour
         hp = playerSO.hp;
         currentCell = moveGrid.WorldToCell(transform.position);
         transform.position = moveGrid.GetCellCenterWorld(currentCell);
-        pocketList = new List<ItemScript>();
+        pocketList = new List<GameObject>();
         inputActions = new InputSystemActions();
         // 註冊移動行為
         inputActions.Player.Move.performed += Move;
@@ -455,5 +452,6 @@ public class PlayerScript : MonoBehaviour
             // enemy.DestroyEnemy();
         }
     }
+
 
 }

@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using System;
 using UnityEngine.InputSystem;
-
+using System.Collections.Generic;
 /// <summary>
 /// 顯示道具腳本 - mobias
 /// </summary>
@@ -14,72 +14,47 @@ public class UIManager : MonoBehaviour
     public bool isCardLocking = false; // ✅ UI 鎖定狀態（鎖定操作）
     public bool isPlayerLocked = false; // ✅ 玩家是否可移動
     public ItemScript currentUsingCard;
+    public List<GameObject> pocketList; // 儲存item GO
 
     [Header("UI 元件")]
     public GameObject cardPrefab;             // 🃏 卡牌預製物
     public RectTransform cardPanel;           // 📦 放卡牌的 Panel
 
-    
-    [Header("道具設定")]
-    public ItemData[] weaponItems;        // 在 Inspector 中拉入 ScriptableObject 陣列
+
+         
 
     void Start()
     {
         playerScript = PlayerScript.GetInstance();
-
-        weaponItems = playerScript.weaponItems;
-
+        pocketList = playerScript.pocketList;
         SetupCardPanelLayout();
-        foreach (var item in weaponItems)
+        foreach (var go in pocketList)
         {
-            if (item != null)
-                CreateCard(item);
-            else
-                Debug.LogWarning("⚠️ item 是空的，請確認設定");
+            var script = go.GetComponent<ItemScript>();
+            CreateCard(script);
         }
+
     }
 
     // 建立一張卡片，並附加對應的腳本與初始化
-    public void CreateCard(ItemData itemData)
+    public void CreateCard(ItemScript itemScript)
     {
         GameObject card = Instantiate(cardPrefab, cardPanel);
 
-        // 設定 UI 顯示名稱
+        var attachedScript = (ItemScript)card.AddComponent(itemScript.GetType());
+        attachedScript.ItemInitialize(itemScript.itemSO);
+        attachedScript.attachedCardUI = card; // ✅ 綁定回 UI 卡片
+
         var tmp = card.GetComponentInChildren<TextMeshProUGUI>();
         if (tmp != null)
-            tmp.text = itemData.itemName;
-        else
-            Debug.LogWarning("❗ 無法找到 TextMeshProUGUI 元件，請確認 prefab 結構");
+            tmp.text = itemScript.itemName;
 
-        // 根據 itemData.itemName 找出對應腳本類別
-        Type type = GetItemScriptType(itemData.itemName);
-        if (type == null)
-        {
-            Debug.LogError($"❌ 找不到類別：{itemData.itemName}，請確認類名是否正確");
-            return;
-        }
-
-        // 加上腳本並初始化
-        ItemScript itemScript = (ItemScript)card.AddComponent(type);
-        itemScript.ItemInitialize(itemData);
-
-        // 設定 CanvasGroup
-        var canvasGroup = card.GetComponent<CanvasGroup>();
-        if (canvasGroup == null)
-            canvasGroup = card.AddComponent<CanvasGroup>();
-        itemScript.cardCanvasGroup = canvasGroup;
-
-        // 設定拖曳控制
         var drag = card.GetComponent<CardDragHandler>();
         if (drag != null)
         {
-            drag.cardName = itemData.itemName;
+            drag.cardName = attachedScript.itemSO.itemName;
             drag.UiManager = this;
-            drag.attachedScript = itemScript;
-        }
-        else
-        {
-            Debug.LogWarning("⚠️ 卡片上缺少 CardDragHandler 腳本！");
+            drag.attachedScript = attachedScript;
         }
     }
 

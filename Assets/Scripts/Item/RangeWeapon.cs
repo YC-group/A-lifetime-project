@@ -7,12 +7,14 @@ using UnityEngine.InputSystem;
 /// </summary>
 public class RangeWeapon : ItemScript
 {
+
     public int bulletCount;
     public bool selectEnemy = false;
     protected List<Transform> selectedTargets = new List<Transform>();
 
     protected virtual void Start()
     {
+        
     }
 
     protected virtual void Update()
@@ -55,15 +57,8 @@ public class RangeWeapon : ItemScript
     {
         selectedTargets.Clear();
         selectEnemy = true;
-        if (cardCanvasGroup == null)
-            Debug.LogWarning("⚠ cardCanvasGroup 尚未正確初始化！");
-    }
 
-    public override void RestoreCardDisplay()
-    {
-        base.RestoreCardDisplay();
     }
-
     public void CancelAttackAndRestore()
     {
         base.CancelAttackAndRestore();
@@ -91,7 +86,7 @@ public class RangeWeapon : ItemScript
         }
         else
         {
-            Destroy(gameObject);
+            RemoveItemFromPocket();
         }
         Debug.Log("剩餘子彈：" + bulletCount);
     }

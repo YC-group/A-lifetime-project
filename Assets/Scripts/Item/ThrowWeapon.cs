@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-
+using UnityEngine.UI;
 /// <summary>
 /// 投擲道具 - mobias
 /// </summary>
@@ -46,15 +46,14 @@ public class ThrowWeapon : ItemScript
         selectedTargets.Clear();
         selectEnemy = false;
         playerScript.isCardDragging = false;
-        Destroy(gameObject);
+        RemoveItemFromPocket();
 
     }   
     public virtual void AimTarget()
     {
         selectedTargets.Clear();
         selectEnemy = true;
-        if (cardCanvasGroup == null)
-            Debug.LogWarning("⚠ cardCanvasGroup 尚未正確初始化！");
+
     }
     public override void Attack()
     {
@@ -73,8 +72,5 @@ public class ThrowWeapon : ItemScript
         selectEnemy = false;
 
     }
-    public override void RestoreCardDisplay()
-    {
-        base.RestoreCardDisplay();
-    }
+
 }

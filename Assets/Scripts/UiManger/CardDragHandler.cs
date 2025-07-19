@@ -113,5 +113,14 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     {
         used = false;
     }
+    public void RestoreDisplay()
+    {
+        if (canvasGroup == null) return;
 
+        canvasGroup.alpha = 1f;
+        canvasGroup.blocksRaycasts = true;
+        canvasGroup.interactable = true;
+
+        used = false;
+    }
 }

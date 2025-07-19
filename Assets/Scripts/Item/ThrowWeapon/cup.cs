@@ -24,8 +24,6 @@ public class cup : ThrowWeapon
 
     }
 
-
-
     //public override void Attack()
     //{
     //    Debug.Log("🔫 Pistol 的攻擊實作");

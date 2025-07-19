@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 /// <summary>
 /// 物品共通屬性腳本 - Jerry0401
 /// </summary>
@@ -13,25 +14,34 @@ public abstract class ItemScript : MonoBehaviour
     [SerializeField] protected float range;
 
     public PlayerScript playerScript;
-    
     public ItemData itemSO;
-    public CanvasGroup cardCanvasGroup; // 所有子類可共用此 CanvasGroup（用來控制 UI 顯示）
+    public GameObject cardPrefab; // ✅ 每張道具對應的 prefab
+    public GameObject attachedCardUI; // ✅ 對應的 UI 卡牌
 
     public virtual void Awake()
     {
         playerScript = PlayerScript.GetInstance();
+
     }
 
     public virtual void AddItemToPocket() // 將物品加入口袋
     {
-        playerScript.pocketList.Add(this);
+        playerScript.pocketList.Add(this.gameObject);
         Debug.Log("Pocket Counts: " + playerScript.pocketList.Count);
         Destroy(this.gameObject);
     }
 
     public virtual void RemoveItemFromPocket() // 將物品從口袋刪除
     {
-        playerScript.pocketList.Remove(this);
+        playerScript.pocketList.Remove(this.gameObject);
+        // ✅ 通知 UI 重新排列
+        attachedCardUI.SetActive(false); // ✅ 先隱藏，才能觸發排版更新
+
+        var layoutGroup = attachedCardUI.transform.parent as RectTransform;
+        if (layoutGroup != null)
+        {
+            LayoutRebuilder.ForceRebuildLayoutImmediate(layoutGroup); // ✅ 重新排版
+        }
     }
 
     public virtual void DropItem() // 掉落物品
@@ -73,18 +83,14 @@ public abstract class ItemScript : MonoBehaviour
     {
         Debug.Log("❌ 攻擊取消");
         playerScript.isCardDragging = false;
-        RestoreCardDisplay();
+
         var dragHandler = GetComponent<CardDragHandler>();
-        dragHandler?.ResetUsedFlag();
+        if (dragHandler != null)
+        {
+            dragHandler.ResetUsedFlag();       // ✅ 重設 used
+            dragHandler.RestoreDisplay();      // ✅ 改為完整重顯 UI
+        }
     }
 
-
-    public virtual void RestoreCardDisplay()
-    {
-        if (cardCanvasGroup == null) return;
-        cardCanvasGroup.alpha = 1f;
-        cardCanvasGroup.interactable = true;
-        cardCanvasGroup.blocksRaycasts = true;
-    }
 
 }
