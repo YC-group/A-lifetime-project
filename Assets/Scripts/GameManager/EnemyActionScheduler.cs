@@ -11,8 +11,9 @@ public class EnemyActionScheduler : MonoBehaviour
 {
     public GameObject[] EnemyGameObjects;
     
+    [SerializeField] private bool isMoving;
+    
     private RoundState currentRound;
-    private bool isMoving;
     private GridManager gridManager;
     private GameManager gameManager;
     private PlayerScript player;
@@ -131,7 +132,7 @@ public class EnemyActionScheduler : MonoBehaviour
                 if (NavMesh.CalculatePath(enemy.transform.position, moveTo, NavMesh.AllAreas, path) && moveGrid.GetCellCenterWorld(player.currentCell) != moveTo)
                 {
                     // Debug.Log("corners : " + path.corners.Length);
-                    // Debug.Log(GridManager.Instance.IsOccupied(currentCell + direction));
+                    // Debug.Log(gridManager.IsOccupied(currentCell + direction));
                     if (path.status == NavMeshPathStatus.PathComplete &&
                         !gridManager.IsOccupied(currentCell + direction) && path.corners.Length < 3|| direction == Vector3Int.zero)
                     {

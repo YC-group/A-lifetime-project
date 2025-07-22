@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class ThrowWeapon : ItemScript
 {
     public int throwRange = 3;             // 可投擲格數
-    public int damage = 1;                 // 傷害值
+    // public int damage = 1;                 // 傷害值
     public GameObject throwEffect;         // 擊中特效（選用）
     public bool selectEnemy = false;
     protected List<Transform> selectedTargets = new List<Transform>();

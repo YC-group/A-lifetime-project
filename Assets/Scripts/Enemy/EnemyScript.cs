@@ -7,6 +7,7 @@ using System.Linq;
 using Unity.AI.Navigation;
 using Unity.VisualScripting;
 using UnityEngine.AI;
+using Object = System.Object;
 
 /// <summary>
 /// 敵人腳本 - Jerry0401 / Mobias0315
@@ -81,7 +82,7 @@ public class EnemyScript : MonoBehaviour
     {
         if (hp == 0)
         {
-            gameObject.SetActive(false);
+            ObjectPoolManager.ReturnObjectToPool(this.gameObject);
             gridManager.RemoveGameObjectFromMoveGrid(this.gameObject);
         }
         
@@ -103,6 +104,7 @@ public class EnemyScript : MonoBehaviour
 
     private void EnemyDataInitializer() // 初始化
     {
+        
         hp = enemySO.hp;
         isAlert = false;
         isStun = false;
@@ -116,6 +118,8 @@ public class EnemyScript : MonoBehaviour
         agent.speed = moveSpeed;
         agent.acceleration = moveAcceleration;
         agent.updateRotation = false; // 停用 NavMeshAgent 轉向方面的功能
+        
+        ObjectPoolManager.AddExistObjetToPool(this.gameObject);
     }
 
     public List<Vector3Int> SetMoveModeDirection(MoveMode mode) // 設定行為模式

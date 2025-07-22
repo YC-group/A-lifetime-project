@@ -97,7 +97,7 @@ NavMeshAgent:
   m_AutoBraking: 1
   m_AutoRepath: 1
   m_Height: 2
-  m_BaseOffset: 0
+  m_BaseOffset: -0.083333
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
 --- !u!114 &-291272724905843849
@@ -126,7 +126,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemySO: {fileID: 11400000, guid: e450abdacdb07a045b1cfbb39978c86e, type: 2}
-  hp: 0
+  hp: 1
   isAlert: 0
   isStun: 0
   stunRound: 0

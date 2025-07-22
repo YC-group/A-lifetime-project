@@ -77,7 +77,7 @@ public class RoomManager : MonoBehaviour
         allRooms.Clear();
         roomIsAlert.Clear();
         roomIsVisited.Clear();
-        roomLinks.Clear();
+        roomLinks.Clear(); 
     }
 
     public async Task ChangeRoom(string targetRoomId)
