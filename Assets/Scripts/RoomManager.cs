@@ -146,6 +146,7 @@ public class RoomManager : MonoBehaviour
         }
 
         GameObject player = await SaveAndLoadTools.LoadFromAddressableAndInstantiate<GameObject>(PLAYER_ADDRESS);
+        player.transform.SetParent(levelParent);
         player.transform.position = currentSpawnpoint;
     }
 
