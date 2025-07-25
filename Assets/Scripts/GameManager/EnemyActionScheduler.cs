@@ -14,28 +14,20 @@ public class EnemyActionScheduler : MonoBehaviour
     [SerializeField] private bool isMoving;
     
     private RoundState currentRound;
-    private GridManager gridManager;
-    private GameManager gameManager;
-    private PlayerScript player;
-    private HealthPointsScript healthPointsScript;
     
     void Start()
     {
         isMoving = false;
-        gridManager = GridManager.GetInstance();
-        gameManager = GameManager.GetInstance();
-        player = PlayerScript.GetInstance(); // 玩家物件
-        healthPointsScript = HealthPointsScript.GetInstance();
         
         foreach (var enemy in EnemyGameObjects)
         {
-            gridManager.AddGameObjectToMoveGrid(enemy); // 將敵人物件存入網格陣列
+            GridManager.GetInstance().AddGameObjectToMoveGrid(enemy); // 將敵人物件存入網格陣列
         }
     }
 
     void Update()
     {
-        currentRound = gameManager.GetCurrentRound(); // 確定現在回合
+        currentRound = GameManager.GetInstance().GetCurrentRound(); // 確定現在回合
     }
 
     void FixedUpdate() 
@@ -50,7 +42,7 @@ public class EnemyActionScheduler : MonoBehaviour
             }
             if (CheckEnemyArrived()) // 確定敵人動作結束
             {
-                gameManager.SetToNextRound();
+                GameManager.GetInstance().SetToNextRound();
             }
         }
     }
@@ -129,12 +121,12 @@ public class EnemyActionScheduler : MonoBehaviour
                 Vector3 moveTo = (moveGrid.GetCellCenterWorld(currentCell + direction)); // 目的地
                 NavMeshPath path = new NavMeshPath();
                 // Debug.Log(NavMesh.CalculatePath(enemy.transform.position, moveTo, NavMesh.AllAreas, path));
-                if (NavMesh.CalculatePath(enemy.transform.position, moveTo, NavMesh.AllAreas, path) && moveGrid.GetCellCenterWorld(player.currentCell) != moveTo)
+                if (NavMesh.CalculatePath(enemy.transform.position, moveTo, NavMesh.AllAreas, path) && moveGrid.GetCellCenterWorld(PlayerScript.GetInstance().currentCell) != moveTo)
                 {
                     // Debug.Log("corners : " + path.corners.Length);
                     // Debug.Log(gridManager.IsOccupied(currentCell + direction));
                     if (path.status == NavMeshPathStatus.PathComplete &&
-                        !gridManager.IsOccupied(currentCell + direction) && path.corners.Length < 3|| direction == Vector3Int.zero)
+                        !GridManager.GetInstance().IsOccupied(currentCell + direction) && path.corners.Length < 3|| direction == Vector3Int.zero)
                     {
                         enemyScript.targetPosition = moveTo;
                         if (rotationCoroutine != null) // 確保只有一個轉向行為
@@ -142,7 +134,7 @@ public class EnemyActionScheduler : MonoBehaviour
                             StopCoroutine(rotationCoroutine);
                         }
                         enemyScript.rotationCoroutine = StartCoroutine(enemyScript.SmoothRotation(direction));
-                        gridManager.UpdateGameObjectFromMoveGrid(enemy, currentCell + direction);
+                        GridManager.GetInstance().UpdateGameObjectFromMoveGrid(enemy, currentCell + direction);
                         agent.SetPath(path); // 移動到目的地
                         break;
                         // else 做其他行為
@@ -156,7 +148,7 @@ public class EnemyActionScheduler : MonoBehaviour
         {
             // 繪製到玩家的最短路徑
             NavMeshPath path = new NavMeshPath();
-            if (NavMesh.CalculatePath(enemy.transform.position, player.transform.position, NavMesh.AllAreas, path))
+            if (NavMesh.CalculatePath(enemy.transform.position, PlayerScript.GetInstance().transform.position, NavMesh.AllAreas, path))
             {
                 Vector3[] corners = path.corners; // 儲存路徑的轉折點
                 if (corners != null && corners.Length > 1)
@@ -180,13 +172,13 @@ public class EnemyActionScheduler : MonoBehaviour
                     NavMeshPath finalPath = new NavMeshPath();
                     // Debug.Log(!gridManager.IsOccupied(moveTo));
                     if (NavMesh.CalculatePath(enemy.transform.position, moveTo, NavMesh.AllAreas, finalPath) &&
-                        !gridManager.IsOccupied(moveTo))
+                        !GridManager.GetInstance().IsOccupied(moveTo))
                     {
                         if (path.status == NavMeshPathStatus.PathComplete)
                         {
-                            if (!enemyScript.isStun && moveGrid.GetCellCenterWorld(player.currentCell).Equals(moveTo))
+                            if (!enemyScript.isStun && moveGrid.GetCellCenterWorld(PlayerScript.GetInstance().currentCell).Equals(moveTo))
                             {
-                                player.hp = healthPointsScript.TakeMeleeDamage(player.hp);
+                                PlayerScript.GetInstance().hp = HealthPointsScript.GetInstance().TakeMeleeDamage(PlayerScript.GetInstance().hp);
                             }
                             enemyScript.targetPosition = moveTo;
                             if (rotationCoroutine != null) // 確保只有一個轉向行為
@@ -194,7 +186,7 @@ public class EnemyActionScheduler : MonoBehaviour
                                 StopCoroutine(rotationCoroutine);
                             }
                             enemyScript.rotationCoroutine = StartCoroutine(enemyScript.SmoothRotation(bestDir));
-                            gridManager.UpdateGameObjectFromMoveGrid(enemy, moveGrid.WorldToCell(moveTo));
+                            GridManager.GetInstance().UpdateGameObjectFromMoveGrid(enemy, moveGrid.WorldToCell(moveTo));
                             agent.SetPath(finalPath); // 移動到目的地
                         }
                     }

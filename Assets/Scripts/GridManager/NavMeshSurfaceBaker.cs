@@ -17,6 +17,11 @@ public class NavMeshSurfaceBaker : MonoBehaviour
 
     private void Awake()
     {
+        this.enabled = false;
+    }
+
+    private void OnEnable()
+    {
         int? agentTypeID = GetNavMeshAgentID(navMeshAgentType); // 獲取 Agent List 的 ID
         if (surface == null)
         {
@@ -55,6 +60,7 @@ public class NavMeshSurfaceBaker : MonoBehaviour
             }
         }
     }
+
     private int? GetNavMeshAgentID(string name)
     {
         for (int i = 0; i < NavMesh.GetSettingsCount(); i++)
@@ -67,16 +73,5 @@ public class NavMeshSurfaceBaker : MonoBehaviour
         }
 
         return null;
-    }
-
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 }

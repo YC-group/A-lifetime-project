@@ -58,6 +58,10 @@ public class PrefabSpawnSave
         {
             GameObject instance = handle.Result;
             instance.transform.localScale = scale;
+            if (instance.CompareTag("Barrier"))
+            {
+                instance.layer = LayerMask.NameToLayer("Barrier");
+            }
             return instance;
         }
         else

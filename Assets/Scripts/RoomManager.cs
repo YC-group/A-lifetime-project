@@ -162,6 +162,11 @@ public class RoomManager : MonoBehaviour
 
         player.transform.position = currentSpawnpoint;
     }
+    
+    // public async Task NavMeshBaker()
+    // {
+    //     
+    // }
 
     public async Task LoadLevel(LevelSave levelSave)
     {
@@ -185,7 +190,7 @@ public class RoomManager : MonoBehaviour
             roomIsAlert.Add(roomSave.RoomId, false);
             roomIsVisited.Add(roomSave.RoomId, false);
 
-            new GameObject(roomSave.RoomId).transform.SetParent(levelParent.transform);
+            new GameObject(roomSave.RoomId).transform.SetParent(levelParent.transform);  
         }
 
         roomIsVisited[currentRoomId] = true;
@@ -216,6 +221,7 @@ public class RoomManager : MonoBehaviour
         {
             
             GameObject instance = await doorSave.Pss.Spawn(levelParent);
+            instance.layer = LayerMask.NameToLayer("Barrier");
 
             if (instance == null)
             {
@@ -232,6 +238,9 @@ public class RoomManager : MonoBehaviour
             door.SetSpawns(doorSave.Spawns);
         }
         Debug.Log("door生成完畢!");
+        
+        //NavMesh生成
+        levelParent.GetComponent<NavMeshSurfaceBaker>().enabled = true;
                 
         //開始房間生成
         await LoadRoom(currentRoomId);
@@ -245,6 +254,7 @@ public class RoomManager : MonoBehaviour
         Debug.Log("玩家生成完畢!");
 
         Debug.Log("關卡載入完畢!");
+        
     }
 
 #if UNITY_EDITOR

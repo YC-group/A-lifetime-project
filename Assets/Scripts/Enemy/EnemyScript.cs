@@ -24,12 +24,9 @@ public class EnemyScript : MonoBehaviour
 {
     [SerializeField] public EnemyData enemySO;
     
-    private GameManager gameManager;
-    private GridManager gridManager;
     private Vector2 moveVector;
     private Vector3Int currentCell;
     private NavMeshPath path;
-    private PlayerScript playerScript;
     private NavMeshAgent agent;
 
     [Header("狀態")] 
@@ -72,32 +69,33 @@ public class EnemyScript : MonoBehaviour
 
     void Start()
     {
-        gameManager = GameManager.GetInstance();
-        gridManager = GridManager.GetInstance();
-        playerScript = PlayerScript.GetInstance();
         EnemyDataInitializer();
     }
 
     void Update()
     {
-        if (hp == 0)
+        // HACK: 暫時方案，敵人生成後無法偵測玩家
+        if (PlayerScript.GetInstance() != null)
         {
-            ObjectPoolManager.ReturnObjectToPool(this.gameObject);
-            gridManager.RemoveGameObjectFromMoveGrid(this.gameObject);
-        }
-        
-        if (DetectPlayer())
-        {
-            DetectAlert();
-            //Debug.Log("偵測到玩家");
-        }
-        
-        if (gameManager.GetCurrentRound() == RoundState.EnemyTurn)
-        {
-            // 經過一回合恢復狀態
-            if (gameManager.GetAfterRoundsCounts() >= stunRound + 3 && isStun)
+            if (hp == 0)
             {
-                isStun = false;
+                ObjectPoolManager.ReturnObjectToPool(this.gameObject);
+                GridManager.GetInstance().RemoveGameObjectFromMoveGrid(this.gameObject);
+            }
+        
+            if (DetectPlayer())
+            {
+                DetectAlert();
+                //Debug.Log("偵測到玩家");
+            }
+        
+            if (GameManager.GetInstance().GetCurrentRound() == RoundState.EnemyTurn)
+            {
+                // 經過一回合恢復狀態
+                if (GameManager.GetInstance().GetAfterRoundsCounts() >= stunRound + 3 && isStun)
+                {
+                    isStun = false;
+                }
             }
         }
     }
@@ -111,8 +109,8 @@ public class EnemyScript : MonoBehaviour
         targetPosition = transform.position;
         movePriority = enemySO.movePriority;
         // 設定移動網格
-        currentCell = gridManager.moveGrid.WorldToCell(transform.position);
-        transform.position = gridManager.moveGrid.GetCellCenterWorld(currentCell);
+        currentCell = GridManager.GetInstance().moveGrid.WorldToCell(transform.position);
+        transform.position = GridManager.GetInstance().moveGrid.GetCellCenterWorld(currentCell);
         // 設定移動速度與加速度
         agent = gameObject.GetComponent<NavMeshAgent>();
         agent.speed = moveSpeed;
@@ -160,7 +158,7 @@ public class EnemyScript : MonoBehaviour
         Vector3 origin = transform.position + Vector3.up * eyeHeight;
 
         // 取得玩家的水平位置（忽略高度差）
-        Vector3 playerPos = new Vector3(playerScript.transform.position.x, origin.y, playerScript.transform.position.z);
+        Vector3 playerPos = new Vector3(PlayerScript.GetInstance().transform.position.x, origin.y, PlayerScript.GetInstance().transform.position.z);
         Vector3 toPlayer = playerPos - origin;
         float distanceToPlayer = toPlayer.magnitude;
         float angle = Vector3.Angle(transform.forward, toPlayer);

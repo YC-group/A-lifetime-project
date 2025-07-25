@@ -24,17 +24,13 @@ public class PlayerScript : MonoBehaviour
     public float hp;
     public bool isCardDragging = false;
     
-
     [SerializeField] private PlayerData playerSO; // 序列化玩家物件
     [SerializeField] private int moveDistance = 1; // 每步移動距離
     [SerializeField] private float moveTime = 0.2f; // 每步移動時間
     
     private bool isMoving = false; // 判斷玩家是否正在移動
     private Vector2 moveVector; // 移動方向
-    private GameManager gameManager; // 遊戲系統
-    private GridManager gridManager; // 網格系統
     private Grid moveGrid; // 移動網格
-    private HealthPointsScript healthPointsScript; // 血量計算腳本
 
     public static PlayerScript GetInstance()  // Singleton
     {
@@ -43,7 +39,7 @@ public class PlayerScript : MonoBehaviour
             Instance = GameObject.FindAnyObjectByType<PlayerScript>();
             if (Instance == null)
             {
-                Debug.LogError("No PlayerScript found");
+                Debug.LogWarning("No PlayerScript found"); 
                 return null;
             }
         }
@@ -74,10 +70,7 @@ public class PlayerScript : MonoBehaviour
 
     private void Start()
     {
-        gameManager = GameManager.GetInstance();
-        gridManager = GridManager.GetInstance();
-        healthPointsScript = HealthPointsScript.GetInstance();
-        moveGrid = gridManager.moveGrid;
+        moveGrid = GridManager.GetInstance().moveGrid;
         hp = playerSO.hp;
         currentCell = moveGrid.WorldToCell(transform.position);
         transform.position = moveGrid.GetCellCenterWorld(currentCell);
@@ -111,18 +104,18 @@ public class PlayerScript : MonoBehaviour
     // NOTE: 使用 InputAction
     public void Skip(InputAction.CallbackContext ctx)
     {
-        if (ctx.performed && gameManager.GetCurrentRound().Equals(RoundState.PlayerTurn))
+        if (ctx.performed && GameManager.GetInstance().GetCurrentRound().Equals(RoundState.PlayerTurn))
         {
-            if (gridManager.IsOccupiedByEnemy(moveGrid.WorldToCell(transform.position)))
+            if (GridManager.GetInstance().IsOccupiedByEnemy(moveGrid.WorldToCell(transform.position)))
             {
-                GameObject enemy = gridManager.GetGameObjectFromMoveGrid(moveGrid.WorldToCell(transform.position));
+                GameObject enemy = GridManager.GetInstance().GetGameObjectFromMoveGrid(moveGrid.WorldToCell(transform.position));
                 if (enemy.GetComponent<EnemyScript>().isStun)
                 {
                     enemy.GetComponent<EnemyScript>().hp =
-                        healthPointsScript.TakeMeleeDamage(enemy.GetComponent<EnemyScript>().hp);
+                        HealthPointsScript.GetInstance().TakeMeleeDamage(enemy.GetComponent<EnemyScript>().hp);
                 }
             }
-            gameManager.SetToNextRound();
+            GameManager.GetInstance().SetToNextRound();
         }
     }
 
@@ -132,7 +125,7 @@ public class PlayerScript : MonoBehaviour
     public void Move(InputAction.CallbackContext ctx)
     {
 
-        if (ctx.performed && !isMoving && gameManager.GetCurrentRound().Equals(RoundState.PlayerTurn) && !isCardDragging)
+        if (ctx.performed && !isMoving && GameManager.GetInstance().GetCurrentRound().Equals(RoundState.PlayerTurn) && !isCardDragging)
         {
             moveVector = ctx.ReadValue<Vector2>();
             //Debug.Log("輸入向量：" + moveVector);
@@ -174,7 +167,7 @@ public class PlayerScript : MonoBehaviour
                     StartCoroutine(SmoothMove(dest));
                     if (!FREEMOVE)
                     {
-                        gameManager.SetToNextRound(); // 敵人回合開始
+                        GameManager.GetInstance().SetToNextRound(); // 敵人回合開始
                     }
                 }
                 return;
@@ -233,12 +226,12 @@ public class PlayerScript : MonoBehaviour
     {
         if (enemy.isStun)
         {
-            enemy.hp = healthPointsScript.TakeMeleeDamage(enemy.hp);
+            enemy.hp = HealthPointsScript.GetInstance().TakeMeleeDamage(enemy.hp);
         }
         else
         {
             enemy.isStun = true;
-            enemy.stunRound = gameManager.GetAfterRoundsCounts();
+            enemy.stunRound = GameManager.GetInstance().GetAfterRoundsCounts();
             Debug.Log("擊暈敵人");
         }
     }

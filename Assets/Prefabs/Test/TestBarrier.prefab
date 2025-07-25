@@ -53,6 +53,10 @@ PrefabInstance:
       value: TestBarrier
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 1074432161e7c0a45a3bbe3752b7f5a4, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 1074432161e7c0a45a3bbe3752b7f5a4, type: 3}
       propertyPath: m_TagString
       value: Barrier
       objectReference: {fileID: 0}
