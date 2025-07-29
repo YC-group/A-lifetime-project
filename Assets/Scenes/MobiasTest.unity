@@ -1924,9 +1924,9 @@ MonoBehaviour:
   isCardLocking: 0
   isPlayerLocked: 0
   currentUsingCard: {fileID: 0}
+  pocketList: []
   cardPrefab: {fileID: 4838384550741636742, guid: 4c97aa95b983b7241bd7a8cde8ce547a, type: 3}
   cardPanel: {fileID: 733797189}
-  pocketList: []
 --- !u!114 &144464037
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5897,6 +5897,9 @@ MonoBehaviour:
   moveMode: 0
   movePriority: 0
   targetPosition: {x: 0, y: 0, z: 0}
+  moveSpeed: 0
+  moveAcceleration: 0
+  moveAngularSpeed: 0
   eyeHeight: 1.5
   viewRadiusForward: 6
   viewAngleForward: 90
@@ -6643,6 +6646,9 @@ MonoBehaviour:
   moveMode: 0
   movePriority: 0
   targetPosition: {x: 0, y: 0, z: 0}
+  moveSpeed: 0
+  moveAcceleration: 0
+  moveAngularSpeed: 0
   eyeHeight: 1.5
   viewRadiusForward: 6
   viewAngleForward: 27
@@ -9852,7 +9858,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -32.000122, y: -3.999939}
+  m_AnchoredPosition: {x: -32.000244, y: -3.999939}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &733797190
@@ -28516,16 +28522,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   FREEMOVE: 1
-  pocketList: []
+  pocketList:
+  - {fileID: 6596398182011954609, guid: 488eccebdf0d1f44dac22667738d57d2, type: 3}
+  - {fileID: 6596398182011954609, guid: f9b7d109b2bc9c64399a62818b8dc741, type: 3}
+  - {fileID: 6596398182011954609, guid: 824fdf472e56600418e60b9ebfff289b, type: 3}
   currentCell: {x: 0, y: 0, z: 0}
   RangeCurrentCard: {fileID: 0}
   ThrowCurrentCard: {fileID: 0}
   hp: 1
   isCardDragging: 0
-  itemGO:
-  - {fileID: 6596398182011954609, guid: 488eccebdf0d1f44dac22667738d57d2, type: 3}
-  - {fileID: 6596398182011954609, guid: f9b7d109b2bc9c64399a62818b8dc741, type: 3}
   playerSO: {fileID: 11400000, guid: 392ebe829a483cf4187e06ec49953088, type: 2}
+  moveDistance: 1
+  moveTime: 0.2
   buildDetectionBox: {x: 0.9, y: 1.5, z: 0.8}
   moveDetectionBox: {x: 0.9, y: 1.5, z: 0.9}
   overlapDetectionBoxYOffset: 2
@@ -29274,6 +29282,9 @@ MonoBehaviour:
   moveMode: 0
   movePriority: 0
   targetPosition: {x: 0, y: 0, z: 0}
+  moveSpeed: 0
+  moveAcceleration: 0
+  moveAngularSpeed: 0
   eyeHeight: 1.5
   viewRadiusForward: 10
   viewAngleForward: 59
@@ -30579,6 +30590,7 @@ SceneRoots:
   m_Roots:
   - {fileID: 941651009}
   - {fileID: 407318325}
+  - {fileID: 144464040}
   - {fileID: 1780600555}
   - {fileID: 920858245}
   - {fileID: 1077149414}
@@ -30832,4 +30844,3 @@ SceneRoots:
   - {fileID: 444704362}
   - {fileID: 1933678377}
   - {fileID: 377832116}
-  - {fileID: 144464040}

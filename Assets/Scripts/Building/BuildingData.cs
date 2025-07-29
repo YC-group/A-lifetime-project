@@ -1,6 +1,6 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 /// <summary>
-/// ÀğªºÄİ©Ê - mobias
+/// ç‰†çš„å±¬æ€§ - mobias
 /// </summary>
 
 
@@ -8,10 +8,10 @@ using UnityEngine;
 public class BuildingData : ScriptableObject
 {
 
-    public string BulidingName;    // Àğ¾À¦WºÙ
-    public enum BuildingType { None, Hardwall, Softwall, Mechanism }     // Àğ¾ÀÃş«¬¡]Hardwall, Softwall, Mechanism¡^
+    public string BulidingName;    // ç‰†å£åç¨±
+    public enum BuildingType { None, Hardwall, Softwall, Mechanism }     // ç‰†å£é¡å‹ï¼ˆHardwall, Softwall, Mechanismï¼‰
     public BuildingType buildingType;
-    public bool isVisionBlocking;  // ¬O§_ªı¾×µø½u
-    public bool isCrossable;    //¬O§_¥i¸ó¶V
+    public bool isVisionBlocking;  // æ˜¯å¦é˜»æ“‹è¦–ç·š
+    public bool isCrossable;    //æ˜¯å¦å¯è·¨è¶Š
 
 }

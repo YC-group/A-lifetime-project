@@ -18,11 +18,11 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     public GameObject player;            // 角色物件（預留給後續功能使用）
     public UIManager UiManager;          // UI 管理器，用來通知卡片被使用
     public ItemScript attachedScript;
-    
 
     // 初始化元件
     void Awake()
     {
+
         rectTransform = GetComponent<RectTransform>();
         canvas = GetComponentInParent<Canvas>();
         canvasGroup = GetComponent<CanvasGroup>();

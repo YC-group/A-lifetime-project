@@ -20,20 +20,17 @@ public class UIManager : MonoBehaviour
     public GameObject cardPrefab;             // 🃏 卡牌預製物
     public RectTransform cardPanel;           // 📦 放卡牌的 Panel
 
-
-         
-
     void Start()
     {
         playerScript = PlayerScript.GetInstance();
         pocketList = playerScript.pocketList;
+        
         SetupCardPanelLayout();
         foreach (var go in pocketList)
         {
             var script = go.GetComponent<ItemScript>();
             CreateCard(script);
         }
-
     }
 
     // 建立一張卡片，並附加對應的腳本與初始化
@@ -42,8 +39,16 @@ public class UIManager : MonoBehaviour
         GameObject card = Instantiate(cardPrefab, cardPanel);
 
         var attachedScript = (ItemScript)card.AddComponent(itemScript.GetType());
+        
         attachedScript.ItemInitialize(itemScript.itemSO);
         attachedScript.attachedCardUI = card; // ✅ 綁定回 UI 卡片
+
+        //給予bulletCount ⚠待優化
+        if (itemScript is RangeWeapon originalWeapon && attachedScript is RangeWeapon newWeapon)
+        {
+            newWeapon.bulletCount = originalWeapon.bulletCount;
+        }
+
 
         var tmp = card.GetComponentInChildren<TextMeshProUGUI>();
         if (tmp != null)
@@ -56,6 +61,8 @@ public class UIManager : MonoBehaviour
             drag.UiManager = this;
             drag.attachedScript = attachedScript;
         }
+
+
     }
 
     // 根據道具名稱尋找對應腳本類別

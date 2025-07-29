@@ -190,6 +190,11 @@ public class EnemyScript : MonoBehaviour
                     return false;
                 }
             }
+            Door door = hit.collider.GetComponent<Door>();
+            if (door != null)
+            {
+                return false;
+            }
         }
 
         // ✅ 畫出一條輔助線從敵人眼睛高度連到玩家位置

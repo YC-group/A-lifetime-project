@@ -74,7 +74,7 @@ public class PlayerScript : MonoBehaviour
         hp = playerSO.hp;
         currentCell = moveGrid.WorldToCell(transform.position);
         transform.position = moveGrid.GetCellCenterWorld(currentCell);
-        pocketList = new List<GameObject>();
+        //pocketList = new List<GameObject>
         inputActions = new InputSystemActions();
         // 註冊移動行為
         inputActions.Player.Move.performed += Move;

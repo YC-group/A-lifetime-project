@@ -133,5 +133,6 @@ MonoBehaviour:
   playerScript: {fileID: 0}
   itemSO: {fileID: 11400000, guid: 9a0471b173231c94e8e14d71bb71918e, type: 2}
   cardPrefab: {fileID: 0}
-  bulletCount: 10
+  attachedCardUI: {fileID: 0}
+  bulletCount: 8
   selectEnemy: 0

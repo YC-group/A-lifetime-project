@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public abstract class ItemScript : MonoBehaviour
 {
     [SerializeField] public string itemName;
-    [SerializeField] protected ItemType itemType;
+    [SerializeField] public ItemType itemType;
     [SerializeField] protected string itemDescription;
     [SerializeField] protected int damage;
     [SerializeField] protected float range;
@@ -58,7 +58,6 @@ public abstract class ItemScript : MonoBehaviour
         damage = itemSO.damage;
         range = itemSO.range;
 
-        Debug.Log("✅ 初始化完成：" + itemName);
     }
 
 

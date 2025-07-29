@@ -14,7 +14,7 @@ public class RangeWeapon : ItemScript
 
     protected virtual void Start()
     {
-        
+
     }
 
     protected virtual void Update()
@@ -51,7 +51,33 @@ public class RangeWeapon : ItemScript
         Debug.Log("🔫 預設攻擊邏輯（可被子類覆寫）");
     }
 
-    protected virtual void changeToThrowWeapon() { }
+    protected virtual void changeToThrowWeapon()
+    {
+        Debug.Log("🔁 切換為投擲模式");
+
+        //StartCoroutine(SwitchToThrowWeaponCoroutine());
+    }
+
+    //private IEnumerator SwitchToThrowWeaponCoroutine()
+    //{
+    //    // 1. 保留參數
+    //    ItemData data = this.itemSO;
+    //    PlayerScript player = this.playerScript;
+
+    //    // 2. 延遲一幀再 Destroy 自己，避免立即操作 this 出錯
+    //    yield return null;
+
+    //    // 3. 移除目前腳本
+    //    Destroy(this);
+
+    //    // 4. 加上新腳本
+    //    var newScript = gameObject.AddComponent<RifleThrow>();
+    //    newScript.ItemInitialize(data);
+    //    newScript.playerScript = player;
+
+    //    Debug.Log("✅ 已切換為 RifleThrow");
+    //}
+
 
     public virtual void AimTarget()
     {
@@ -86,6 +112,7 @@ public class RangeWeapon : ItemScript
         }
         else
         {
+            changeToThrowWeapon();
             RemoveItemFromPocket();
         }
         Debug.Log("剩餘子彈：" + bulletCount);
@@ -96,5 +123,6 @@ public class RangeWeapon : ItemScript
     public override void ItemInitialize(ItemData data)
     {
         base.ItemInitialize(data);
+
     }
 }
