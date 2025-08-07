@@ -28523,12 +28523,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   FREEMOVE: 1
   pocketList:
-  - {fileID: 6596398182011954609, guid: 488eccebdf0d1f44dac22667738d57d2, type: 3}
   - {fileID: 6596398182011954609, guid: f9b7d109b2bc9c64399a62818b8dc741, type: 3}
-  - {fileID: 6596398182011954609, guid: 824fdf472e56600418e60b9ebfff289b, type: 3}
   currentCell: {x: 0, y: 0, z: 0}
   RangeCurrentCard: {fileID: 0}
-  ThrowCurrentCard: {fileID: 0}
+  CurrentCard: {fileID: 0}
   hp: 1
   isCardDragging: 0
   playerSO: {fileID: 11400000, guid: 392ebe829a483cf4187e06ec49953088, type: 2}

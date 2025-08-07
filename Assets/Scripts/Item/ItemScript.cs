@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 /// <summary>
 /// 物品共通屬性腳本 - Jerry0401
 /// </summary>
@@ -17,6 +18,10 @@ public abstract class ItemScript : MonoBehaviour
     public ItemData itemSO;
     public GameObject cardPrefab; // ✅ 每張道具對應的 prefab
     public GameObject attachedCardUI; // ✅ 對應的 UI 卡牌
+    public bool throwSelectEnemy = false;
+    public bool Selected = false;
+    private Transform Target;
+  
 
     public virtual void Awake()
     {
@@ -59,10 +64,11 @@ public abstract class ItemScript : MonoBehaviour
         range = itemSO.range;
 
     }
+    public virtual void Attack()
+    {
 
+    }
 
-    public abstract void Attack(); // 讓子物件實作攻擊
-    
     private void OnTriggerEnter(Collider other) // 撿起道具
     {
         if (other.CompareTag("Player"))
@@ -75,6 +81,7 @@ public abstract class ItemScript : MonoBehaviour
     public virtual void Use()
     {
         Debug.Log($"🧪 使用了通用道具：{itemName}");
+        Selected =true;
         playerScript.isCardDragging = true;
     }
 
@@ -82,13 +89,41 @@ public abstract class ItemScript : MonoBehaviour
     {
         Debug.Log("❌ 攻擊取消");
         playerScript.isCardDragging = false;
-
+        Selected = false;
         var dragHandler = GetComponent<CardDragHandler>();
         if (dragHandler != null)
         {
             dragHandler.ResetUsedFlag();       // ✅ 重設 used
             dragHandler.RestoreDisplay();      // ✅ 改為完整重顯 UI
         }
+    }
+
+    public virtual void Throw()
+    {
+        playerScript.isCardDragging = true;
+        throwSelectEnemy = true;
+    }
+
+    public void SelectThrowTarget()
+    {
+        if (!throwSelectEnemy) return;
+
+        Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
+        if (Physics.Raycast(ray, out RaycastHit hit) && hit.collider.CompareTag("Enemy"))
+        {
+            Target = hit.collider.transform;
+            ThrowOut();
+        }
+    }
+
+    public virtual void ThrowOut()
+    {
+
+        Debug.Log($"➡ 丟擲敵人：{Target.name}");
+        throwSelectEnemy = false;
+        playerScript.isCardDragging = false;
+        RemoveItemFromPocket();
+
     }
 
 

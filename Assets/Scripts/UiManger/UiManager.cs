@@ -24,7 +24,7 @@ public class UIManager : MonoBehaviour
     {
         playerScript = PlayerScript.GetInstance();
         pocketList = playerScript.pocketList;
-        
+
         SetupCardPanelLayout();
         foreach (var go in pocketList)
         {
@@ -39,7 +39,7 @@ public class UIManager : MonoBehaviour
         GameObject card = Instantiate(cardPrefab, cardPanel);
 
         var attachedScript = (ItemScript)card.AddComponent(itemScript.GetType());
-        
+
         attachedScript.ItemInitialize(itemScript.itemSO);
         attachedScript.attachedCardUI = card; // ✅ 綁定回 UI 卡片
 
@@ -57,24 +57,11 @@ public class UIManager : MonoBehaviour
         var drag = card.GetComponent<CardDragHandler>();
         if (drag != null)
         {
-            drag.cardName = attachedScript.itemSO.itemName;
             drag.UiManager = this;
             drag.attachedScript = attachedScript;
         }
 
 
-    }
-
-    // 根據道具名稱尋找對應腳本類別
-    private Type GetItemScriptType(string className)
-    {
-        foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-        {
-            var type = assembly.GetType(className);
-            if (type != null)
-                return type;
-        }
-        return null;
     }
 
     // 設定卡片面板位置與大小
@@ -90,28 +77,25 @@ public class UIManager : MonoBehaviour
     // 呼叫道具的 Use() 行為
     public void useItem(ItemScript script)
     {
-
         currentUsingCard = script;
+        scriptToPlayer(script); 
+        script.Use();// 執行 Use 行為
+    }
 
-        
-        if (playerScript == null)
-        {
-            Debug.LogError("❌ 找不到 PlayerScript 實例");
-            return;
-        }
+    public void throwItem(ItemScript script)
+    {
+        currentUsingCard = script;
+        scriptToPlayer(script);
+        script.Throw();
+    }
 
-        // 根據實際類型處理，但都能指定給 currentCard（因為 currentCard 是 ItemScript）
+    // 根據實際類型處理，但都能指定給 currentCard（因為 currentCard 是 ItemScript）
+    private void scriptToPlayer(ItemScript script)
+    {
+        playerScript.CurrentCard = script;
         if (script is RangeWeapon rangeWeapon)
         {
             playerScript.RangeCurrentCard = rangeWeapon;
         }
-        else if (script is ThrowWeapon throwWeapon)
-        {
-            playerScript.ThrowCurrentCard = throwWeapon;
-        }
-
-        // 執行 Use 行為
-        script.Use();
     }
-
 }

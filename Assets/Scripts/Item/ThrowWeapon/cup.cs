@@ -5,38 +5,38 @@ using System.Collections;
 /// <summary>
 /// 杯子- mobias
 /// </summary>
-public class cup : ThrowWeapon
+public class cup : ItemScript
 {
 
-    public override void ItemInitialize(ItemData data)
-    {
-        base.ItemInitialize(data);
-    }
+    //public override void ItemInitialize(ItemData data)
+    //{
+    //    base.ItemInitialize(data);
+    //}
 
-    protected override void Start()
-    {
-        base.Start(); // ✅ 正確呼叫父類 Start
-    }
+    //protected override void Start()
+    //{
+    //    base.Start(); // ✅ 正確呼叫父類 Start
+    //}
 
-    protected override void Update()
-    {
-        base.Update(); // ✅ 正確呼叫父類 Update
+    //protected override void Update()
+    //{
+    //    base.Update(); // ✅ 正確呼叫父類 Update
 
-    }
+    //}
 
     //public override void Attack()
     //{
     //    Debug.Log("🔫 Pistol 的攻擊實作");
     //}
 
-    public override void AimTarget()
-    {
-        base.AimTarget();  // 呼叫父類邏輯，或你自己客製
-    }
-    public override void Use()
-    {
-        base.Use();
-        AimTarget();
+    //public override void AimTarget()
+    //{
+    //    base.AimTarget();  // 呼叫父類邏輯，或你自己客製
+    //}
+    //public override void Use()
+    //{
+    //    base.Use();
+    //    AimTarget();
         
-    }
+    //}
 }

@@ -20,7 +20,7 @@ public class PlayerScript : MonoBehaviour
     public List<GameObject> pocketList; // 儲存item GO
     public Vector3Int currentCell; // 當下網格位置
     public RangeWeapon RangeCurrentCard;
-    public ThrowWeapon ThrowCurrentCard;
+    public ItemScript CurrentCard;
     public float hp;
     public bool isCardDragging = false;
     
@@ -175,32 +175,31 @@ public class PlayerScript : MonoBehaviour
         }
     }
 
-    // NOTE: 使用 InputAction
     public void Fire(InputAction.CallbackContext ctx)
     {
         if (RangeCurrentCard != null && RangeCurrentCard.selectEnemy)
             RangeCurrentCard.Fire();
-        if (ThrowCurrentCard != null && ThrowCurrentCard.selectEnemy)
-            ThrowCurrentCard.Fire();
+
     }
 
-    // NOTE: 使用 InputAction
     public void Cancel(InputAction.CallbackContext ctx)
     {
         if (RangeCurrentCard != null && RangeCurrentCard.selectEnemy)
             RangeCurrentCard.CancelAttackAndRestore();
-        if (ThrowCurrentCard != null && ThrowCurrentCard.selectEnemy)
-            ThrowCurrentCard.CancelAttackAndRestore();
+        if (CurrentCard != null && CurrentCard.throwSelectEnemy)
+            CurrentCard.CancelAttackAndRestore();
     }
 
-    // NOTE: 使用 InputAction
     public void Select(InputAction.CallbackContext ctx)
     {
         if (RangeCurrentCard != null && RangeCurrentCard.selectEnemy)
             RangeCurrentCard.SelectTarget();
-        if (ThrowCurrentCard != null && ThrowCurrentCard.selectEnemy)
-            ThrowCurrentCard.SelectTarget();
+        if (CurrentCard != null && CurrentCard.throwSelectEnemy)
+            CurrentCard.SelectThrowTarget();
+
     }
+
+
 
     // HACK: 暫時移動動畫
     IEnumerator SmoothMove(Vector3 destination) // 使用迭代做平滑移動
@@ -445,6 +444,5 @@ public class PlayerScript : MonoBehaviour
             // enemy.DestroyEnemy();
         }
     }
-
 
 }

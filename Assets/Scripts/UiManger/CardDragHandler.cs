@@ -7,8 +7,6 @@ using System.Collections;
 // 此腳本負責處理卡片拖曳與使用的邏輯
 public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    public string cardName; // 卡片名稱，例如「火球」、「補血藥水」
-
     private RectTransform rectTransform; // 卡片的 UI 元件，用來控制位置
     private CanvasGroup canvasGroup;     // 控制透明度與是否可以被點擊、擋住射線
     private Vector2 originalPos;         // 拖曳前的原始位置
@@ -78,8 +76,8 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             canvasGroup.alpha = 0f;
             canvasGroup.blocksRaycasts = false;
             canvasGroup.interactable = false;
-
-            UiManager.useItem(attachedScript); // 通知 UI Manager 使用該卡片
+            UiManager.throwItem(attachedScript);
+            //UiManager.useItem(attachedScript); // 通知 UI Manager 使用該卡片
         }
     }
 
@@ -122,5 +120,19 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         canvasGroup.interactable = true;
 
         used = false;
+    }
+
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        // 判斷是否是左鍵
+        if (eventData.button == PointerEventData.InputButton.Left && !used)
+        {
+
+            canvasGroup.alpha = 0f;
+            canvasGroup.blocksRaycasts = false;
+            canvasGroup.interactable = false;
+            UiManager.useItem(attachedScript); // ✅ 左鍵點擊就使用
+        }
     }
 }
