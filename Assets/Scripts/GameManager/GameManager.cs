@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour
 {
     private static GameManager Instance;
     private RoundState currentRound;
+    // public EnemyActionManager enemyActionManager;
     [SerializeField] private int roundCounts;
     public bool SHOWROUNDSTATE = true;
     public bool SHOWENEMYSTUNSTATE = true;
@@ -73,6 +74,15 @@ public class GameManager : MonoBehaviour
         if (Keyboard.current.rKey.wasPressedThisFrame)
         {
             SetToNextRound();
+        }
+
+        if (currentRound != RoundState.EnemyTurn)
+        {
+            EnemyActionManager.GetInstance().enabled = false;
+        }
+        else
+        {
+            EnemyActionManager.GetInstance().enabled = true;
         }
     }
 

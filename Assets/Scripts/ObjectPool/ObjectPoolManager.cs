@@ -14,6 +14,7 @@ public class ObjectPoolManager : MonoBehaviour
     private GameObject emptyHolder; // 多個物件池的父物件
     
     private static GameObject gameObjectEmpty; // GameObject 的物件池
+    private static GameObject enemyObjectEmpty;
 
     private static Dictionary<GameObject, ObjectPool<GameObject>> objectPools; // 用於找多個物件池
     private static Dictionary<GameObject, GameObject> cloneToPrfabMap; // 用來查詢已存入物件池的物件字典
@@ -21,6 +22,7 @@ public class ObjectPoolManager : MonoBehaviour
     public enum PoolType
     {
         GameObjects,
+        Enemies
     }
 
     public static PoolType PoolingType;
@@ -39,6 +41,9 @@ public class ObjectPoolManager : MonoBehaviour
         
         gameObjectEmpty = new GameObject("GameObjects");
         gameObjectEmpty.transform.SetParent(emptyHolder.transform);
+        
+        enemyObjectEmpty = new GameObject("Enemies");
+        enemyObjectEmpty.transform.SetParent(emptyHolder.transform);
 
         if (addToDontDestroyOnLoad)
         {
@@ -58,6 +63,7 @@ public class ObjectPoolManager : MonoBehaviour
             );
         
         objectPools.Add(prefab, pool); // 加入物件池字典
+        // Debug.Log($"Length : {objectPools.Count}");
     }
 
     private static GameObject CreateObject(GameObject obj, Vector3 pos, Quaternion rot,
@@ -102,6 +108,8 @@ public class ObjectPoolManager : MonoBehaviour
         {
             case PoolType.GameObjects:
                 return gameObjectEmpty;
+            case PoolType.Enemies:
+                return enemyObjectEmpty;
             default:
                 return null;
         }
@@ -112,10 +120,11 @@ public class ObjectPoolManager : MonoBehaviour
     /// </summary>
     /// <param name="objectToSpawn"></param>
     /// <param name="poolType"></param>
-    public static void AddExistObjetToPool(GameObject objectToSpawn, PoolType poolType = PoolType.GameObjects)
+    public static void RegisterExistObjetToPool(GameObject objectToSpawn, PoolType poolType = PoolType.GameObjects)
     {
         if (!objectPools.ContainsKey(objectToSpawn))
         {
+            // Debug.Log("新增物件池...");
             CreatePool(objectToSpawn, objectToSpawn.transform.position, objectToSpawn.transform.rotation, poolType);
         }
         

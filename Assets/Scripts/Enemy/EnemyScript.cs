@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.AI.Navigation;
+using Unity.Behavior;
 using Unity.VisualScripting;
 using UnityEngine.AI;
 using Object = System.Object;
@@ -25,24 +26,24 @@ public class EnemyScript : MonoBehaviour
     [SerializeField] public EnemyData enemySO;
     
     private Vector2 moveVector;
-    private Vector3Int currentCell;
-    private NavMeshPath path;
-    private NavMeshAgent agent;
+    // private NavMeshAgent agent;
 
     [Header("狀態")] 
     public float hp; // 血量
     public bool isAlert; // 警戒狀態
     public bool isStun; // 擊暈狀態
+    public bool isMoving;
+    public bool isSelected;
     public int stunRound = 0; // 擊暈持續回合
+    
+    public EnemyStateMachine stateMachine {get; private set;}
+    public EnemyIdleState idleState {get; private set;}
+    public EnemyNavigateState navigateState {get; private set;}
 
     [Header("移動模式")] 
     public MoveMode moveMode;
     public int movePriority;
     public Vector3 targetPosition; // 移動到下個位置
-    [Tooltip("Speed in NavMeshAgent , units / sec")]
-    public float moveSpeed; // unit / second
-    [Tooltip("Acceleration in NavMeshAgent , units^2 / sec")]
-    public float moveAcceleration; // unit^2 / second
     [Tooltip("Angular speed in SmoothRotation , speed * deltaTime at each frame")]
     public float moveAngularSpeed; // speed * deltaTime
 
@@ -74,8 +75,8 @@ public class EnemyScript : MonoBehaviour
 
     void Update()
     {
-        // HACK: 暫時方案，敵人生成後無法偵測玩家
-        if (PlayerScript.GetInstance() != null)
+        // 當讀取遊戲結束後
+        if (RoomManager.GetInstance().isComplete)
         {
             if (hp == 0)
             {
@@ -83,7 +84,7 @@ public class EnemyScript : MonoBehaviour
                 GridManager.GetInstance().RemoveGameObjectFromMoveGrid(this.gameObject);
             }
         
-            if (DetectPlayer())
+            if (DetectPlayer() && !isMoving)
             {
                 DetectAlert();
                 //Debug.Log("偵測到玩家");
@@ -102,27 +103,33 @@ public class EnemyScript : MonoBehaviour
 
     private void EnemyDataInitializer() // 初始化
     {
-        
         hp = enemySO.hp;
         isAlert = false;
         isStun = false;
+        isMoving = false;
+        isSelected = false;
         targetPosition = transform.position;
         movePriority = enemySO.movePriority;
         // 設定移動網格
-        currentCell = GridManager.GetInstance().moveGrid.WorldToCell(transform.position);
+        Vector3Int currentCell = GridManager.GetInstance().moveGrid.WorldToCell(transform.position);
         transform.position = GridManager.GetInstance().moveGrid.GetCellCenterWorld(currentCell);
         // 設定移動速度與加速度
-        agent = gameObject.GetComponent<NavMeshAgent>();
-        agent.speed = moveSpeed;
-        agent.acceleration = moveAcceleration;
-        agent.updateRotation = false; // 停用 NavMeshAgent 轉向方面的功能
-        
-        ObjectPoolManager.AddExistObjetToPool(this.gameObject);
+        GetComponent<NavMeshAgent>().baseOffset = -0.08333f;
+        // agent = gameObject.GetComponent<NavMeshAgent>();
+        // agent.speed = moveSpeed;
+        // agent.acceleration = moveAcceleration;
+        // agent.updateRotation = false; // 停用 NavMeshAgent 轉向方面的功能
+        stateMachine = GetComponent<EnemyStateMachine>();
+        idleState = new EnemyIdleState(this, stateMachine);
+        navigateState = new EnemyNavigateState(this, stateMachine);
+        stateMachine.Initialize(idleState);
+        // TODO: enemy stay state
+        ObjectPoolManager.RegisterExistObjetToPool(this.gameObject);
     }
 
-    public List<Vector3Int> SetMoveModeDirection(MoveMode mode) // 設定行為模式
+    public List<Vector3Int> GetMoveModeDirectionMode() // 設定行為模式
     {
-        switch (mode)
+        switch (moveMode)
         {
             case MoveMode.DownRightUpLeft:
                 return new List<Vector3Int>()
@@ -151,6 +158,24 @@ public class EnemyScript : MonoBehaviour
         }
 
         transform.rotation = targetRotation; // 確保精準面向
+    }
+    
+    // HACK: 暫時移動動畫
+    public IEnumerator SmoothMove(Vector3 destination) // 使用迭代做平滑移動
+    {
+        isMoving = true;
+        float elapsed = 0f; // 已經過時間
+        float duration = 1f; // 移動時間，
+
+        while (elapsed < duration)
+        {
+            transform.position = Vector3.Lerp(transform.position, destination, elapsed / duration);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+        
+        transform.position = destination;
+        isMoving = false;
     }
 
     public bool DetectPlayer()

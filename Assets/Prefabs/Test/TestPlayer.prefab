@@ -84,10 +84,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79aff8223d38bbd42b14369bbd1d0127, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerSO: {fileID: 11400000, guid: 392ebe829a483cf4187e06ec49953088, type: 2}
-  grid: {fileID: 0}
   FREEMOVE: 0
   pocketList: []
+  currentCell: {x: 0, y: 0, z: 0}
+  RangeCurrentCard: {fileID: 0}
+  ThrowCurrentCard: {fileID: 0}
+  hp: 0
+  isCardDragging: 0
+  playerSO: {fileID: 11400000, guid: 392ebe829a483cf4187e06ec49953088, type: 2}
+  moveDistance: 1
+  moveTime: 0.2
   buildDetectionBox: {x: 0.9, y: 1.5, z: 0.8}
   moveDetectionBox: {x: 0.9, y: 1.5, z: 0.9}
   overlapDetectionBoxYOffset: 2

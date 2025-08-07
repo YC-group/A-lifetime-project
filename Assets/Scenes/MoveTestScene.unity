@@ -183,6 +183,10 @@ PrefabInstance:
       propertyPath: SHOWENEMYSTUNSTATE
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8825587853773391057, guid: f390d2617ad1a8f459c0b0acaeed5fba, type: 3}
+      propertyPath: enemyActionManager
+      value: 
+      objectReference: {fileID: 550133259}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -265,6 +269,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f1733c798e44b9b469dc5cb795fd6580, type: 3}
+--- !u!114 &550133259 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3912976626961057350, guid: f390d2617ad1a8f459c0b0acaeed5fba, type: 3}
+  m_PrefabInstance: {fileID: 43313944}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbf068fe26e94924197edadf95f26509, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1017383266
 GameObject:
   m_ObjectHideFlags: 0

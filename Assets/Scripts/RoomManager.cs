@@ -25,6 +25,8 @@ public class RoomManager : MonoBehaviour
     private Dictionary<string, bool> roomIsVisited = new();
     private Dictionary<string, List<string>> roomLinks = new();
 
+    public bool isComplete = false; //判斷遊戲生成是否完成
+
     public string GetCurrentRoomId()
     {
         return currentRoomId;
@@ -148,9 +150,9 @@ public class RoomManager : MonoBehaviour
         GameObject player = await SaveAndLoadTools.LoadFromAddressableAndInstantiate<GameObject>(PLAYER_ADDRESS);
         player.transform.SetParent(levelParent);
         player.transform.position = currentSpawnpoint;
+        isComplete = true; // 讀取完成
     }
-
-
+    
     public void PlayerRespawn()
     {
         GameObject player = PlayerScript.GetInstance().gameObject;
@@ -162,11 +164,6 @@ public class RoomManager : MonoBehaviour
 
         player.transform.position = currentSpawnpoint;
     }
-    
-    // public async Task NavMeshBaker()
-    // {
-    //     
-    // }
 
     public async Task LoadLevel(LevelSave levelSave)
     {
