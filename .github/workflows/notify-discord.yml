@@ -18,31 +18,32 @@ on:
 jobs:
   # Job 1: 處理常規事件通知
   notify-events:
-    # 排除 project_card 事件，因为它由另一个 job 处理
     if: github.event_name != 'project_card'
     runs-on: ubuntu-latest
     steps:
       - name: Send Discord notification
-        uses: rtsg-adapter/discord-webhook-action@v2
+        # 👇 使用新的、有效的 action
+        uses: ij-abo/discord-webhook-action@v5
         with:
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-          color: >
+          # ⚠️ 注意：參數名稱已更新 (例如 webhookUrl -> webhook_url)
+          webhook_url: ${{ secrets.DISCORD_WEBHOOK }} 
+          embed_color: >
             ${{ (github.event.pull_request.merged && '7506394') ||
                (github.event_name == 'push' && '3066993') ||
                (github.event_name == 'pull_request' && '13632027') ||
                (github.event_name == 'pull_request_review' && '15158332') ||
                (github.event_name == 'issues' && '16098851') ||
                '3447003' }}
-          author: ${{ github.actor }}
-          authorIcon: https://avatars.githubusercontent.com/${{ github.actor }}
-          title: >
+          author_name: ${{ github.actor }}
+          author_icon_url: https://avatars.githubusercontent.com/${{ github.actor }}
+          embed_title: >
             ${{ (github.event_name == 'push' && format('Pushed to {0}', github.ref_name)) ||
                (github.event.pull_request.merged && format('✅ Merged PR #{0}: {1}', github.event.pull_request.number, github.event.pull_request.title)) ||
                (github.event.pull_request && format('PR #{0}: {1}', github.event.pull_request.number, github.event.pull_request.title)) ||
                (github.event.issue && format('Issue #{0}: {1}', github.event.issue.number, github.event.issue.title)) ||
                (github.event.review && format('Review on PR #{0} ({1})', github.event.pull_request.number, github.event.review.state)) ||
                format('New event: {0}', github.event_name) }}
-          description: >
+          embed_description: >
             ${{ (github.event.head_commit.message) ||
                (github.event.pull_request.body) ||
                (github.event.issue.body) ||
