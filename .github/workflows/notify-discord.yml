@@ -12,7 +12,7 @@ on:
   pull_request_review:
     types: [submitted]
   project_card:
-    types: [moved]
+    types: [created, moved]
   workflow_dispatch:
 
 jobs:
@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Send Discord notification
-        uses: tsg-adapter/discord-webhook-action@v2
+        uses: rtsg-adapter/discord-webhook-action@v2
         with:
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
           color: >
