@@ -1,79 +1,117 @@
-name: Notify Discord on All Events
+name: Notify Discord on Key Events
 
 on:
   push:
+    branches:
+      - main # 只通知 main 分支的 push
+      - develop
   pull_request:
+    types: [opened, closed, reopened]
   issues:
-  issue_comment:
+    types: [opened, closed, reopened]
   pull_request_review:
-  pull_request_review_comment:
-  discussion:
-  discussion_comment:
+    types: [submitted]
+  project_card:
+    types: [moved]
   workflow_dispatch:
 
 jobs:
-  notify:
+  # Job 1: 處理常規事件通知
+  notify-events:
+    # 排除 project_card 事件，因为它由另一个 job 处理
+    if: github.event_name != 'project_card'
     runs-on: ubuntu-latest
     steps:
-      - name: Send Discord Embed notification
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        run: |
-          EVENT_NAME="${{ github.event_name }}"
-          ACTOR="${{ github.actor }}"
-          REPO="${{ github.repository }}"
-          EVENT_URL="${{ github.server_url }}/${{ github.repository }}"
-          REPO_NAME="${{ github.repository }}"
+      - name: Send Discord notification
+        uses: tsg-adapter/discord-webhook-action@v2
+        with:
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+          color: >
+            ${{ (github.event.pull_request.merged && '7506394') ||
+               (github.event_name == 'push' && '3066993') ||
+               (github.event_name == 'pull_request' && '13632027') ||
+               (github.event_name == 'pull_request_review' && '15158332') ||
+               (github.event_name == 'issues' && '16098851') ||
+               '3447003' }}
+          author: ${{ github.actor }}
+          authorIcon: https://avatars.githubusercontent.com/${{ github.actor }}
+          title: >
+            ${{ (github.event_name == 'push' && format('Pushed to {0}', github.ref_name)) ||
+               (github.event.pull_request.merged && format('✅ Merged PR #{0}: {1}', github.event.pull_request.number, github.event.pull_request.title)) ||
+               (github.event.pull_request && format('PR #{0}: {1}', github.event.pull_request.number, github.event.pull_request.title)) ||
+               (github.event.issue && format('Issue #{0}: {1}', github.event.issue.number, github.event.issue.title)) ||
+               (github.event.review && format('Review on PR #{0} ({1})', github.event.pull_request.number, github.event.review.state)) ||
+               format('New event: {0}', github.event_name) }}
+          description: >
+            ${{ (github.event.head_commit.message) ||
+               (github.event.pull_request.body) ||
+               (github.event.issue.body) ||
+               (github.event.review.body) ||
+               format('Action triggered in repository {0}', github.repository) }}
+          url: >
+            ${{ (github.event.compare) ||
+               (github.event.pull_request.html_url) ||
+               (github.event.issue.html_url) ||
+               (github.event.review.html_url) ||
+               format('{0}/{1}', github.server_url, github.repository) }}
 
-          # 設置預設顏色和訊息
-          TITLE="GitHub 事件通知"
-          DESCRIPTION="有新活動發生！"
-          COLOR="3447003"  # 預設藍色
-          
-          # 根據事件類型設置不同訊息
-          if [ "$EVENT_NAME" = "issues" ]; then
-            EVENT_URL="${{ github.event.issue.html_url }}"
-            TITLE="Issue: ${{ github.event.issue.title }}"
-            DESCRIPTION="Issue 被開啟"
-            COLOR="3066993" # 藍色
-          elif [ "$EVENT_NAME" = "push" ]; then
-            EVENT_URL="${{ github.event.head_commit.url }}"
-            TITLE="Push: ${{ github.event.head_commit.message }}"
-            DESCRIPTION="Push了新程式碼"
-            COLOR="3066993" # 藍色
-          elif [ "$EVENT_NAME" = "pull_request" ]; then
-            EVENT_URL="${{ github.event.pull_request.html_url }}"
-            TITLE="Pull Request: ${{ github.event.pull_request.title }}"
-            DESCRIPTION="PR 被建立"
-            COLOR="13632027" # 黃色
-          elif [ "$EVENT_NAME" = "pull_request_review" ]; then
-            EVENT_URL="${{ github.event.review.html_url }}"
-            TITLE="PR Review: ${{ github.event.review.state }}"
-            DESCRIPTION="有新的 PR 審查"
-            COLOR="15158332" # 紅色
-          elif [ "$EVENT_NAME" = "issue_comment" ]; then
-            EVENT_URL="${{ github.event.comment.html_url }}"
-            TITLE="Issue Comment"
-            DESCRIPTION="有新的留言在 Issue 上"
-            COLOR="16098851" # 綠色
-          fi
+  # Job 2: 處理專案進度通知
+  notify-project-progress:
+    # 只在 project_card 被移动时触发
+    if: github.event_name == 'project_card' && github.event.action == 'moved'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Calculate Project Progress and Notify
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const webhookUrl = "${{ secrets.DISCORD_WEBHOOK }}";
+            const column_id = context.payload.project_card.column_id;
+            
+            const { data: column } = await github.rest.projects.getColumn({ column_id });
+            const project_url = column.project_url;
+            const project_id = parseInt(project_url.split('/').pop(), 10);
 
-          # 發送嵌入式訊息到 Discord
-          curl -H "Content-Type: application/json" \
-            -X POST \
-            -d "{
-              \"embeds\": [{
-                \"title\": \"$TITLE\",
-                \"description\": \"$DESCRIPTION\",
-                \"url\": \"$EVENT_URL\",
-                \"color\": $COLOR,
-                \"footer\": {
-                  \"text\": \"來自 GitHub 的通知\"
-                },
-                \"author\": {
-                  \"name\": \"$ACTOR\",
-                  \"icon_url\": \"https://avatars.githubusercontent.com/$ACTOR\"
+            const { data: columns } = await github.rest.projects.listColumns({ project_id });
+
+            let totalCards = 0;
+            let doneCards = 0;
+            const doneColumnName = "Done"; // ⚠️ 請根據你的專案，修改「完成」欄位的名稱
+
+            for (const col of columns) {
+              const { data: cards } = await github.rest.projects.listCards({ column_id: col.id, per_page: 100 }); // 增加 per_page 以獲取所有卡片
+              totalCards += cards.length;
+              if (col.name === doneColumnName) {
+                doneCards += cards.length;
+              }
+            }
+            
+            const progress = totalCards > 0 ? Math.round((doneCards / totalCards) * 100) : 0;
+            const progressBarLength = 10;
+            const filledBlocks = Math.round(progress / (100 / progressBarLength));
+            const emptyBlocks = progressBarLength - filledBlocks;
+            const progressBar = '▓'.repeat(filledBlocks) + '░'.repeat(emptyBlocks);
+
+            const { data: project } = await github.rest.projects.get({ project_id });
+            const embed = {
+              title: `📊 Project Progress Update: ${project.name}`,
+              description: `A card was moved by **${context.actor}**. The project is now **${progress}%** complete.`,
+              url: project.html_url,
+              color: 7506394, // 紫色
+              fields: [
+                {
+                  name: "Progress",
+                  value: `\`${progressBar}\` (${doneCards}/${totalCards} cards)`,
+                  inline: false
                 }
-              }]
-            }" \
-            "$DISCORD_WEBHOOK"
+              ],
+              footer: { text: `Repository: ${context.repo.owner}/${context.repo.repo}` }
+            };
+
+            const fetch = require('node-fetch');
+            await fetch(webhookUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ embeds: [embed] })
+            });
