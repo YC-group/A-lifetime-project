@@ -93,6 +93,7 @@ public abstract class ItemScript : MonoBehaviour
         var dragHandler = GetComponent<CardDragHandler>();
         if (dragHandler != null)
         {
+
             dragHandler.ResetUsedFlag();       // ✅ 重設 used
             dragHandler.RestoreDisplay();      // ✅ 改為完整重顯 UI
         }
